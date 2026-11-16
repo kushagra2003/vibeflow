@@ -27,7 +27,7 @@
         <span>⌕</span><input id="searchInput" placeholder="Search Audius tracks or artists…" autocomplete="off">
         <button type="submit">Search</button>
       </form>
-      <button id="aiStatus" class="ai-pill" title="Toggle continuous AI DJ"><span class="ai-dot"></span> AI DJ OFF</button>
+      <button id="aiStatus" class="ai-pill" title="Toggle Smart Mix automatic playback"><span class="ai-dot"></span> SMART MIX OFF</button>
       <button id="partyModeButton" class="party-launch">✦ Party mode</button>
     </header>
 
@@ -77,7 +77,7 @@
       <div id="hooksList" class="hooks-list"><div class="empty-state">Play a song and mark its best moments as hooks.</div></div>
       <div class="hook-data-actions"><button id="exportHooks" type="button">↓ Export hook backup</button><button id="importHooks" type="button">↑ Restore hook backup</button><input id="importHooksFile" type="file" accept="application/json,.json" hidden></div>
       <div class="ai-hook-tools"><div class="ai-hook-tools-copy"><b>VIBE FLOW · LOCAL HOOK ANALYSIS</b><small>Detect repeated musical sections and high-energy moments directly in your browser. No AI API key or audio upload required.</small></div><button id="scanHooks" class="primary-btn" type="button">⌕ Analyse for hooks</button></div>
-      <div id="aiHookResults" class="ai-hook-results" aria-live="polite"><div class="ai-hook-status">Click Analyse for hooks to scan this song. AI DJ can also scan an unmarked upcoming song automatically.</div></div>
+      <div id="aiHookResults" class="ai-hook-results" aria-live="polite"><div class="ai-hook-status">Click Analyse for hooks to scan this song. Smart Mix can also scan an unmarked upcoming song automatically.</div></div>
     </section>
 
     <section class="content-grid">
@@ -119,7 +119,7 @@
   </div>
   <div class="party-bottom">
     <div class="party-telemetry"><b id="partyActivity">DJ ENGINE READY</b><span id="partyDetail">Waiting for the first beat.</span><strong id="partyMessage">Surprise incoming… 🪩</strong></div>
-    <div class="party-controls"><button id="partyPrev" aria-label="Previous track">⏮</button><button id="partyPlay" class="party-play" aria-label="Play or pause">▶</button><button id="partyNext" aria-label="Next track">⏭</button><button id="partyAI" class="party-ai">AI DJ: OFF</button></div>
+    <div class="party-controls"><button id="partyPrev" aria-label="Previous track">⏮</button><button id="partyPlay" class="party-play" aria-label="Play or pause">▶</button><button id="partyNext" aria-label="Next track">⏭</button><button id="partyAI" class="party-ai">SMART MIX: OFF</button></div>
   </div>
 </section>
 
@@ -129,11 +129,11 @@
     <div class="transport-buttons"><button id="barPrev">⏮</button><button id="barPlay" class="bar-play">▶</button><button id="barNext">⏭</button></div>
     <div class="transport-options">
       <label>Crossfade <select id="mixsec"><option value="0">Off</option><option value="3">3 sec</option><option value="6" selected>6 sec</option><option value="9">9 sec</option></select></label>
-      <label>Auto mix <select id="autoMode"><option value="random">Random / smart</option><option value="hook">From hook</option><option value="beginning">From beginning</option><option value="off">Off</option></select></label>
+      
       <label class="volume-control">Volume <input id="vol" type="range" min="0" max="100" value="80"></label>
     </div>
   </div>
-  <div class="player-right"><button id="aiRadio" class="quiet-btn">AI DJ: OFF</button><button id="footerSettings" class="icon-btn" aria-label="Settings">⚙</button></div>
+  <div class="player-right"><button id="aiRadio" class="quiet-btn">Smart Mix: OFF</button><button id="footerSettings" class="icon-btn" aria-label="Settings">⚙</button></div>
 </footer>
 
 <div id="modalRoot"></div>
