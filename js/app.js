@@ -527,56 +527,40 @@ function setDJActivity(title,detail,countdown="--:--",state="ready") {
 function updateDJStatus() {
   const t=cur(), a=audio();
   if(!t) { setDJActivity("AWAITING SIGNAL","Load a track and the DJ engine will lock onto its rhythm."); return; }
-  const upcoming=S.queue[S.idx+1]||null;
-  maybeAutoScanUpcoming(upcoming);
-  if(upcoming && S.autoHookInFlight.has(upcoming.id)) {
-    setDJActivity("AUTO SCAN · NEXT TRACK","Analysing "+upcoming.title+" for repeated sections and high-energy hooks","SCAN","sync");
+  if(S.preparingNext) {
+    setDJActivity("FINDING THE NEXT HOOK","Preparing "+S.preparingNext.title+" · checking saved cues or analysing locally","SCAN","sync");
     return;
   }
-  const chosen=upcoming && upcoming._chosenHook;
-  if(S.transitioning) {
-    setDJActivity("LOCKING NEXT TRACK","Preparing "+(upcoming?.title||t.title)+" · buffering audio and cue points…","SYNC","sync");
-    return;
-  }
-  if(S.mixing) {
-    setDJActivity("CROSSFADING · LIVE","Blending "+t.title+" into the next track. Keep the energy up!","LIVE","mix");
+  if(S.transitioning || S.mixing) {
+    setDJActivity("CROSSFADING · LIVE","Blending into the next track. Keep the energy up!","MIXING","mix");
     return;
   }
   if(a.paused) {
-    setDJActivity("ENGINE PAUSED","Playback is paused. Your next cue is safely waiting.","PAUSED","paused");
+    setDJActivity(S.endWaiting?"NEXT TRACK PREPARING":"ENGINE PAUSED",S.endWaiting?"The current song has ended. Waiting for the next cue to finish preparing.":"Playback is paused. Your next action is waiting.","PAUSED","paused");
     return;
   }
-  const hook=S.activeHook?.trackId===t.id?S.activeHook:null;
-  const deadline=hook?(hook.end!=null?hook.end:hook.t+settings.hookPlaySeconds):(S.activeNoHookDeadline?.trackId===t.id?S.activeNoHookDeadline.at:settings.noHookSeconds);
-  const resetCountdown=S.seeking
-    ? S.seekResetDelay
-    : (S.seekResumeAt ? S.seekResetDelay-(a.currentTime-S.seekResetMediaTime) : null);
-  const left=Math.max(0,resetCountdown==null?deadline-a.currentTime:resetCountdown);
-  const clock=String(Math.floor(left/60)).padStart(2,"0")+":"+String(Math.floor(left%60)).padStart(2,"0");
-  const nextName=upcoming?.title||"next random pick";
-  if(chosen) {
-    if(left<=8) setDJActivity("BEAT SYNC · HOOK LOCKED","Lining up “"+(chosen.lyric||"your selected hook")+"” on "+nextName+". Get ready!",clock,"sync");
-    else setDJActivity("HOOK LOCKED · READY","Next: "+nextName+" · “"+(chosen.lyric||"selected hook")+"” at "+fmt(chosen.t),clock,"ready");
-  } else if(upcoming && hooksOf(upcoming).length) {
-    if(left<=8) setDJActivity("SYNCING THE BEAT","Scanning "+hooksOf(upcoming).length+" saved hooks for "+nextName+" · transition imminent",clock,"sync");
-    else setDJActivity("HOOKS DETECTED",hooksOf(upcoming).length+" saved cue point(s) ready on "+nextName+" · lining up the next mix",clock,"ready");
-  } else if(left<=8) {
-    setDJActivity("COUNTDOWN · DROP INCOMING","No saved hook on the next track · preparing the "+settings.noHookStartSeconds+"s fallback start",clock,"sync");
-  } else {
-    setDJActivity("AI DJ SCANNING","Playing "+t.title+" · next transition in "+clock+" · scanning your music library",clock,"ready");
-  }
+  let left=null;
+  if(settings.playDurationMode==="skip") left=S.playWindowRemaining??settings.skipAfterSeconds;
+  else if(Number.isFinite(a.duration)&&a.duration>0) left=Math.max(0,a.duration-a.currentTime);
+  const clock=left==null?"--:--":String(Math.floor(left/60)).padStart(2,"0")+":"+String(Math.floor(left%60)).padStart(2,"0");
+  const prepared=S.preparedNext;
+  if(settings.endAction==="pause") setDJActivity("PLAYING · PAUSE AT END","The current song will stop. No next song will be selected.",clock,"ready");
+  else if(prepared?.hook) setDJActivity("HOOK LOCKED · READY","Next: "+prepared.track.title+" · “"+(prepared.hook.lyric||"selected hook")+"” at "+fmt(prepared.hook.t),clock,"ready");
+  else if(prepared) setDJActivity("NEXT TRACK READY","Next: "+prepared.track.title+" · starting at 0:00",clock,"ready");
+  else setDJActivity(settings.endAction==="smart"?"SMART MIX · LISTENING":"RANDOM MIX · LISTENING",
+    settings.playDurationMode==="full"?"The full song will play. The next track is prepared near the end.":"Next action in "+clock+" · seeking resets the countdown.",clock,"ready");
 }
 function showTransition(track,hook,automatic=true) {
   const banner=$("#transitionBanner");
   $("#transitionTitle").textContent="DJ ENGINE · PREPARING THE DROP";
   $("#transitionText").textContent=hook
     ? "Hook found: “"+(hook.lyric||"Saved hook")+"” at "+fmt(hook.t)+". Locking the cue and beat…"
-    : "No hook found. Loading the "+settings.noHookStartSeconds+"s fallback start for "+track.title+"…";
+    : "No hook detected. "+track.title+" will start from 0:00.";
   $("#transitionCaption").textContent="Next: "+track.title;
   $("#engineState").textContent="SYNCING";
   setDJActivity(hook?"HOOK FOUND · LOCKING CUE":"TRACK FOUND · LOADING",hook
     ? "“"+(hook.lyric||"Saved hook")+"” selected · calculating transition timing"
-    : "Preparing "+track.title+" from "+settings.noHookStartSeconds+"s · beat sync in progress","SYNC","sync");
+    : "Preparing "+track.title+" from 0:00 · beat sync in progress","SYNC","sync");
   banner.classList.add("show");
   clearTimeout(showTransition.timer);
   showTransition.timer=setTimeout(()=>{banner.classList.remove("show");$("#engineState").textContent="READY";updateDJStatus();},Math.max(1800,mixSec()*1000+500));
@@ -601,17 +585,18 @@ async function waitMetadata(el) {
     el.addEventListener("error",bad,{once:true});
   });
 }
-async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}={}) {
+async function transitionTo(track,hook,{manual=false,automatic=false,mode=null,mixDuration=null}={}) {
   if(!track || S.transitioning) return;
   S.transitioning=true;
   clearTimeout(S.transitionTimer);
   const previous=cur(), token=++S.tok;
+  const fadeSeconds=mixDuration==null?mixSec():Math.max(0,Math.min(mixSec(),mixDuration));
   const idx=ensureQueued(track);
   S.idx=idx;
   clearTimeout(S.displayUpdateTimer);
   document.querySelector(".queue-list .track-row.current")?.classList.add("track-entering");
   $(".dj-upcoming")?.classList.add("upcoming-mixing");
-  const startAt=hook ? mixStartForHook(hook) : ((automatic || mode==="no-hook") ? settings.noHookStartSeconds : 0);
+  const startAt=hook ? mixStartForHook(hook,fadeSeconds) : 0;
   showTransition(track,hook,automatic);
   try {
     const url=await getUrl(track);
@@ -626,19 +611,21 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
     await nextAudio.play();
     if(token!==S.tok){nextAudio.pause();return;}
     ci=1-ci;
-    if(mixSec()===0) {
+    if(fadeSeconds===0) {
       // Crossfade disabled: switch decks instantly without overlapping audio.
       old.pause(); old.removeAttribute("src"); old.load();
       nextAudio.volume=vol(); S.mixing=false; S.transitioning=false;
       $(".dj-upcoming")?.classList.remove("upcoming-mixing");
     } else {
       S.mixing=true;
-      if(wasPlaying) fade(old,0,mixSec()*1000,()=>{old.pause();old.removeAttribute("src");old.load();});
+      if(wasPlaying) fade(old,0,fadeSeconds*1000,()=>{old.pause();old.removeAttribute("src");old.load();});
       else old.pause();
-      fade(nextAudio,vol(),mixSec()*1000,()=>{S.mixing=false;S.transitioning=false;$(".dj-upcoming")?.classList.remove("upcoming-mixing");});
+      fade(nextAudio,vol(),fadeSeconds*1000,()=>{S.mixing=false;S.transitioning=false;$(".dj-upcoming")?.classList.remove("upcoming-mixing");});
     }
     S.activeHook=hook?{trackId:track.id,hookId:hook.id,t:hook.t,end:hook.end??null,lyric:hook.lyric||"Hook"}:null;
-    S.activeNoHookDeadline=hook?null:{trackId:track.id,at:startAt+settings.noHookSeconds};
+    S.activeNoHookDeadline=null;
+    S.preparedNext=null; S.preparingNext=null; S.endWaiting=false;
+    resetPlaybackWindow();
     if(hook) markHookPlayed(track,hook);
     if(previous) rememberPattern(previous,track,hook);
     setDJActivity(hook?"YEAHHH · HOOK DROP!":"NEW TRACK · LET’S GO!",hook
@@ -646,7 +633,6 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
       : "Now playing "+track.title+" · keep the party moving","LIVE","mix");
     S.hist=[track,...S.hist.filter(x=>x.id!==track.id)].slice(0,100);
     save();
-    if(S.radio) ensureAINextTrack();
     if(settings.aiEnabled) suggest();
     scheduleTrackDisplayUpdate(token);
   } catch(e) {
@@ -687,117 +673,107 @@ function pickStart(env) {
   return best;
 }
 
-// ---------- Auto DJ: fair hook rotation, no endless track ----------
+// ---------- Unified playback ending and next-track preparation ----------
 function pickRandomDJTrack() {
   const current=cur();
   let pool=S.lib.filter(f=>"my:"+f.file!==current?.id);
   const recent=new Set(S.hist.slice(0,4).map(t=>t.id));
   const fresh=pool.filter(f=>!recent.has("my:"+f.file));
-  if(fresh.length) pool=fresh;
-  if(!pool.length) return null;
+  if(fresh.length)pool=fresh;
+  if(!pool.length)return null;
   const least=Math.min(...pool.map(f=>S.trackPlays["my:"+f.file]||0));
   const fair=pool.filter(f=>(S.trackPlays["my:"+f.file]||0)===least);
   return toTrack(fair[Math.floor(Math.random()*fair.length)]);
 }
-function ensureAINextTrack() {
-  if(!S.radio || !cur() || S.queue[S.idx+1]) return;
-  const nextTrack=pickRandomDJTrack();
-  if(nextTrack) addQueue(nextTrack,"next");
+function resetPlaybackWindow() {
+  S.playWindowRemaining=settings.skipAfterSeconds;
+  S.playWindowLastTick=(!audio().paused&&settings.playDurationMode==="skip"&&!S.seeking)?performance.now():null;
+  S.endTriggered=false; S.endWaiting=false;
 }
-
-async function nextAutomatic() {
-  // A queued song must never bypass the user's automatic-switching preference.
-  if (!automaticSwitchingEnabled() || S.transitioning || S.autoTransitionPending) return;
-  S.autoTransitionPending=true;
+function pausePlaybackWindow() {
+  if(S.playWindowLastTick!=null) {
+    S.playWindowRemaining=Math.max(0,(S.playWindowRemaining??settings.skipAfterSeconds)-(performance.now()-S.playWindowLastTick)/1000);
+    S.playWindowLastTick=null;
+  }
+}
+async function prepareUpcomingTrack() {
+  if(settings.endAction==="pause"||S.preparedNext||S.preparingNext||S.transitioning)return;
+  const track=pickRandomDJTrack();
+  if(!track){setDJActivity("NO NEXT TRACK","Add another song to My music to continue.","READY","ready");return;}
+  const token=++S.preparationToken;
+  S.preparingNext=track;
+  setDJActivity("FINDING THE NEXT HOOK","Random pick: "+track.title+" · checking saved cues","SCAN","sync");
+  showPartyMessage("Surprise incoming… finding the next hook! 🎧");
   try {
-  // A queued track always has priority over AI/random selection.
-  // This keeps the "Coming up next" display and actual playback in sync.
-  const queuedNext = S.queue[S.idx + 1] || null;
-  if (S.radio && queuedNext && S.autoHookInFlight.has(queuedNext.id) &&
-      Date.now() - (S.autoHookStartedAt[queuedNext.id] || Date.now()) < 15000) {
-    setDJActivity("WAITING FOR HOOK SCAN","Letting the local scanner finish on "+queuedNext.title+" before the drop","SCAN","sync");
-    return;
-  }
-  if (!queuedNext && (!settings.autoAdvance || settings.autoMode === "off")) return;
-
-  let t = queuedNext || (S.radio ? pickRandomDJTrack() : pickNextTrack());
-  let globallyChosenHook = null;
-  if(!queuedNext && S.radio) {
-    const allHookChoices=S.lib.flatMap(file=>{
-      const track=toTrack(file);
-      return track.id===cur()?.id ? [] : hooksOf(track).map(h=>({track,hook:h}));
-    });
-    if(allHookChoices.length) {
-      const pick=allHookChoices[Math.floor(Math.random()*allHookChoices.length)];
-      t=pick.track; globallyChosenHook=pick.hook;
+    if(settings.endAction==="smart"&&track.provider==="mine"&&!hooksOf(track).length)
+      await scanCurrentSongHooks({automatic:true,trackOverride:track,force:true});
+    if(token!==S.preparationToken||settings.endAction==="pause")return;
+    const hooks=settings.endAction==="smart"?hooksOf(track):[];
+    const hook=hooks.length?hooks[Math.floor(Math.random()*hooks.length)]:null;
+    S.preparedNext={track,hook}; S.preparingNext=null;
+    setDJActivity(hook?"HOOK LINE FOUND · READY":"NEXT TRACK READY",
+      hook?"Random hook selected on "+track.title+" · "+(hook.lyric||fmt(hook.t)):"No hook detected on "+track.title+" · it will start at 0:00",
+      "READY","ready");
+    showPartyMessage(hook?"Hook line found. Bass drop on the way! 🔊":"No hook found — fresh track incoming from 0:00. ✨");
+  } catch(error) {
+    if(token===S.preparationToken) {
+      S.preparingNext=null; S.preparedNext={track,hook:null};
+      setDJActivity("HOOK SCAN UNAVAILABLE","Starting "+track.title+" from 0:00 · "+String(error.message||error).slice(0,90),"READY","ready");
+    }
+  } finally {
+    if(token===S.preparationToken) {
+      S.preparingNext=null; render();
+      if(S.endWaiting&&S.preparedNext) startPreparedTransition(0);
     }
   }
-  if(!queuedNext && !S.radio && settings.autoMode==="hook") {
-    const verifiedChoices=S.lib.flatMap(file=>{
-      const track=toTrack(file);
-      return track.id===cur()?.id ? [] : hooksOf(track).filter(h=>h.source!=="auto").map(h=>({track,hook:h}));
-    });
-    if(!verifiedChoices.length) { toast("No saved or verified hooks are available. Add or verify a hook first."); return; }
-    const pick=verifiedChoices[Math.floor(Math.random()*verifiedChoices.length)];
-    t=pick.track; globallyChosenHook=pick.hook;
-  }
-  if (!t) { toast("Add more tracks to My music for automatic DJ playback."); return; }
-
-  if(S.radio && t.provider==="mine" && !hooksOf(t).length && !S.hookScans[t.id]) {
-    setDJActivity("FINDING HOOK LINE","Analysing "+t.title+" before playback · no hook is saved yet","SCAN","sync");
-    showPartyMessage("Finding the hook line… 🎧");
-    await scanCurrentSongHooks({automatic:true,trackOverride:t});
-  }
-  // Settings may have changed while the async hook scan was running.
-  if (!automaticSwitchingEnabled() || S.transitioning) return;
-  const chosen = queuedNext?._chosenHook || null;
-  const hook = chosen
-    ? (hooksOf(t).find(h => String(h.id) === String(chosen.id)) || chosen)
-    : (globallyChosenHook || (S.radio
-      ? (hooksOf(t).length ? hooksOf(t)[Math.floor(Math.random()*hooksOf(t).length)] : null)
-      : settings.autoMode === "hook"
-        ? verifiedRandomHook(t)
-        : (settings.autoMode === "beginning" ? null : fairHook(t))));
-
-  if (chosen) { delete t._chosenHook; save(); }
-  if(hook && S.radio) { setDJActivity("HOOK LINE FOUND · MIXING NOW","Cue locked on "+t.title+" · preparing the drop","READY","ready"); showPartyMessage("Hook line found. Bass drop on the way! 🔊"); }
-  else if(S.radio) { showPartyMessage("No hook found — bringing the track in from your fallback point."); }
-  transitionTo(t, hook, {automatic:true, mode:hook ? "hook" : (settings.autoMode === "beginning" ? "beginning" : "no-hook")});
-  } finally { S.autoTransitionPending=false; }
 }
-function handleAutoAdvance() {
-  if (!automaticSwitchingEnabled() || S.transitioning || S.mixing) return;
-  nextAutomatic();
-}
-function seekResetDuration() {
-  const t=cur();
-  const h=S.activeHook && S.activeHook.trackId===t?.id ? S.activeHook : null;
-  if(h) return h.end!=null ? Math.max(0.5,h.end-h.t) : settings.hookPlaySeconds;
-  return settings.noHookSeconds;
-}
-function checkHookTimer() {
-  // Hook-end and fallback timers are automatic transitions, never manual controls.
-  if (!automaticSwitchingEnabled()) return;
-  const t=cur(), a=audio(); if(!t || a.paused || S.transitioning || S.mixing || S.seeking) return;
-  if(S.seekResumeAt) {
-    if(a.currentTime-S.seekResetMediaTime>=S.seekResetDelay) {
-      S.seekResumeAt=0;
-      handleAutoAdvance();
-    }
-    return;
+async function startPreparedTransition(remaining=0) {
+  if(S.transitioning||S.endTriggered||settings.endAction==="pause")return;
+  if(!S.preparedNext) {
+    S.endWaiting=true; pausePlaybackWindow();
+    if(!S.preparingNext) await prepareUpcomingTrack();
+    if(!S.preparedNext)return;
   }
-  const h=S.activeHook && S.activeHook.trackId===t.id ? S.activeHook : null;
-  if(h) {
-    const deadline=h.end!=null ? h.end : h.t+settings.hookPlaySeconds;
-    if(a.currentTime>=deadline) handleAutoAdvance();
+  const prepared=S.preparedNext;
+  if(!prepared)return;
+  S.endTriggered=true;
+  const fadeSeconds=Math.min(mixSec(),Math.max(0,remaining));
+  setDJActivity(prepared.hook?"HOOK LINE FOUND · MIXING NOW":"MIXING · NEW TRACK",
+    prepared.hook?"Aligning "+(prepared.hook.lyric||"the selected hook")+" with the end of the crossfade":"No hook detected · starting the random song from 0:00",
+    "MIXING","mix");
+  showPartyMessage(prepared.hook?"Ye hogyi mixing! Bass drop incoming. 🔊":"Surprise incoming… LET’S NACHOOOO! 🪩");
+  transitionTo(prepared.track,prepared.hook,{automatic:true,mode:prepared.hook?"smart":"beginning",mixDuration:fadeSeconds});
+}
+function tickPlaybackEnd() {
+  const t=cur(),a=audio();
+  if(!t||a.paused||S.seeking||S.transitioning||S.mixing||S.endTriggered)return;
+  let remaining;
+  if(settings.playDurationMode==="skip") {
+    const now=performance.now();
+    if(S.playWindowLastTick==null)S.playWindowLastTick=now;
+    S.playWindowRemaining=Math.max(0,(S.playWindowRemaining??settings.skipAfterSeconds)-(now-S.playWindowLastTick)/1000);
+    S.playWindowLastTick=now; remaining=S.playWindowRemaining;
   } else {
-    const fallback=S.activeNoHookDeadline?.trackId===t.id
-      ? S.activeNoHookDeadline.at
-      : settings.noHookSeconds;
-    if(a.currentTime>=fallback) handleAutoAdvance();
+    if(!Number.isFinite(a.duration)||a.duration<=0)return;
+    remaining=Math.max(0,a.duration-a.currentTime);
+  }
+  if(settings.endAction==="pause") {
+    if(remaining<=0){S.endTriggered=true;pausePlaybackWindow();a.pause();render();}
+    return;
+  }
+  // Start local analysis early enough that the cue is ready before the transition.
+  if(remaining<=20&&!S.preparedNext&&!S.preparingNext)prepareUpcomingTrack();
+  if(remaining<=mixSec()&&S.preparedNext)startPreparedTransition(remaining);
+  else if(remaining<=0&&!S.preparedNext) {
+    S.endWaiting=true; pausePlaybackWindow(); a.pause();
+    if(!S.preparingNext)prepareUpcomingTrack();
   }
 }
-
+async function handleNaturalTrackEnd() {
+  if(S.transitioning||S.endTriggered)return;
+  if(settings.endAction==="pause"){S.endTriggered=true;audio().pause();render();return;}
+  await startPreparedTransition(0);
+}
 // ---------- Queue ----------
 function addQueue(track,where="end") {
   if(!track || track.id===cur()?.id) return;
@@ -833,8 +809,8 @@ function playTrack(track) {
 function next() {
   const t=pickNextTrack();
   if(!t) return toast("No next track. Add songs to your library.");
-  const hook=settings.autoMode==="beginning"?null:fairHook(t);
-  transitionTo(t,hook,{automatic:true,mode:settings.autoMode});
+  const hook=settings.endAction==="smart"&&hooksOf(t).length?hooksOf(t)[Math.floor(Math.random()*hooksOf(t).length)]:null;
+  transitionTo(t,hook,{manual:true,mode:hook?"smart":"beginning"});
 }
 function previous() {
   if(audio().currentTime>5){audio().currentTime=0;return;}
@@ -1105,12 +1081,8 @@ $("#repeat").onclick=()=>{S.repeat=!S.repeat;$("#repeat").classList.toggle("acti
 $("#vol").oninput=()=>{if(!S.mixing)audio().volume=vol();};
 const seekSlider=$("#seek");
 function beginSeek() {
-  if(S.seeking) return;
-  S.seeking=true;
-  S.seekMoved=false;
-  S.seekResumeAt=0;
-  S.seekResetDelay=seekResetDuration();
-  updateDJStatus();
+  if(S.seeking)return;
+  pausePlaybackWindow(); S.seeking=true; S.seekMoved=false; updateDJStatus();
 }
 function updateSeek(value) {
   const a=audio();
@@ -1122,15 +1094,16 @@ function updateSeek(value) {
   updateDJStatus();
 }
 function finishSeek() {
-  const a=audio(), t=cur();
-  if(!S.seeking) return;
+  const a=audio(); if(!S.seeking)return;
   S.seeking=false;
-  if(!S.seekMoved) { updateDJStatus(); return; }
-  // Every completed manual seek restarts the full cue window from the new position.
-  // The countdown begins only after the slider is released; dragging never skips.
-  S.seekResetDelay=seekResetDuration();
-  S.seekResetMediaTime=a.currentTime;
-  S.seekResumeAt=true;
+  if(S.seekMoved) {
+    S.preparedNext=null; S.preparingNext=null; S.preparationToken++;
+    if(settings.playDurationMode==="skip") {
+      S.playWindowRemaining=settings.skipAfterSeconds;
+      S.playWindowLastTick=a.paused?null:performance.now();
+      S.endTriggered=false; S.endWaiting=false;
+    }
+  }
   updateDJStatus();
 }
 seekSlider.addEventListener("pointerdown",beginSeek);
@@ -1144,7 +1117,6 @@ seekSlider.addEventListener("touchend",finishSeek);
 seekSlider.addEventListener("keyup",e=>{if(S.seeking && ["ArrowLeft","ArrowRight","Home","End","PageUp","PageDown"].includes(e.key))finishSeek();});
 window.addEventListener("blur",finishSeek);
 $("#mixsec").onchange=e=>{settings.mixLength=[0,3,6,9].includes(+e.target.value)?+e.target.value:6;saveSettings();};
-$("#autoMode").onchange=e=>{settings.autoMode=e.target.value;saveSettings();};
 $("#searchForm").onsubmit=e=>{e.preventDefault();const q=$("#searchInput").value.trim();searchAudius(q);};
 document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=()=>switchView(b.dataset.view));
 $("#refreshLibrary").onclick=async()=>{await initLib();toast(`Found ${S.lib.length} songs in GitHub.`);};
@@ -1161,39 +1133,31 @@ $("#closeParty").onclick=async()=>{
   try { if(document.fullscreenElement) await document.exitFullscreen?.(); } catch {}
 };
 $("#partyPlay").onclick=togglePlay;
-$("#partyNext").onclick=()=>{if(S.radio) nextAutomatic(); else next();};
+$("#partyNext").onclick=next;
 $("#partyPrev").onclick=previous;
 $("#partyAI").onclick=toggleAIDJ;
 document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement && !$("#partyMode").hidden){$("#partyMode").hidden=true;document.body.classList.remove("party-mode-open");}});
 $("#openSettings").onclick=openSettings; $("#footerSettings").onclick=openSettings;
 function toggleAIDJ() {
-  S.radio=!S.radio;
-  settings.autoAdvance=S.radio;
-  if(S.radio) settings.autoMode="random";
-  saveSettings();
-  syncControls();
-  if(S.radio) {
-    if(!cur()) nextAutomatic();
-    else if(audio().paused) audio().play().then(()=>{audio().volume=vol();render();}).catch(()=>toast("Press play to start the AI DJ."));
-    ensureAINextTrack();
-    if(settings.aiEnabled) suggest();
-    toast("AI DJ is mixing random tracks.");
-  } else {
-    toast("AI DJ stopped. Current song will continue.");
-  }
+  settings.endAction=settings.endAction==="smart"?"pause":"smart";
+  S.preparedNext=null; S.preparingNext=null; S.preparationToken++; S.endTriggered=false;
+  S.radio=settings.endAction==="smart";
+  saveSettings(); syncControls(); render();
+  toast(settings.endAction==="smart"?"Smart Mix enabled: random songs with randomly selected hooks.":"Automatic mixing paused. The current song will stop at its selected end point.");
 }
 $("#aiStatus").onclick=toggleAIDJ;
 $("#aiRadio").onclick=toggleAIDJ;
 A.forEach(a=>{
   a.volume=.8;
-  a.onplay=()=>{if(a===audio())render();}; a.onpause=()=>{if(a===audio())render();};
+  a.onplay=()=>{if(a===audio()){if(settings.playDurationMode==="skip"&&S.playWindowLastTick==null&&!S.seeking)S.playWindowLastTick=performance.now();render();}};
+  a.onpause=()=>{if(a===audio()){pausePlaybackWindow();render();}};
   a.ontimeupdate=()=>{
     if(a!==audio())return;
     if(a.duration){if(!S.seeking) $("#seek").value=a.currentTime/a.duration*1000;$("#time").textContent=`${fmt(a.currentTime)} / ${fmt(a.duration)}`;}
-    if(!S.seeking) checkHookTimer();
+    if(!S.seeking)tickPlaybackEnd();
     updateDJStatus();
   };
-  a.onended=()=>{if(a===audio()&&!S.transitioning&&automaticSwitchingEnabled())nextAutomatic();};
+  a.onended=()=>{if(a===audio()&&!S.transitioning)handleNaturalTrackEnd();};
   a.onerror=()=>{if(a===audio()&&a.src)toast("This audio file could not be played. Check the file URL and format.");};
 });
 $("#modalRoot").addEventListener("click",e=>{if(e.target.classList.contains("modal-backdrop")&&e.target.dataset.dismiss)$("#modalRoot").innerHTML="";});
