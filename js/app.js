@@ -928,11 +928,70 @@ A.forEach(a=>{
 });
 $("#modalRoot").addEventListener("click",e=>{if(e.target.classList.contains("modal-backdrop")&&e.target.dataset.dismiss)$("#modalRoot").innerHTML="";});
 window.addEventListener("keydown",e=>{
-  if(e.key==="Escape") $("#modalRoot").innerHTML="";
-  if(e.code==="Space" && !e.repeat) {
-    const target=e.target;
-    const typing=target?.closest?.('input,textarea,select,button,a,[contenteditable="true"],[role="textbox"]');
-    if(!typing) { e.preventDefault(); togglePlay(true); }
+  if(e.key==="Escape") { $("#modalRoot").innerHTML=""; return; }
+
+  // Never hijack shortcuts while the user is typing or operating a form/control.
+  const target=e.target;
+  const interactive=target?.closest?.('input,textarea,select,button,a,[contenteditable="true"],[role="textbox"],[role="slider"]');
+  if(interactive || e.ctrlKey || e.metaKey || e.altKey) return;
+  if(e.repeat) return;
+
+  const key=e.key.toLowerCase();
+  if(e.code==="Space") {
+    e.preventDefault();
+    togglePlay(true);
+    return;
+  }
+
+  // Transport and seek
+  if(key==="arrowleft" || key==="arrowright") {
+    const a=audio();
+    if(!Number.isFinite(a.duration) || !a.duration) return;
+    e.preventDefault();
+    a.currentTime=Math.max(0,Math.min(a.duration,a.currentTime+(key==="arrowright"?5:-5)));
+    if(!S.seeking) {
+      $("#seek").value=a.currentTime/a.duration*1000;
+      $("#time").textContent=`${fmt(a.currentTime)} / ${fmt(a.duration)}`;
+    }
+    updateDJStatus();
+    return;
+  }
+  if(key==="n") {
+    e.preventDefault();
+    if(S.queue[S.idx+1]) nextAutomatic(); else next();
+    return;
+  }
+  if(key==="p") { e.preventDefault(); previous(); return; }
+
+  // Mixer controls
+  if(key==="arrowup" || key==="arrowdown") {
+    e.preventDefault();
+    const slider=$("#vol");
+    slider.value=String(Math.max(0,Math.min(100,+slider.value+(key==="arrowup"?5:-5))));
+    if(!S.mixing) audio().volume=vol();
+    toast(`Volume ${slider.value}%`);
+    return;
+  }
+  if(key==="m") {
+    audio().muted=!audio().muted;
+    toast(audio().muted?"Muted":"Unmuted");
+    return;
+  }
+  if(key==="a") { toggleAIDJ(); return; }
+  if(key==="s") {
+    S.shuffle=!S.shuffle;
+    $("#shuffle").classList.toggle("active",S.shuffle);
+    toast(`Shuffle ${S.shuffle?"on":"off"}`);
+    return;
+  }
+  if(key==="r") {
+    S.repeat=!S.repeat;
+    $("#repeat").classList.toggle("active",S.repeat);
+    toast(`Repeat ${S.repeat?"on":"off"}`);
+    return;
+  }
+  if(key==="?") {
+    toast("VIBE FLOW SHORTCUTS · Space Play/Pause · ←/→ Seek 5s · ↑/↓ Volume · N Next · P Previous · A AI DJ · S Shuffle · R Repeat · M Mute");
   }
 });
 
