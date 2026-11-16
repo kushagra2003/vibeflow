@@ -249,3 +249,13 @@ body.party-mode-open{overflow:hidden}
 .party-stage.dj-mixing .party-hand-left{animation-duration:.58s}
 .party-stage.dj-mixing .party-hand-right{animation-duration:.66s}
 @media(prefers-reduced-motion:reduce){.party-soundwave:before{box-shadow:none}}
+
+
+/* VIBE FLOW party identity: gentle motion even while paused */
+.party-center-title span{animation:vibeGlowPulse 3.4s ease-in-out infinite;will-change:transform,filter}
+@keyframes vibeGlowPulse{0%,100%{filter:drop-shadow(0 0 8px #a66cff55);transform:scale(1)}50%{filter:drop-shadow(0 0 20px #bd8cffaa);transform:scale(1.018)}}
+.party-hand-left{animation:handIdleLeft 4.2s ease-in-out infinite}
+.party-hand-right{animation:handIdleRight 4.6s ease-in-out infinite}
+@keyframes handIdleLeft{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(0,-5px) rotate(-.65deg)}}
+@keyframes handIdleRight{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(0,-6px) rotate(.65deg)}}
+@media(prefers-reduced-motion:reduce){.party-center-title span,.party-hand-left,.party-hand-right{animation:none!important}}
