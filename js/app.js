@@ -192,12 +192,19 @@ function renderHooks() {
   }
   $("#hooksList").innerHTML=hooks.map((h,i)=>`
     <div class="hook-item">
-      <span class="hook-time">${fmt(h.t)}</span>
-      <div class="hook-detail"><b>${esc(h.lyric || "Hook "+(i+1))}</b><small>${h.end!=null?`Ends ${fmt(h.end)}${h.endLyric?" · "+esc(h.endLyric):""}`:"End not marked"}</small></div>
-      <button data-hook-go="${esc(h.id)}" title="Jump exactly to hook">Go</button>
-      <input id="endLine-${esc(h.id)}" aria-label="Hook ending lyric" placeholder="End line" style="width:90px;padding:6px;font-size:10px">
-      <button data-hook-end="${esc(h.id)}" title="Mark hook end here">Mark end</button>
-      <button data-hook-delete="${esc(h.id)}" title="Delete hook">×</button>
+      <div class="hook-main">
+        <span class="hook-time">${fmt(h.t)}</span>
+        <div class="hook-detail">
+          <b title="${esc(h.lyric || "Hook "+(i+1))}">${esc(h.lyric || "Hook "+(i+1))}</b>
+          <small>${h.end!=null?`Ends ${fmt(h.end)}${h.endLyric?" · "+esc(h.endLyric):""}`:"End not marked"}</small>
+        </div>
+      </div>
+      <div class="hook-controls">
+        <button data-hook-go="${esc(h.id)}" title="Jump exactly to hook">Go</button>
+        <input id="endLine-${esc(h.id)}" aria-label="Hook ending lyric" placeholder="End line" value="${esc(h.endLyric||"")}" style="width:110px;padding:6px;font-size:10px">
+        <button data-hook-end="${esc(h.id)}" title="Mark hook end here">Mark end</button>
+        <button data-hook-delete="${esc(h.id)}" title="Delete hook">×</button>
+      </div>
     </div>`).join("");
   $("#hooksList").querySelectorAll("[data-hook-go]").forEach(b=>b.onclick=()=>playHookDirect(hooks.find(h=>String(h.id)===b.dataset.hookGo)));
   $("#hooksList").querySelectorAll("[data-hook-end]").forEach(b=>b.onclick=()=>markHookEnd(b.dataset.hookEnd));
