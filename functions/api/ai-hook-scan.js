@@ -14,7 +14,7 @@ export async function onRequest({ request, env }) {
   if (audio.size > 24 * 1024 * 1024) return json({ error: "Audio files must be 24 MB or smaller." }, 413);
   const allowed = new Set(["audio/mpeg","audio/mp3","audio/mp4","audio/x-m4a","audio/m4a","audio/wav","audio/x-wav","audio/ogg","audio/webm","audio/aac","audio/flac","application/octet-stream"]);
   if (audio.type && !allowed.has(audio.type)) return json({ error: "Unsupported audio format. Try MP3, WAV, M4A, OGG or FLAC." }, 415);
-  const base = (env.AI_BASE_URL || "https://api.openai.com/v1").replace(/\\/$/, "");
+  const base = (env.AI_BASE_URL || "https://api.openai.com/v1").replace(/\/$/, "");
   const upstreamForm = new FormData();
   upstreamForm.append("file", audio, audio.name || "track.mp3");
   upstreamForm.append("model", env.HOOK_TRANSCRIPTION_MODEL || "whisper-1");
