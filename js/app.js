@@ -325,15 +325,62 @@ function openMixChoices() {
 }
 
 // ---------- Transition animation + two-deck playback ----------
+function setDJActivity(title,detail,countdown="--:--",state="ready") {
+  const titleEl=$("#djActivity"), detailEl=$("#djDetail"), countEl=$("#djCountdown");
+  if(titleEl) titleEl.textContent=title;
+  if(detailEl) detailEl.textContent=detail;
+  if(countEl) countEl.textContent=countdown;
+  const panel=$(".wave-panel");
+  if(panel) panel.dataset.djState=state;
+}
+function updateDJStatus() {
+  const t=cur(), a=audio();
+  if(!t) { setDJActivity("AWAITING SIGNAL","Load a track and the DJ engine will lock onto its rhythm."); return; }
+  const upcoming=S.queue[S.idx+1]||null;
+  const chosen=upcoming && upcoming._chosenHook;
+  if(S.transitioning) {
+    setDJActivity("LOCKING NEXT TRACK","Preparing "+(upcoming?.title||t.title)+" · buffering audio and cue points…","SYNC","sync");
+    return;
+  }
+  if(S.mixing) {
+    setDJActivity("CROSSFADING · LIVE","Blending "+t.title+" into the next track. Keep the energy up!","LIVE","mix");
+    return;
+  }
+  if(a.paused) {
+    setDJActivity("ENGINE PAUSED","Playback is paused. Your next cue is safely waiting.","PAUSED","paused");
+    return;
+  }
+  const hook=S.activeHook?.trackId===t.id?S.activeHook:null;
+  const deadline=hook?(hook.end!=null?hook.end:hook.t+settings.hookPlaySeconds):(S.activeNoHookDeadline?.trackId===t.id?S.activeNoHookDeadline.at:settings.noHookSeconds);
+  const left=Math.max(0,deadline-a.currentTime);
+  const clock=String(Math.floor(left/60)).padStart(2,"0")+":"+String(Math.floor(left%60)).padStart(2,"0");
+  const nextName=upcoming?.title||"next random pick";
+  if(chosen) {
+    if(left<=8) setDJActivity("BEAT SYNC · HOOK LOCKED","Lining up “"+(chosen.lyric||"your selected hook")+"” on "+nextName+". Get ready!",clock,"sync");
+    else setDJActivity("HOOK LOCKED · READY","Next: "+nextName+" · “"+(chosen.lyric||"selected hook")+"” at "+fmt(chosen.t),clock,"ready");
+  } else if(upcoming && hooksOf(upcoming).length) {
+    if(left<=8) setDJActivity("SYNCING THE BEAT","Scanning "+hooksOf(upcoming).length+" saved hooks for "+nextName+" · transition imminent",clock,"sync");
+    else setDJActivity("HOOKS DETECTED",hooksOf(upcoming).length+" saved cue point(s) ready on "+nextName+" · lining up the next mix",clock,"ready");
+  } else if(left<=8) {
+    setDJActivity("COUNTDOWN · DROP INCOMING","No saved hook on the next track · preparing the "+settings.noHookStartSeconds+"s fallback start",clock,"sync");
+  } else {
+    setDJActivity("AI DJ SCANNING","Playing "+t.title+" · next transition in "+clock+" · scanning your music library",clock,"ready");
+  }
+}
 function showTransition(track,hook,automatic=true) {
   const banner=$("#transitionBanner");
-  $("#transitionTitle").textContent=settings.aiEnabled?"AI analysing the best next track":"DJ engine preparing the next track";
-  $("#transitionText").textContent=`Switching to ${track.title}${hook?` · ${hook.lyric||"saved hook"} at ${fmt(hook.t)}`:" · beginning"}…`;
-  $("#transitionCaption").textContent=`Next: ${track.title}`;
-  $("#engineState").textContent="ANALYSING";
+  $("#transitionTitle").textContent="DJ ENGINE · PREPARING THE DROP";
+  $("#transitionText").textContent=hook
+    ? "Hook found: “"+(hook.lyric||"Saved hook")+"” at "+fmt(hook.t)+". Locking the cue and beat…"
+    : "No hook found. Loading the "+settings.noHookStartSeconds+"s fallback start for "+track.title+"…";
+  $("#transitionCaption").textContent="Next: "+track.title;
+  $("#engineState").textContent="SYNCING";
+  setDJActivity(hook?"HOOK FOUND · LOCKING CUE":"TRACK FOUND · LOADING",hook
+    ? "“"+(hook.lyric||"Saved hook")+"” selected · calculating transition timing"
+    : "Preparing "+track.title+" from "+settings.noHookStartSeconds+"s · beat sync in progress","SYNC","sync");
   banner.classList.add("show");
   clearTimeout(showTransition.timer);
-  showTransition.timer=setTimeout(()=>{banner.classList.remove("show");$("#engineState").textContent="READY";},Math.max(1800,mixSec()*1000+500));
+  showTransition.timer=setTimeout(()=>{banner.classList.remove("show");$("#engineState").textContent="READY";updateDJStatus();},Math.max(1800,mixSec()*1000+500));
 }
 function fade(el,to,ms,done) {
   clearInterval(el._fade);
@@ -371,6 +418,9 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
     const old=audio(), nextAudio=A[1-ci], wasPlaying=!old.paused;
     clearInterval(nextAudio._fade); nextAudio.pause(); nextAudio.src=url; nextAudio.volume=0;
     await waitMetadata(nextAudio);
+    setDJActivity(hook?"HOOK FOUND · CUE LOCKED":"TRACK LOADED · NO HOOK",hook
+      ? "“"+(hook.lyric||"Saved hook")+"” located · starting at "+fmt(startAt)+" to land on the drop"
+      : "No saved hook · starting at "+fmt(startAt)+" as configured","SYNC","sync");
     if(startAt>0 && Number.isFinite(nextAudio.duration)) nextAudio.currentTime=Math.min(startAt,Math.max(0,nextAudio.duration-1));
     await nextAudio.play();
     if(token!==S.tok){nextAudio.pause();return;}
@@ -389,6 +439,9 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
     S.activeNoHookDeadline=hook?null:{trackId:track.id,at:startAt+settings.noHookSeconds};
     if(hook) markHookPlayed(track,hook);
     if(previous) rememberPattern(previous,track,hook);
+    setDJActivity(hook?"YEAHHH · HOOK DROP!":"NEW TRACK · LET’S GO!",hook
+      ? "Now riding “"+(hook.lyric||"the hook")+"” · "+track.title
+      : "Now playing "+track.title+" · keep the party moving","LIVE","mix");
     S.hist=[track,...S.hist.filter(x=>x.id!==track.id)].slice(0,100);
     save();
     if(settings.aiEnabled) suggest();
@@ -638,6 +691,7 @@ function render() {
   if(!$("#waveform").children.length) $("#waveform").innerHTML=Array.from({length:36},(_,i)=>`<i style="height:${8+((i*17)%34)}px;animation-delay:${-(i%9)*.13}s"></i>`).join("");
   syncControls();
   bindTrackActions();
+  updateDJStatus();
 }
 function bindTrackActions() {
   document.querySelectorAll("[data-select-next-hook]").forEach(b=>b.onclick=()=>{
@@ -776,6 +830,7 @@ A.forEach(a=>{
     if(a!==audio())return;
     if(a.duration){if(!S.seeking) $("#seek").value=a.currentTime/a.duration*1000;$("#time").textContent=`${fmt(a.currentTime)} / ${fmt(a.duration)}`;}
     if(!S.seeking) checkHookTimer();
+    updateDJStatus();
   };
   a.onended=()=>{if(a===audio()&&!S.transitioning&&settings.autoAdvance&&settings.autoMode!=="off")nextAutomatic();};
   a.onerror=()=>{if(a===audio()&&a.src)toast("This audio file could not be played. Check the file URL and format.");};
