@@ -352,7 +352,10 @@ function updateDJStatus() {
   }
   const hook=S.activeHook?.trackId===t.id?S.activeHook:null;
   const deadline=hook?(hook.end!=null?hook.end:hook.t+settings.hookPlaySeconds):(S.activeNoHookDeadline?.trackId===t.id?S.activeNoHookDeadline.at:settings.noHookSeconds);
-  const left=Math.max(0,deadline-a.currentTime);
+  const resetCountdown=S.seeking
+    ? S.seekResetDelay
+    : (S.seekResumeAt ? S.seekResetDelay-(a.currentTime-S.seekResetMediaTime) : null);
+  const left=Math.max(0,resetCountdown==null?deadline-a.currentTime:resetCountdown);
   const clock=String(Math.floor(left/60)).padStart(2,"0")+":"+String(Math.floor(left%60)).padStart(2,"0");
   const nextName=upcoming?.title||"next random pick";
   if(chosen) {
@@ -519,10 +522,19 @@ function handleAutoAdvance() {
   if(!explicitlyChosen && (!settings.autoAdvance || settings.autoMode==="off")) return;
   nextAutomatic();
 }
+function seekResetDuration() {
+  const t=cur();
+  const h=S.activeHook && S.activeHook.trackId===t?.id ? S.activeHook : null;
+  if(h) return h.end!=null ? Math.max(0.5,h.end-h.t) : settings.hookPlaySeconds;
+  return settings.noHookSeconds;
+}
 function checkHookTimer() {
   const t=cur(), a=audio(); if(!t || a.paused || S.transitioning || S.mixing || S.seeking) return;
   if(S.seekResumeAt) {
-    if(a.currentTime-S.seekResetMediaTime>=S.seekResetDelay) { S.seekResumeAt=0; handleAutoAdvance(); }
+    if(a.currentTime-S.seekResetMediaTime>=S.seekResetDelay) {
+      S.seekResumeAt=0;
+      handleAutoAdvance();
+    }
     return;
   }
   const h=S.activeHook && S.activeHook.trackId===t.id ? S.activeHook : null;
@@ -820,23 +832,34 @@ $("#shuffle").onclick=()=>{S.shuffle=!S.shuffle;$("#shuffle").classList.toggle("
 $("#repeat").onclick=()=>{S.repeat=!S.repeat;$("#repeat").classList.toggle("active",S.repeat);};
 $("#vol").oninput=()=>{if(!S.mixing)audio().volume=vol();};
 const seekSlider=$("#seek");
-function beginSeek() { S.seeking=true; S.seekResumeAt=0; }
+function beginSeek() {
+  if(S.seeking) return;
+  S.seeking=true;
+  S.seekMoved=false;
+  S.seekResumeAt=0;
+  S.seekResetDelay=seekResetDuration();
+  updateDJStatus();
+}
 function updateSeek(value) {
   const a=audio();
   if(!Number.isFinite(a.duration) || !a.duration) return;
   const target=Math.max(0,Math.min(a.duration,a.duration*(+value/1000)));
+  S.seekMoved=true;
   try { a.currentTime=target; } catch(e) { console.warn("Seek unavailable during media transition",e); }
   $("#time").textContent=`${fmt(target)} / ${fmt(a.duration)}`;
+  updateDJStatus();
 }
 function finishSeek() {
   const a=audio(), t=cur();
   if(!S.seeking) return;
   S.seeking=false;
-  const h=S.activeHook && S.activeHook.trackId===t?.id ? S.activeHook : null;
-  const mediaDeadline=h ? (h.end!=null ? h.end : h.t+settings.hookPlaySeconds) : settings.noHookSeconds;
+  if(!S.seekMoved) { updateDJStatus(); return; }
+  // Every completed manual seek restarts the full cue window from the new position.
+  // The countdown begins only after the slider is released; dragging never skips.
+  S.seekResetDelay=seekResetDuration();
   S.seekResetMediaTime=a.currentTime;
-  // Start a fresh full countdown only after the user releases the slider.\n  // Seeking past an old hook/end threshold must never trigger an instant skip.\n  S.seekResetDelay=h?settings.hookPlaySeconds:settings.noHookSeconds;
-  S.seekResumeAt=performance.now();
+  S.seekResumeAt=true;
+  updateDJStatus();
 }
 seekSlider.addEventListener("pointerdown",beginSeek);
 seekSlider.addEventListener("touchstart",beginSeek,{passive:true});
