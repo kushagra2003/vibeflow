@@ -8,10 +8,14 @@ const store = {
   set(k, v) { try { localStorage.setItem("vf_" + k, JSON.stringify(v)); } catch {} }
 };
 const defaults = {
-  mixLength: 6, leadSubtract: 2, hookPlaySeconds: 24, noHookSeconds: 45, noHookStartSeconds: 20,
-  displayUpdateDelay: 0, aiEnabled: true, autoMode: "random", autoAdvance: true
+  mixLength: 6, leadSubtract: 2, playDurationMode: "full", skipAfterSeconds: 180,
+  endAction: "smart", displayUpdateDelay: 0, aiEnabled: true
 };
-const settings = { ...defaults, ...store.get("settings", {}) };
+const savedSettings = store.get("settings", {});
+const settings = { ...defaults, ...savedSettings };
+if (!savedSettings.endAction) settings.endAction = savedSettings.autoAdvance === false || savedSettings.autoMode === "off"
+  ? "pause" : savedSettings.autoMode === "beginning" ? "beginning" : "smart";
+if (!savedSettings.playDurationMode) settings.playDurationMode = "full";
 const S = {
   queue: store.get("queue", []), idx: store.get("idx", -1),
   favs: store.get("favs", []), hist: store.get("hist", []),
@@ -23,7 +27,9 @@ const S = {
   seeking: false, seekResetMediaTime: null, seekResetDelay: 0, seekResumeAt: 0,
   activeNoHookDeadline: null, displayUpdateTimer: null,
   hookScans: store.get("hookScans", {}), autoHookInFlight: new Set(), autoHookStartedAt: {},
-  aiHookTrackId: null, aiHookScanning: false
+  aiHookTrackId: null, aiHookScanning: false,
+  playWindowRemaining: null, playWindowLastTick: null, preparedNext: null,
+  preparingNext: null, preparationToken: 0, endTriggered: false
 };
 const save = () => {
   for (const [k, v] of Object.entries({
@@ -32,7 +38,7 @@ const save = () => {
   })) store.set(k, v);
 };
 const saveSettings = () => store.set("settings", settings);
-const automaticSwitchingEnabled = () => settings.autoAdvance === true && settings.autoMode !== "off";
+const automaticSwitchingEnabled = () => settings.endAction !== "pause";
 const toast = msg => {
   const el = $("#toast"); el.textContent = msg; el.style.display = "block";
   clearTimeout(toast.timer); toast.timer = setTimeout(() => el.style.display = "none", 3800);
@@ -138,53 +144,49 @@ function openSettings() {
   const root = $("#modalRoot");
   root.innerHTML = `
   <div class="modal-backdrop" data-close="1"><div class="modal-card" role="dialog" aria-modal="true">
-    <div class="modal-head"><div><div class="eyebrow">PERSONALISE YOUR DJ</div><h2>VibeFlow settings</h2><p class="modal-sub">Control how tracks are selected, mixed and repeated.</p></div><button class="modal-close" data-close="1">×</button></div>
-    <div class="toggle-row"><div><b>AI recommendations</b><small>Turn off AI requests, suggestions and AI Radio completely.</small></div><input class="switch" id="setAI" type="checkbox" ${settings.aiEnabled?"checked":""}></div>
-    <div class="toggle-row"><div><b>Automatic track switching</b><small>Keep the music moving without manually pressing next.</small></div><input class="switch" id="setAuto" type="checkbox" ${settings.autoAdvance?"checked":""}></div>
-    <div class="settings-grid" style="margin-top:14px">
-      <div class="setting-field"><label for="setMix">Crossfade length</label><select id="setMix"><option value="0">Off (no crossfade)</option><option value="3">3 seconds</option><option value="6">6 seconds</option><option value="9">9 seconds</option></select><small>How long both songs overlap.</small></div>
-      <div class="setting-field"><label for="setLead">Seconds to subtract from mix length</label><input id="setLead" type="number" min="0" max="8" step="1" value="${settings.leadSubtract}"><small>Default 2. Hook starts at hook time − (mix length − this value).</small></div>
-      <div class="setting-field"><label for="setHookDuration">Play time after hook start</label><input id="setHookDuration" type="number" min="5" max="300" step="1" value="${settings.hookPlaySeconds}"><div class="seconds-stepper" aria-label="Adjust hook seconds"><button type="button" id="hookSecondsDown" title="Decrease by 1 second" aria-label="Decrease hook seconds">▼</button><span>−1 sec</span><button type="button" id="hookSecondsUp" title="Increase by 1 second" aria-label="Increase hook seconds">▲</button></div><small>Used when that hook has no marked end. Use the arrows to adjust by exactly 1 second.</small></div>
-      <div class="setting-field"><label for="setNoHook">Fallback time without a hook end</label><input id="setNoHook" type="number" min="5" max="600" step="5" value="${settings.noHookSeconds}"><small>Switch after this many seconds if no hook end is available.</small></div>
-      <div class="setting-field"><label for="setNoHookStart">Start position when no hook is saved</label><input id="setNoHookStart" type="number" min="0" max="300" step="1" value="${settings.noHookStartSeconds}"><small>Start unmarked songs at this position. Default: 20 seconds.</small></div>
-      <div class="setting-field"><label for="setDisplayDelay">Update current / next song details</label><select id="setDisplayDelay"><option value="0">Immediately (0 seconds)</option><option value="1">After 1 second</option><option value="2">After 2 seconds</option><option value="3">After 3 seconds</option><option value="4">After 4 seconds</option><option value="5">After 5 seconds</option></select><small>Wait this long after the new track starts before refreshing the Now Playing and Coming Up Next details.</small></div>
-      <div class="setting-field"><label for="setMode">Automatic mix mode</label><select id="setMode"><option value="random">Smart + random hooks</option><option value="hook">Verified hooks only</option><option value="beginning">Start at song beginning</option><option value="off">Off</option></select><small>Controls how automatic transitions choose the next start point.</small></div>
+    <div class="modal-head"><div><div class="eyebrow">PERSONALISE YOUR DJ</div><h2>VibeFlow settings</h2><p class="modal-sub">Choose when a song ends and exactly what VIBE FLOW does next.</p></div><button class="modal-close" data-close="1">×</button></div>
+    <div class="settings-grid">
+      <div class="setting-field"><label for="setDurationMode">How long should each song play?</label><select id="setDurationMode"><option value="full">Play the full song</option><option value="skip">Skip after a set time</option></select><small>Full song lets the track reach its natural ending. Set time starts a fresh countdown whenever a new song begins.</small></div>
+      <div class="setting-field" id="skipDurationField"><label for="setSkipSeconds">Play each song for (seconds)</label><input id="setSkipSeconds" type="number" min="15" max="1800" step="15" value="${settings.skipAfterSeconds}"><small>Seeking resets this countdown after you release the progress slider.</small></div>
+      <div class="setting-field"><label for="setEndAction">What should happen when the song ends?</label><select id="setEndAction"><option value="pause">Pause – stop playback</option><option value="smart">Smart Mix – random song + hook</option><option value="beginning">Random song – start from beginning</option></select><small>Smart Mix chooses a random song, uses saved hooks or scans locally, then randomly selects a hook. If no hook is detected, the next song starts at 0:00.</small></div>
+      <div class="setting-field"><label for="setMix">Crossfade length</label><select id="setMix"><option value="0">Off (instant switch)</option><option value="3">3 seconds</option><option value="6">6 seconds</option><option value="9">9 seconds</option></select><small>How long the outgoing and incoming songs overlap. The incoming hook is aligned to the end of this transition.</small></div>
+      <div class="setting-field"><label for="setLead">Hook timing adjustment (seconds)</label><input id="setLead" type="number" min="0" max="8" step="1" value="${settings.leadSubtract}"><small>Fine-tune when the incoming hook lands during the crossfade. Default: 2 seconds. Adjust by ear.</small></div>
+      <div class="setting-field"><label for="setDisplayDelay">Update song details</label><select id="setDisplayDelay"><option value="0">Immediately</option><option value="1">After 1 second</option><option value="2">After 2 seconds</option><option value="3">After 3 seconds</option><option value="4">After 4 seconds</option><option value="5">After 5 seconds</option></select><small>Delay the Now Playing and Coming Up Next display after a transition.</small></div>
     </div>
+    <div class="toggle-row"><div><b>AI recommendations</b><small>Allow optional AI track suggestions. This does not control automatic playback.</small></div><input class="switch" id="setAI" type="checkbox" ${settings.aiEnabled?"checked":""}></div>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px"><button data-close="1">Cancel</button><button id="saveSettings" class="primary-btn">Save settings</button></div>
   </div></div>`;
-  $("#setMix").value = String(settings.mixLength);
-  $("#setMode").value = settings.autoMode;
-  $("#setDisplayDelay").value = String([0,1,2,3,4,5].includes(+settings.displayUpdateDelay)?settings.displayUpdateDelay:0);
-  const hookSecondsInput=$("#setHookDuration");
-  $("#hookSecondsDown").onclick=()=>{hookSecondsInput.value=String(Math.max(5,(+hookSecondsInput.value||settings.hookPlaySeconds)-1));};
-  $("#hookSecondsUp").onclick=()=>{hookSecondsInput.value=String(Math.min(300,(+hookSecondsInput.value||settings.hookPlaySeconds)+1));};
+  $("#setDurationMode").value=settings.playDurationMode;
+  $("#setEndAction").value=settings.endAction;
+  $("#setMix").value=String(settings.mixLength);
+  $("#setDisplayDelay").value=String([0,1,2,3,4,5].includes(+settings.displayUpdateDelay)?settings.displayUpdateDelay:0);
+  const updateSkipVisibility=()=>{$("#skipDurationField").style.opacity=$("#setDurationMode").value==="skip"?"1":".55";};
+  $("#setDurationMode").onchange=updateSkipVisibility; updateSkipVisibility();
   root.querySelectorAll("[data-close]").forEach(x=>x.addEventListener("click",e=>{
-    if (x.classList.contains("modal-backdrop") ? e.target === x : true) root.innerHTML="";
+    if(x.classList.contains("modal-backdrop")?e.target===x:true)root.innerHTML="";
   }));
-  $("#saveSettings").onclick = () => {
-    settings.aiEnabled = $("#setAI").checked;
-    settings.autoAdvance = $("#setAuto").checked;
-    settings.mixLength = [0,3,6,9].includes(+$("#setMix").value) ? +$("#setMix").value : 6;
-    settings.leadSubtract = Math.max(0,Math.min(8,+$("#setLead").value || 0));
-    settings.hookPlaySeconds = Math.max(5,Math.min(300,+$("#setHookDuration").value || 24));
-    settings.noHookSeconds = Math.max(5,Math.min(600,+$("#setNoHook").value || 45));
-    settings.noHookStartSeconds = Math.max(0,Math.min(300,+$("#setNoHookStart").value || 0));
-    settings.displayUpdateDelay = [0,1,2,3,4,5].includes(+$("#setDisplayDelay").value)?+$("#setDisplayDelay").value:0;
-    settings.autoMode = $("#setMode").value;
-    // Turning automatic switching off (or choosing Off mode) also exits AI DJ.
-    if (!automaticSwitchingEnabled()) S.radio = false;
+  $("#saveSettings").onclick=()=>{
+    settings.aiEnabled=$("#setAI").checked;
+    settings.playDurationMode=$("#setDurationMode").value==="skip"?"skip":"full";
+    settings.skipAfterSeconds=Math.max(15,Math.min(1800,+$("#setSkipSeconds").value||180));
+    settings.endAction=["pause","smart","beginning"].includes($("#setEndAction").value)?$("#setEndAction").value:"smart";
+    settings.mixLength=[0,3,6,9].includes(+$("#setMix").value)?+$("#setMix").value:6;
+    settings.leadSubtract=Math.max(0,Math.min(8,+$("#setLead").value||0));
+    settings.displayUpdateDelay=[0,1,2,3,4,5].includes(+$("#setDisplayDelay").value)?+$("#setDisplayDelay").value:0;
+    S.preparedNext=null; S.preparingNext=null; S.preparationToken++; S.endTriggered=false;
+    if(settings.playDurationMode==="skip")resetPlaybackWindow();
     saveSettings(); root.innerHTML=""; syncControls(); render();
-    toast("DJ settings saved.");
+    toast("Playback settings saved. Your saved hooks are unchanged.");
   };
 }
 function syncControls() {
-  $("#mixsec").value = String(settings.mixLength);
-  $("#autoMode").value = settings.autoMode;
-  $("#aiStatus").classList.toggle("off",!S.radio);
-  $("#aiStatus").classList.toggle("active",S.radio);
-  $("#aiStatus").innerHTML = `<span class="ai-dot"></span> AI DJ ${S.radio?"ON":"OFF"}`;
-  $("#aiRadio").textContent = `AI DJ: ${S.radio?"ON":"OFF"}`;
-  if($("#partyAI")) $("#partyAI").textContent=`AI DJ: ${S.radio?"ON":"OFF"}`;
+  $("#mixsec").value=String(settings.mixLength);
+  const smart=settings.endAction==="smart";
+  $("#aiStatus").classList.toggle("off",!smart); $("#aiStatus").classList.toggle("active",smart);
+  $("#aiStatus").innerHTML=`<span class="ai-dot"></span> SMART MIX ${smart?"ON":"OFF"}`;
+  $("#aiStatus").title="Quickly switch between Smart Mix and Pause";
+  $("#aiRadio").textContent=`Smart Mix: ${smart?"ON":"OFF"}`;
+  if($("#partyAI"))$("#partyAI").textContent=`Smart Mix: ${smart?"ON":"OFF"}`;
 }
 
 // ---------- API ----------
@@ -263,7 +265,7 @@ function syncTrackHooks(trackId, hooks) {
     for (const track of list) if (track?.id === trackId) track.hooks = hooks;
   }
 }
-async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
+async function scanCurrentSongHooks({automatic=false,trackOverride=null,force=false}={}) {
   const track=trackOverride||cur();
   if(!track || track.provider!=="mine") {
     if(!automatic) toast("Local hook analysis currently scans songs in My music.");
@@ -274,7 +276,7 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
     if(!automatic) toast("Could not locate this song in your GitHub music folder.");
     return;
   }
-  if(S.aiHookScanning || (automatic && (S.autoHookInFlight.has(track.id)||S.hookScans[track.id]))) return;
+  if(S.aiHookScanning || (automatic && (S.autoHookInFlight.has(track.id)||(!force&&S.hookScans[track.id])))) return;
   const button=$("#scanHooks");
   if(automatic) {
     S.autoHookInFlight.add(track.id);
@@ -332,12 +334,6 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
     if(automatic) {
       S.autoHookInFlight.delete(track.id);
       delete S.autoHookStartedAt[track.id];
-      const upcoming=S.queue[S.idx+1];
-      if(S.radio && upcoming?.id===track.id && !audio().paused && !S.transitioning) {
-        const active=S.activeHook?.trackId===cur()?.id?S.activeHook:null;
-        const deadline=active?(active.end??active.t+settings.hookPlaySeconds):(S.activeNoHookDeadline?.at??settings.noHookSeconds);
-        if(audio().currentTime>=deadline-2) setTimeout(()=>nextAutomatic(),0);
-      }
     } else {
       S.aiHookScanning=false;
       if(button){button.disabled=false;button.textContent="⌕ Analyse for hooks";}
@@ -466,8 +462,8 @@ function ensureQueued(track) {
   if(i<0) { S.queue.splice(Math.max(0,S.idx+1),0,track); i=Math.max(0,S.idx+1); }
   return i;
 }
-function mixStartForHook(hook) {
-  const lead=Math.max(0,mixSec()-settings.leadSubtract);
+function mixStartForHook(hook,mixDuration=mixSec()) {
+  const lead=Math.max(0,mixDuration-settings.leadSubtract);
   return Math.max(0,hook.t-lead);
 }
 
