@@ -9,7 +9,7 @@ const store = {
 };
 const defaults = {
   mixLength: 6, leadSubtract: 2, hookPlaySeconds: 24, noHookSeconds: 45, noHookStartSeconds: 20,
-  aiEnabled: true, autoMode: "random", autoAdvance: true
+  displayUpdateDelay: 0, aiEnabled: true, autoMode: "random", autoAdvance: true
 };
 const settings = { ...defaults, ...store.get("settings", {}) };
 const S = {
@@ -21,7 +21,7 @@ const S = {
   tok: 0, mixing: false, transitioning: false, activeHook: null,
   transitionTimer: null, env: {}, lib: [], dragIndex: null,
   seeking: false, seekResetMediaTime: null, seekResetDelay: 0, seekResumeAt: 0,
-  activeNoHookDeadline: null
+  activeNoHookDeadline: null, displayUpdateTimer: null
 };
 const save = () => {
   for (const [k, v] of Object.entries({
@@ -104,12 +104,14 @@ function openSettings() {
       <div class="setting-field"><label for="setHookDuration">Play time after hook start</label><input id="setHookDuration" type="number" min="5" max="300" step="1" value="${settings.hookPlaySeconds}"><div class="seconds-stepper" aria-label="Adjust hook seconds"><button type="button" id="hookSecondsDown" title="Decrease by 1 second" aria-label="Decrease hook seconds">▼</button><span>−1 sec</span><button type="button" id="hookSecondsUp" title="Increase by 1 second" aria-label="Increase hook seconds">▲</button></div><small>Used when that hook has no marked end. Use the arrows to adjust by exactly 1 second.</small></div>
       <div class="setting-field"><label for="setNoHook">Fallback time without a hook end</label><input id="setNoHook" type="number" min="5" max="600" step="5" value="${settings.noHookSeconds}"><small>Switch after this many seconds if no hook end is available.</small></div>
       <div class="setting-field"><label for="setNoHookStart">Start position when no hook is saved</label><input id="setNoHookStart" type="number" min="0" max="300" step="1" value="${settings.noHookStartSeconds}"><small>Start unmarked songs at this position. Default: 20 seconds.</small></div>
+      <div class="setting-field"><label for="setDisplayDelay">Update current / next song details</label><select id="setDisplayDelay"><option value="0">Immediately (0 seconds)</option><option value="1">After 1 second</option><option value="2">After 2 seconds</option><option value="3">After 3 seconds</option><option value="4">After 4 seconds</option><option value="5">After 5 seconds</option></select><small>Wait this long after the new track starts before refreshing the Now Playing and Coming Up Next details.</small></div>
       <div class="setting-field"><label for="setMode">Automatic mix mode</label><select id="setMode"><option value="random">Random / smart</option><option value="hook">Always choose a saved hook</option><option value="beginning">Start at song beginning</option><option value="off">Off</option></select><small>Controls how automatic transitions choose the next start point.</small></div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px"><button data-close="1">Cancel</button><button id="saveSettings" class="primary-btn">Save settings</button></div>
   </div></div>`;
   $("#setMix").value = String(settings.mixLength);
   $("#setMode").value = settings.autoMode;
+  $("#setDisplayDelay").value = String([0,1,2,3,4,5].includes(+settings.displayUpdateDelay)?settings.displayUpdateDelay:0);
   const hookSecondsInput=$("#setHookDuration");
   $("#hookSecondsDown").onclick=()=>{hookSecondsInput.value=String(Math.max(5,(+hookSecondsInput.value||settings.hookPlaySeconds)-1));};
   $("#hookSecondsUp").onclick=()=>{hookSecondsInput.value=String(Math.min(300,(+hookSecondsInput.value||settings.hookPlaySeconds)+1));};
@@ -124,6 +126,7 @@ function openSettings() {
     settings.hookPlaySeconds = Math.max(5,Math.min(300,+$("#setHookDuration").value || 24));
     settings.noHookSeconds = Math.max(5,Math.min(600,+$("#setNoHook").value || 45));
     settings.noHookStartSeconds = Math.max(0,Math.min(300,+$("#setNoHookStart").value || 0));
+    settings.displayUpdateDelay = [0,1,2,3,4,5].includes(+$("#setDisplayDelay").value)?+$("#setDisplayDelay").value:0;
     settings.autoMode = $("#setMode").value;
     saveSettings(); root.innerHTML=""; syncControls(); render();
     toast("DJ settings saved.");
@@ -412,7 +415,7 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
   const previous=cur(), token=++S.tok;
   const idx=ensureQueued(track);
   S.idx=idx;
-  render(); // Keep the upcoming queue visible while the next track is prepared.
+  clearTimeout(S.displayUpdateTimer);
   document.querySelector(".queue-list .track-row.current")?.classList.add("track-entering");
   $(".dj-upcoming")?.classList.add("upcoming-mixing");
   const startAt=hook ? mixStartForHook(hook) : ((automatic || mode==="no-hook") ? settings.noHookStartSeconds : 0);
@@ -434,13 +437,12 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
       // Crossfade disabled: switch decks instantly without overlapping audio.
       old.pause(); old.removeAttribute("src"); old.load();
       nextAudio.volume=vol(); S.mixing=false; S.transitioning=false;
-      document.querySelector(".queue-list .track-row.current")?.classList.add("track-arrived");
       $(".dj-upcoming")?.classList.remove("upcoming-mixing");
     } else {
       S.mixing=true;
       if(wasPlaying) fade(old,0,mixSec()*1000,()=>{old.pause();old.removeAttribute("src");old.load();});
       else old.pause();
-      fade(nextAudio,vol(),mixSec()*1000,()=>{S.mixing=false;S.transitioning=false;document.querySelector(".queue-list .track-row.current")?.classList.add("track-arrived");$(".dj-upcoming")?.classList.remove("upcoming-mixing");});
+      fade(nextAudio,vol(),mixSec()*1000,()=>{S.mixing=false;S.transitioning=false;$(".dj-upcoming")?.classList.remove("upcoming-mixing");});
     }
     S.activeHook=hook?{trackId:track.id,hookId:hook.id,t:hook.t,end:hook.end??null,lyric:hook.lyric||"Hook"}:null;
     S.activeNoHookDeadline=hook?null:{trackId:track.id,at:startAt+settings.noHookSeconds};
@@ -452,8 +454,7 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
     S.hist=[track,...S.hist.filter(x=>x.id!==track.id)].slice(0,100);
     save();
     if(settings.aiEnabled) suggest();
-    render(); renderHooks();
-    document.querySelector(".queue-list .track-row.current")?.classList.add("track-arrived");
+    scheduleTrackDisplayUpdate(token);
   } catch(e) {
     S.transitioning=false; S.mixing=false;
     if(token===S.tok) toast(`Couldn't play ${track.title}: ${e.message}`);
@@ -718,23 +719,37 @@ function render() {
 }
 function animateNextShadow(sourceRow) {
   const source=sourceRow?.getBoundingClientRect();
-  const target=document.querySelector(".queue-list .track-row.current")?.getBoundingClientRect()
-    || document.querySelector(".now-card .now-info")?.getBoundingClientRect();
+  const target=document.querySelector(".now-card .cover-wrap");
   if(!source || !target) return;
+  const targetRect=target.getBoundingClientRect();
   const ghost=sourceRow.cloneNode(true);
+  ghost.querySelectorAll(".track-actions,.track-hook-popover,button").forEach(el=>el.remove());
+  ghost.removeAttribute("draggable");
+  ghost.setAttribute("aria-hidden","true");
+  ghost.classList.remove("current","dragging","drop-target","track-entering","track-arrived");
   ghost.classList.add("queue-shadow-flight");
   ghost.style.left=source.left+"px"; ghost.style.top=source.top+"px";
   ghost.style.width=source.width+"px"; ghost.style.height=source.height+"px";
   document.body.appendChild(ghost);
-  const dx=(target.left+target.width/2)-(source.left+source.width/2);
-  const dy=(target.top+target.height/2)-(source.top+source.height/2);
+  const dx=(targetRect.left+targetRect.width/2)-(source.left+source.width/2);
+  const dy=(targetRect.top+targetRect.height/2)-(source.top+source.height/2);
   const animation=ghost.animate([
     {transform:"translate(0,0) scale(1)",opacity:.92,filter:"drop-shadow(0 0 0 #b987ff)"},
-    {transform:"translate("+dx*.55+"px,"+dy*.55+"px) scale(.82)",opacity:.9,filter:"drop-shadow(0 0 18px #c48aff)"},
-    {transform:"translate("+dx+"px,"+dy+"px) scale(.25)",opacity:0,filter:"drop-shadow(0 0 25px #e3c4ff)"}
+    {transform:"translate("+dx*.58+"px,"+dy*.58+"px) scale(.72)",opacity:.86,filter:"drop-shadow(0 0 18px #c48aff)"},
+    {transform:"translate("+dx+"px,"+dy+"px) scale(.12)",opacity:0,filter:"drop-shadow(0 0 25px #e3c4ff)"}
   ],{duration:760,easing:"cubic-bezier(.18,.78,.22,1)"});
-  target.classList.add("queue-impact");
-  animation.onfinish=()=>{ghost.remove();target.classList.remove("queue-impact");};
+  animation.onfinish=()=>ghost.remove();
+  animation.oncancel=()=>ghost.remove();
+}
+function scheduleTrackDisplayUpdate(token) {
+  clearTimeout(S.displayUpdateTimer);
+  const delay=[0,1,2,3,4,5].includes(+settings.displayUpdateDelay)?+settings.displayUpdateDelay:0;
+  S.displayUpdateTimer=setTimeout(()=>{
+    if(token!==S.tok) return;
+    render();
+    renderHooks();
+    document.querySelector(".queue-list .track-row.current")?.classList.add("track-arrived");
+  },delay*1000);
 }
 function updateUpcomingCard(track) {
   const card=$("#djUpcoming");
@@ -896,7 +911,7 @@ $("#aiStatus").onclick=toggleAIDJ;
 $("#aiRadio").onclick=toggleAIDJ;
 A.forEach(a=>{
   a.volume=.8;
-  a.onplay=render; a.onpause=render;
+  a.onplay=()=>{if(a===audio())render();}; a.onpause=()=>{if(a===audio())render();};
   a.ontimeupdate=()=>{
     if(a!==audio())return;
     if(a.duration){if(!S.seeking) $("#seek").value=a.currentTime/a.duration*1000;$("#time").textContent=`${fmt(a.currentTime)} / ${fmt(a.duration)}`;}
