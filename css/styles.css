@@ -124,7 +124,9 @@ input,select{color:var(--text);background:#100d18;border:1px solid var(--line);b
 .track-row.track-arrived{animation:trackArrived .85s ease-out}
 @keyframes trackEnter{0%{transform:translateY(9px) scale(.98);opacity:.55}100%{transform:translateY(0) scale(1);opacity:1}}
 @keyframes trackArrived{0%{box-shadow:0 0 0 0 #9e6ce800}35%{box-shadow:0 0 0 3px #b887ff99,0 0 25px #9d61e766}100%{box-shadow:0 0 0 0 #9e6ce800}}
-.queue-shadow-flight{position:fixed!important;z-index:99999!important;margin:0!important;pointer-events:none!important;opacity:.92!important;border-color:#c08aff!important;background:#352149!important;box-shadow:0 0 25px #c18affaa,0 15px 45px #000a!important}
+.queue-shadow-flight{position:fixed!important;z-index:99999!important;display:flex!important;align-items:center!important;overflow:hidden!important;margin:0!important;pointer-events:none!important;opacity:.92!important;border:1px solid #c08aff!important;border-radius:14px!important;background:linear-gradient(120deg,#352149,#21172f)!important;box-shadow:0 0 25px #c18affaa,0 15px 45px #000a!important;transform-origin:center center!important}
+.queue-shadow-flight .track-meta{min-width:0!important}
+.queue-shadow-flight *{pointer-events:none!important}
 .queue-impact{animation:queueImpact .65s ease-out}
 @keyframes queueImpact{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px);box-shadow:0 0 0 3px #c08affaa,0 0 25px #bd8aff88}55%{transform:translateX(3px)}}
 
