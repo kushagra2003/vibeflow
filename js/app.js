@@ -21,7 +21,8 @@ const S = {
   tok: 0, mixing: false, transitioning: false, activeHook: null,
   transitionTimer: null, env: {}, lib: [], dragIndex: null,
   seeking: false, seekResetMediaTime: null, seekResetDelay: 0, seekResumeAt: 0,
-  activeNoHookDeadline: null, displayUpdateTimer: null
+  activeNoHookDeadline: null, displayUpdateTimer: null,
+  aiHookSuggestions: [], aiHookTrackId: null, aiHookScanning: false
 };
 const save = () => {
   for (const [k, v] of Object.entries({
@@ -202,6 +203,61 @@ function playHookDirect(h) {
   $("#hookStatus").textContent=`${h.lyric || "Hook"} · ${fmt(h.t)}`;
   toast(`Jumped directly to ${fmt(h.t)}.`);
 }
+async function scanCurrentSongHooks() {
+  const track=cur();
+  if(!track || track.provider!=="mine") return toast("AI Hook Scanner currently scans songs in My music.");
+  const entry=getLibTrack(track.id);
+  if(!entry?.file) return toast("Could not locate this song in your GitHub music folder.");
+  const button=$("#scanHooks");
+  if(S.aiHookScanning) return;
+  S.aiHookScanning=true; S.aiHookSuggestions=[]; S.aiHookTrackId=track.id;
+  if(button){button.disabled=true;button.textContent="◌ Scanning audio…";}
+  renderAIHookSuggestions();
+  try {
+    const response=await fetch("songs/"+encodeURIComponent(entry.file),{cache:"no-store"});
+    if(!response.ok) throw new Error("Could not download this song from the GitHub music folder.");
+    const blob=await response.blob();
+    if(blob.size>24*1024*1024) throw new Error("This song is larger than 24 MB. Use a smaller audio file for transcription.");
+    if(!blob.size) throw new Error("The audio file is empty.");
+    const form=new FormData(); form.append("audio",blob,entry.file);
+    const result=await fetch("/api/ai-hook-scan",{method:"POST",body:form});
+    const data=await result.json().catch(()=>({}));
+    if(!result.ok) throw new Error(data.error||"AI transcription failed.");
+    const segments=Array.isArray(data.segments)?data.segments:[];
+    const normalize=s=>String(s||"").toLowerCase().replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
+    const groups=new Map();
+    for(const seg of segments) {
+      const lyric=String(seg.text||"").trim(), key=normalize(lyric);
+      if(!lyric || key.split(" ").length<2 || !Number.isFinite(+seg.start)) continue;
+      if(!groups.has(key)) groups.set(key,{lyric,start:+seg.start,count:0});
+      const group=groups.get(key); group.count++;
+      if(+seg.start<group.start){group.start=+seg.start;group.lyric=lyric;}
+    }
+    S.aiHookSuggestions=[...groups.values()].filter(x=>x.count>=2)
+      .map(x=>({id:crypto.randomUUID?.()||String(Date.now()+Math.random()),t:Math.max(0,Math.round(x.start*2)/2),lyric:x.lyric,count:x.count,confidence:Math.min(0.98,0.55+0.12*(x.count-2))}))
+      .sort((x,y)=>y.confidence-x.confidence||x.t-y.t).slice(0,12);
+    if(!S.aiHookSuggestions.length) toast("Scan complete. No clearly repeated lyric lines were detected; your saved hooks are untouched.");
+    else toast("Found "+S.aiHookSuggestions.length+" possible hook cue(s). Review and approve the ones you want.");
+  } catch(error) { toast(error.message||"AI Hook Scanner could not analyse this song."); S.aiHookSuggestions=[]; }
+  finally { S.aiHookScanning=false; if(button){button.disabled=false;button.textContent="✦ AI Scan hooks";} renderAIHookSuggestions(); }
+}
+function approveAIHook(id) {
+  const track=cur(), entry=track && getLibTrack(track.id);
+  if(!entry || S.aiHookTrackId!==track.id) return toast("Select the song that was scanned.");
+  const suggestion=S.aiHookSuggestions.find(x=>x.id===id); if(!suggestion) return;
+  const duplicate=hooksOf(entry).some(h=>Math.abs(Number(h.t)-suggestion.t)<1.5 || String(h.lyric||"").trim().toLowerCase()===suggestion.lyric.trim().toLowerCase());
+  if(duplicate) return toast("A similar saved hook already exists; nothing was changed.");
+  const hook={id:crypto.randomUUID?.()||String(Date.now()),t:suggestion.t,end:null,lyric:suggestion.lyric,endLyric:"",source:"ai",confidence:suggestion.confidence};
+  entry.hooks=[...hooksOf(entry),hook].sort((x,y)=>x.t-y.t); track.hooks=entry.hooks;
+  saveLib(); save(); renderHooks(); render(); toast("AI hook approved and saved. Existing hooks were preserved.");
+}
+function renderAIHookSuggestions() {
+  const root=$("#aiHookResults"); if(!root) return;
+  if(S.aiHookScanning){root.innerHTML='<div class="ai-hook-status">◌ Listening to the track and analysing repeated lyric lines…</div>';return;}
+  if(!S.aiHookSuggestions.length){root.innerHTML='<div class="ai-hook-status">AI suggestions will appear here for review. Existing saved hooks are never modified by a scan.</div>';return;}
+  root.innerHTML='<div class="ai-hook-heading"><b>AI-detected hook candidates</b><small>Approve individually to add them to your saved cue points.</small></div>'+S.aiHookSuggestions.map((x)=>'<div class="ai-hook-candidate"><span class="ai-hook-time">'+fmtHook(x.t)+'</span><div class="ai-hook-lyric"><b>'+esc(x.lyric)+'</b><small>Repeated '+x.count+' times · '+Math.round(x.confidence*100)+'% heuristic confidence</small></div><button type="button" data-approve-ai-hook="'+esc(x.id)+'">Approve</button></div>').join("");
+  root.querySelectorAll("[data-approve-ai-hook]").forEach(b=>b.onclick=()=>approveAIHook(b.dataset.approveAiHook));
+}
 function renderHooks() {
   const t=cur(), hooks=hooksOf(t);
   $("#hookCount").textContent=`${hooks.length} saved`;
@@ -237,6 +293,7 @@ function renderHooks() {
   $("#hooksList").querySelectorAll("[data-hook-start-adjust]").forEach(b=>b.onclick=()=>adjustHookStart(b.dataset.hookStartAdjust,Number(b.dataset.delta)));
   $("#hooksList").querySelectorAll("[data-hook-end]").forEach(b=>b.onclick=()=>markHookEnd(b.dataset.hookEnd));
   $("#hooksList").querySelectorAll("[data-hook-delete]").forEach(b=>b.onclick=()=>deleteHook(b.dataset.hookDelete));
+  renderAIHookSuggestions();
 }
 
 // ---------- Hook fairness + remembered transitions ----------
@@ -829,6 +886,7 @@ function bindTrackActions() {
 
 // ---------- Player events ----------
 $("#addHook").onclick=addHook;
+$("#scanHooks").onclick=scanCurrentSongHooks;
 $("#mix").onclick=mixNext;
 $("#forceMix").onclick=forceMixNow;
 $("#prev").onclick=previous; $("#barPrev").onclick=previous;
