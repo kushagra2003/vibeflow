@@ -181,6 +181,7 @@ function syncControls() {
   $("#aiStatus").classList.toggle("active",S.radio);
   $("#aiStatus").innerHTML = `<span class="ai-dot"></span> AI DJ ${S.radio?"ON":"OFF"}`;
   $("#aiRadio").textContent = `AI DJ: ${S.radio?"ON":"OFF"}`;
+  if($("#partyAI")) $("#partyAI").textContent=`AI DJ: ${S.radio?"ON":"OFF"}`;
 }
 
 // ---------- API ----------
@@ -328,6 +329,12 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
     if(automatic) {
       S.autoHookInFlight.delete(track.id);
       delete S.autoHookStartedAt[track.id];
+      const upcoming=S.queue[S.idx+1];
+      if(S.radio && upcoming?.id===track.id && !audio().paused && !S.transitioning) {
+        const active=S.activeHook?.trackId===cur()?.id?S.activeHook:null;
+        const deadline=active?(active.end??active.t+settings.hookPlaySeconds):(S.activeNoHookDeadline?.at??settings.noHookSeconds);
+        if(audio().currentTime>=deadline-2) setTimeout(()=>nextAutomatic(),0);
+      }
     } else {
       S.aiHookScanning=false;
       if(button){button.disabled=false;button.textContent="⌕ Analyse for hooks";}
@@ -888,6 +895,7 @@ function switchView(view) {
   $("#listTitle").textContent={discover:"Trending on Audius",library:"Your music library",favs:"Your favourites",history:"Recently played"}[view];
   $("#listEyebrow").textContent={discover:"FIND YOUR NEXT SOUND",library:"GITHUB MUSIC FOLDER",favs:"YOUR COLLECTION",history:"YOUR LISTENING"}[view];
   document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
+  if(view==="discover" && !S.results.length) { searchAudius(); return; }
   render();
 }
 
@@ -935,6 +943,9 @@ function render() {
   art.src=t?.art||"";
   $("#miniTitle").textContent=t?.title||"Nothing playing";
   $("#miniArtist").textContent=t?.artist||"VibeFlow";
+  if($("#partySong")) $("#partySong").textContent=t?.title||"Nothing playing yet";
+  if($("#partyArtist")) $("#partyArtist").textContent=t?.artist||"Choose your first track";
+  if($("#partyPlay")) $("#partyPlay").textContent=audio().paused?"▶":"Ⅱ";
   $("#playState").textContent=audio().paused?"· PAUSED":"· PLAYING";
   $("#pp").textContent=audio().paused?"▶":"Ⅱ";
   $("#barPlay").textContent=audio().paused?"▶":"Ⅱ";
