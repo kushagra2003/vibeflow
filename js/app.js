@@ -701,8 +701,12 @@ async function prepareUpcomingTrack() {
   setDJActivity("FINDING THE NEXT HOOK","Random pick: "+track.title+" · checking saved cues","SCAN","sync");
   showPartyMessage("Surprise incoming… finding the next hook! 🎧");
   try {
-    if(settings.endAction==="smart"&&track.provider==="mine"&&!hooksOf(track).length)
+    if(settings.endAction==="smart"&&track.provider==="mine"&&!hooksOf(track).length) {
       await scanCurrentSongHooks({automatic:true,trackOverride:track,force:true});
+      // The scanner persists to the library entry; refresh this temporary track object.
+      const refreshed=getLibTrack(track.id);
+      if(refreshed) track.hooks=hooksOf(refreshed);
+    }
     if(token!==S.preparationToken||settings.endAction==="pause")return;
     const hooks=settings.endAction==="smart"?hooksOf(track):[];
     const hook=hooks.length?hooks[Math.floor(Math.random()*hooks.length)]:null;
