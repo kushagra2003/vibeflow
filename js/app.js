@@ -149,11 +149,23 @@ function addHook() {
   const t=cur(); if(!t || t.provider!=="mine") return toast("Select a song from My music to save hooks.");
   const label=$("#hookLabel").value.trim() || `Hook ${hooksOf(t).length+1}`;
   const entry=getLibTrack(t.id); if(!entry) return;
-  const h={id:crypto.randomUUID?.() || String(Date.now()),t:+audio().currentTime.toFixed(2),end:null,lyric:label,endLyric:""};
+  const h={id:crypto.randomUUID?.() || String(Date.now()),t:+audio().currentTime.toFixed(2),end:null,duration:settings.hookPlaySeconds,lyric:label,endLyric:""};
   entry.hooks=[...hooksOf(entry),h].sort((a,b)=>a.t-b.t);
   t.hooks=entry.hooks; S.activeHook={trackId:t.id,hookId:h.id,t:h.t,end:null};
   $("#hookLabel").value=""; saveLib(); save(); renderHooks(); render();
   toast(`Hook marked at ${fmt(h.t)}. Mark its end when the hook finishes.`);
+}
+function adjustHookDuration(id,delta) {
+  const t=cur(), entry=t && getLibTrack(t.id);
+  if(!entry) return;
+  const h=hooksOf(entry).find(x=>String(x.id)===String(id));
+  if(!h) return;
+  const current=Number(h.duration ?? settings.hookPlaySeconds);
+  h.duration=Math.max(5,Math.min(300,current+delta));
+  t.hooks=entry.hooks;
+  if(S.activeHook?.trackId===t.id && String(S.activeHook.hookId)===String(id)) S.activeHook.duration=h.duration;
+  saveLib();
+  renderHooks();
 }
 function markHookEnd(id) {
   const t=cur(), entry=t && getLibTrack(t.id);
@@ -177,7 +189,7 @@ function deleteHook(id) {
 function playHookDirect(h) {
   const t=cur(); if(!t || !audio().src) return;
   audio().currentTime=h.t;
-  S.activeHook={trackId:t.id,hookId:h.id,t:h.t,end:h.end ?? null};
+  S.activeHook={trackId:t.id,hookId:h.id,t:h.t,end:h.end ?? null,duration:h.duration ?? settings.hookPlaySeconds};
   markHookPlayed(t,h);
   $("#hookStatus").textContent=`${h.lyric || "Hook"} · ${fmt(h.t)}`;
   toast(`Jumped directly to ${fmt(h.t)}.`);
@@ -208,8 +220,17 @@ function renderHooks() {
         <button data-hook-end="${esc(h.id)}" title="Mark hook end here">Mark end</button>
         <button data-hook-delete="${esc(h.id)}" title="Delete hook">×</button>
       </div>
+      <div class="hook-duration-controls">
+        <span>Hook duration</span>
+        <button type="button" data-hook-duration-down="${esc(h.id)}" aria-label="Decrease hook duration by one second" title="−1 second">−</button>
+        <strong>${Number(h.duration ?? settings.hookPlaySeconds)} sec</strong>
+        <button type="button" data-hook-duration-up="${esc(h.id)}" aria-label="Increase hook duration by one second" title="+1 second">+</button>
+        <small>Used if no end line is marked</small>
+      </div>
     </div>`).join("");
   $("#hooksList").querySelectorAll("[data-hook-go]").forEach(b=>b.onclick=()=>playHookDirect(hooks.find(h=>String(h.id)===b.dataset.hookGo)));
+  $("#hooksList").querySelectorAll("[data-hook-duration-down]").forEach(b=>b.onclick=()=>adjustHookDuration(b.dataset.hookDurationDown,-1));
+  $("#hooksList").querySelectorAll("[data-hook-duration-up]").forEach(b=>b.onclick=()=>adjustHookDuration(b.dataset.hookDurationUp,1));
   $("#hooksList").querySelectorAll("[data-hook-end]").forEach(b=>b.onclick=()=>markHookEnd(b.dataset.hookEnd));
   $("#hooksList").querySelectorAll("[data-hook-delete]").forEach(b=>b.onclick=()=>deleteHook(b.dataset.hookDelete));
 }
@@ -364,7 +385,7 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
       else old.pause();
       fade(nextAudio,vol(),mixSec()*1000,()=>{S.mixing=false;S.transitioning=false;});
     }
-    S.activeHook=hook?{trackId:track.id,hookId:hook.id,t:hook.t,end:hook.end??null,lyric:hook.lyric||"Hook"}:null;
+    S.activeHook=hook?{trackId:track.id,hookId:hook.id,t:hook.t,end:hook.end??null,duration:hook.duration ?? settings.hookPlaySeconds,lyric:hook.lyric||"Hook"}:null;
     if(hook) markHookPlayed(track,hook);
     if(previous) rememberPattern(previous,track,hook);
     S.hist=[track,...S.hist.filter(x=>x.id!==track.id)].slice(0,100);
@@ -431,7 +452,7 @@ function checkHookTimer() {
   }
   const h=S.activeHook && S.activeHook.trackId===t.id ? S.activeHook : null;
   if(h) {
-    const deadline=h.end!=null ? h.end : h.t+settings.hookPlaySeconds;
+    const deadline=h.end!=null ? h.end : h.t+(h.duration ?? settings.hookPlaySeconds);
     if(a.currentTime>=deadline) handleAutoAdvance();
   } else if(a.currentTime>=settings.noHookSeconds) {
     handleAutoAdvance();
