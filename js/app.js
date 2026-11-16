@@ -36,6 +36,7 @@ const toast = msg => {
 };
 const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt = n => Number.isFinite(+n) ? `${Math.floor(+n/60)}:${String(Math.floor(+n%60)).padStart(2,"0")}` : "0:00";
+const fmtHook = n => `${fmt(n)}${Math.abs((+n)-Math.round(+n))>.01?".5":""}`;
 const cur = () => S.queue[S.idx] || null;
 const mixSec = () => +settings.mixLength;
 const vol = () => $("#vol").value / 100;
@@ -152,7 +153,7 @@ function addHook() {
   const entry=getLibTrack(t.id); if(!entry) return;
   const h={id:crypto.randomUUID?.() || String(Date.now()),t:Math.round(audio().currentTime*2)/2,end:null,lyric:label,endLyric:""};
   entry.hooks=[...hooksOf(entry),h].sort((a,b)=>a.t-b.t);
-  t.hooks=entry.hooks; S.activeHook={trackId:t.id,hookId:h.id,t:h.t,end:null};
+  t.hooks=entry.hooks; S.activeNoHookDeadline=null; S.activeHook={trackId:t.id,hookId:h.id,t:h.t,end:null};
   $("#hookLabel").value=""; saveLib(); save(); renderHooks(); render();
   toast(`Hook marked at ${fmt(h.t)}. Mark its end when the hook finishes.`);
 }
@@ -192,6 +193,7 @@ function deleteHook(id) {
 function playHookDirect(h) {
   const t=cur(); if(!t || !audio().src) return;
   audio().currentTime=h.t;
+  S.activeNoHookDeadline=null;
   S.activeHook={trackId:t.id,hookId:h.id,t:h.t,end:h.end ?? null};
   markHookPlayed(t,h);
   $("#hookStatus").textContent=`${h.lyric || "Hook"} · ${fmt(h.t)}`;
@@ -213,7 +215,7 @@ function renderHooks() {
       <div class="hook-main">
         <div class="hook-time-control" aria-label="Adjust hook start time">
           <button type="button" data-hook-start-adjust="${esc(h.id)}" data-delta="-0.5" aria-label="Move hook start back half a second" title="−0.5 seconds">−</button>
-          <span class="hook-time">${fmt(h.t)}</span>
+          <span class="hook-time">${fmtHook(h.t)}</span>
           <button type="button" data-hook-start-adjust="${esc(h.id)}" data-delta="0.5" aria-label="Move hook start forward half a second" title="+0.5 seconds">+</button>
         </div>
         <div class="hook-detail">
@@ -430,9 +432,20 @@ function pickStart(env) {
 }
 
 // ---------- Auto DJ: fair hook rotation, no endless track ----------
+function pickRandomDJTrack() {
+  const current=cur();
+  let pool=S.lib.filter(f=>"my:"+f.file!==current?.id);
+  const recent=new Set(S.hist.slice(0,4).map(t=>t.id));
+  const fresh=pool.filter(f=>!recent.has("my:"+f.file));
+  if(fresh.length) pool=fresh;
+  if(!pool.length) return null;
+  const least=Math.min(...pool.map(f=>S.trackPlays["my:"+f.file]||0));
+  const fair=pool.filter(f=>(S.trackPlays["my:"+f.file]||0)===least);
+  return toTrack(fair[Math.floor(Math.random()*fair.length)]);
+}
 function nextAutomatic() {
   if(!settings.autoAdvance || settings.autoMode==="off") return;
-  const t=pickNextTrack();
+  const t=S.radio ? pickRandomDJTrack() : pickNextTrack();
   if(!t) { toast("Add more tracks to My music for automatic DJ playback."); return; }
   // Random / smart mode uses saved hooks when available, rotating fairly.
   // Learned pairings remain recorded, but never override random selection.
