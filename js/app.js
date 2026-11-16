@@ -657,8 +657,7 @@ function finishSeek() {
   const h=S.activeHook && S.activeHook.trackId===t?.id ? S.activeHook : null;
   const mediaDeadline=h ? (h.end!=null ? h.end : h.t+settings.hookPlaySeconds) : settings.noHookSeconds;
   S.seekResetMediaTime=a.currentTime;
-  S.seekResetDelay=Math.max(0,mediaDeadline-a.currentTime);
-  if(S.seekResetDelay===0) S.seekResetDelay=h?settings.hookPlaySeconds:settings.noHookSeconds;
+  // Start a fresh full countdown only after the user releases the slider.\n  // Seeking past an old hook/end threshold must never trigger an instant skip.\n  S.seekResetDelay=h?settings.hookPlaySeconds:settings.noHookSeconds;
   S.seekResumeAt=performance.now();
 }
 seekSlider.addEventListener("pointerdown",beginSeek);
