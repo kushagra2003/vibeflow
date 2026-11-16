@@ -505,7 +505,7 @@ function openMixChoices() {
 
 // ---------- Party mode motion + rotating brand line ---------- 
 let partyTaglineTimer=null;
-const PARTY_TAGLINES=["BY KUSHAGRA","IS YOUR DJ TONIGHT","LET'S PARTY"];
+const PARTY_TAGLINES=["IS YOUR DJ","BY KUSHAGRA","IS YOUR DJ TONIGHT","LET'S PARTY"];
 let partyTaglineIndex=0;
 function startPartyBrandLoop(){
   const tagline=$("#partyTagline"), wave=$("#partySoundwave");
@@ -516,11 +516,12 @@ function startPartyBrandLoop(){
   tagline.classList.remove("tagline-change");
   if(wave && !wave.childElementCount){
     const bars=Array.from({length:64},(_,i)=>{
-      const center=1-Math.abs((i-31.5)/31.5);
-      const envelope= Math.max(.12,center*(.52+Math.abs(Math.sin(i*2.17))*.48));
-      const h=Math.round(12+envelope*82);
-      const delay=(-Math.abs(Math.sin(i*1.71))*1.2).toFixed(2);
-      const speed=(.62+Math.abs(Math.sin(i*.83))*.62).toFixed(2);
+      const peaks=[.10,.29,.43,.58,.73,.91];
+      const envelope=Math.max(.09,...peaks.map((p,j)=>Math.exp(-Math.pow((i/63-p)/(j%2?.055:.085),2))*(.62+(j%3)*.12)));
+      const texture=.58+.42*Math.abs(Math.sin(i*2.17));
+      const h=Math.round(8+envelope*texture*92);
+      const delay=(-Math.abs(Math.sin(i*1.71))*1.25).toFixed(2);
+      const speed=(.48+Math.abs(Math.sin(i*.83))*.78).toFixed(2);
       return '<i style="--wave-h:'+h+'%;--wave-delay:'+delay+'s;--wave-speed:'+speed+'s"></i>';
     }).join("");
     wave.innerHTML=bars;
