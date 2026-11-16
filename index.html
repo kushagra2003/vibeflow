@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VibeFlow</title><link rel="stylesheet" href="css/styles.css"></head>
+<body>
+<div class="app">
+  <nav class="side"><h1>VibeFlow</h1>
+    <button data-view="discover" class="on">Discover</button><button data-view="radio">AI Radio</button>
+    <button data-view="favs">Favourites</button><button data-view="history">History</button><button data-view="diag">Diagnostics</button></nav>
+  <main>
+    <section class="now"><img id="art" alt=""><div><h2 id="title">Nothing playing</h2><p id="artist">Search or start AI Radio</p>
+      <p id="why" class="why"></p></div></section>
+    <form id="sf"><input id="q" placeholder="Search Audius tracks or artists" autocomplete="off"><button>Search</button></form>
+    <h3 id="vh">Trending on Audius</h3><div id="list" class="list"></div>
+    <h3>Next-track suggestions</h3><div id="recs" class="list"></div>
+  </main>
+  <aside class="queue"><h3>Queue</h3><div id="queue" class="list"></div></aside>
+  <footer class="bar">
+    <div class="ctl"><button id="prev" aria-label="Previous">⏮</button><button id="pp" aria-label="Play or pause">▶</button><button id="next" aria-label="Next">⏭</button>
+      <button id="mix">Mix &amp; next</button><button id="shuf">Shuffle</button><button id="rep">Repeat</button></div>
+    <input id="seek" type="range" min="0" max="1000" value="0" aria-label="Progress"><span id="time">0:00</span>
+    <label>Mix length <select id="mixsec"><option value="3">3s</option><option value="6" selected>6s</option><option value="10">10s</option></select></label>
+    <label><input type="checkbox" id="auto" checked> Auto-mix</label>
+    <input id="vol" type="range" min="0" max="100" value="80" aria-label="Volume">
+    <button id="radio">AI Radio: off</button>
+  </footer>
+</div>
+<div id="toast" role="status"></div>
+<audio id="a1" preload="auto"></audio><audio id="a2" preload="auto"></audio>
+<script src="js/app.js"></script></body></html>
