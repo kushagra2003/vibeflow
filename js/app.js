@@ -32,6 +32,7 @@ const save = () => {
   })) store.set(k, v);
 };
 const saveSettings = () => store.set("settings", settings);
+const automaticSwitchingEnabled = () => settings.autoAdvance === true && settings.autoMode !== "off";
 const toast = msg => {
   const el = $("#toast"); el.textContent = msg; el.style.display = "block";
   clearTimeout(toast.timer); toast.timer = setTimeout(() => el.style.display = "none", 3800);
@@ -170,6 +171,8 @@ function openSettings() {
     settings.noHookStartSeconds = Math.max(0,Math.min(300,+$("#setNoHookStart").value || 0));
     settings.displayUpdateDelay = [0,1,2,3,4,5].includes(+$("#setDisplayDelay").value)?+$("#setDisplayDelay").value:0;
     settings.autoMode = $("#setMode").value;
+    // Turning automatic switching off (or choosing Off mode) also exits AI DJ.
+    if (!automaticSwitchingEnabled()) S.radio = false;
     saveSettings(); root.innerHTML=""; syncControls(); render();
     toast("DJ settings saved.");
   };
@@ -707,7 +710,8 @@ function ensureAINextTrack() {
 }
 
 async function nextAutomatic() {
-  if(S.transitioning || S.autoTransitionPending) return;
+  // A queued song must never bypass the user's automatic-switching preference.
+  if (!automaticSwitchingEnabled() || S.transitioning || S.autoTransitionPending) return;
   S.autoTransitionPending=true;
   try {
   // A queued track always has priority over AI/random selection.
@@ -765,9 +769,7 @@ async function nextAutomatic() {
   } finally { S.autoTransitionPending=false; }
 }
 function handleAutoAdvance() {
-  if (S.transitioning || S.mixing) return;
-  const hasQueuedNext = !!S.queue[S.idx + 1];
-  if (!hasQueuedNext && (!settings.autoAdvance || settings.autoMode === "off")) return;
+  if (!automaticSwitchingEnabled() || S.transitioning || S.mixing) return;
   nextAutomatic();
 }
 function seekResetDuration() {
@@ -777,6 +779,8 @@ function seekResetDuration() {
   return settings.noHookSeconds;
 }
 function checkHookTimer() {
+  // Hook-end and fallback timers are automatic transitions, never manual controls.
+  if (!automaticSwitchingEnabled()) return;
   const t=cur(), a=audio(); if(!t || a.paused || S.transitioning || S.mixing || S.seeking) return;
   if(S.seekResumeAt) {
     if(a.currentTime-S.seekResetMediaTime>=S.seekResetDelay) {
@@ -1192,7 +1196,7 @@ A.forEach(a=>{
     if(!S.seeking) checkHookTimer();
     updateDJStatus();
   };
-  a.onended=()=>{if(a===audio()&&!S.transitioning&&(!!S.queue[S.idx+1]||(settings.autoAdvance&&settings.autoMode!=="off")))nextAutomatic();};
+  a.onended=()=>{if(a===audio()&&!S.transitioning&&automaticSwitchingEnabled())nextAutomatic();};
   a.onerror=()=>{if(a===audio()&&a.src)toast("This audio file could not be played. Check the file URL and format.");};
 });
 $("#modalRoot").addEventListener("click",e=>{if(e.target.classList.contains("modal-backdrop")&&e.target.dataset.dismiss)$("#modalRoot").innerHTML="";});
@@ -1227,7 +1231,7 @@ window.addEventListener("keydown",e=>{
   }
   if(key==="n") {
     e.preventDefault();
-    if(S.queue[S.idx+1]) nextAutomatic(); else next();
+    next();
     return;
   }
   if(key==="p") { e.preventDefault(); previous(); return; }
