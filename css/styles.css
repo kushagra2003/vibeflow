@@ -20,3 +20,14 @@ input,select{color:var(--text);background:#100d18;border:1px solid var(--line);b
 @media(max-width:720px){body{padding-bottom:150px}.app-shell{grid-template-columns:1fr}.sidebar{min-height:0;position:sticky;top:0;z-index:15;flex-direction:row;align-items:center;padding:8px 10px;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}.brand{margin:0 12px 0 0;font-size:16px;white-space:nowrap}.brand-mark{width:29px;height:29px}.nav-label,.sidebar-status{display:none}.nav-btn{white-space:nowrap;padding:8px 10px;font-size:11px}.settings-nav{width:auto;flex:0 0 auto;margin-top:0!important}.main-content{padding:17px 12px}.topbar{flex-wrap:wrap;gap:10px}.topbar>div{flex:1}.topbar h1{font-size:21px}.search-box{order:3;max-width:none;flex-basis:100%;margin:0}.ai-pill{font-size:9px}.now-card{grid-template-columns:88px 1fr;padding:13px;gap:13px}.cover-wrap{width:88px;height:88px}.now-info h2{font-size:19px;margin-top:7px}.now-info>p{font-size:11px;margin-bottom:8px}.now-actions{gap:5px;flex-wrap:wrap;margin-top:9px}.now-actions .primary-btn{font-size:10px;padding:8px}.now-actions .icon-btn{width:31px;height:31px}.play-btn{width:35px;height:35px}.wave-panel{display:none}.panel{padding:13px}.hook-create{flex-wrap:wrap}.hook-create input{flex-basis:100%}.hooks-list{grid-template-columns:1fr}.track-actions button{font-size:9px;padding:5px}.track-row{gap:7px;padding:7px}.track-art{width:38px;height:38px;flex-basis:38px}.player-bar{grid-template-columns:1fr auto;gap:7px;padding:8px 11px;min-height:125px}.mini-track{grid-column:1/-1}.mini-cover{width:30px;height:30px}.transport{align-items:flex-start}.transport-options{flex-wrap:wrap}.player-right{align-self:end}.volume-control{display:none}.settings-grid{grid-template-columns:1fr}.transition-tag{display:none}}
 
 .ai-panel{margin-top:22px;padding-top:17px;border-top:1px solid var(--line)}
+
+/* Hook cards: keep the saved lyric/comment readable above the action controls. */
+.hook-item{display:flex;flex-direction:column;align-items:stretch;gap:10px;min-width:0}
+.hook-main{display:flex;align-items:flex-start;gap:10px;min-width:0;width:100%}
+.hook-time{flex:0 0 auto;padding-top:1px}
+.hook-detail{flex:1 1 auto;min-width:0}
+.hook-detail b{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;line-height:1.4;font-size:13px}
+.hook-detail small{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;line-height:1.4;margin-top:3px}
+.hook-controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap;width:100%}
+.hook-controls input{flex:1 1 100px;min-width:90px;max-width:180px}
+.hook-controls button{flex:0 0 auto}
