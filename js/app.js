@@ -150,7 +150,7 @@ function openSettings() {
       <div class="setting-field" id="skipDurationField"><label for="setSkipSeconds">Play each song for (seconds)</label><input id="setSkipSeconds" type="number" min="15" max="1800" step="15" value="${settings.skipAfterSeconds}"><small>Seeking resets this countdown after you release the progress slider.</small></div>
       <div class="setting-field"><label for="setEndAction">What should happen when the song ends?</label><select id="setEndAction"><option value="pause">Pause – stop playback</option><option value="smart">Smart Mix – random song + hook</option><option value="beginning">Random song – start from beginning</option></select><small>Smart Mix chooses a random song, uses saved hooks or scans locally, then randomly selects a hook. If no hook is detected, the next song starts at 0:00.</small></div>
       <div class="setting-field"><label for="setMix">Crossfade length</label><select id="setMix"><option value="0">Off (instant switch)</option><option value="3">3 seconds</option><option value="6">6 seconds</option><option value="9">9 seconds</option></select><small>How long the outgoing and incoming songs overlap. The incoming hook is aligned to the end of this transition.</small></div>
-      <div class="setting-field"><label for="setLead">Hook timing adjustment (seconds)</label><input id="setLead" type="number" min="0" max="8" step="1" value="${settings.leadSubtract}"><small>Fine-tune when the incoming hook lands during the crossfade. Default: 2 seconds. Adjust by ear.</small></div>
+      <div class="setting-field"><label for="setLead">Hook timing adjustment (seconds)</label><input id="setLead" type="number" min="0" max="8" step="1" value="${settings.leadSubtract}"><small>2 seconds aligns the hook with the end of the crossfade. Increase to bring the hook slightly earlier; decrease to let it land slightly later.</small></div>
       <div class="setting-field"><label for="setDisplayDelay">Update song details</label><select id="setDisplayDelay"><option value="0">Immediately</option><option value="1">After 1 second</option><option value="2">After 2 seconds</option><option value="3">After 3 seconds</option><option value="4">After 4 seconds</option><option value="5">After 5 seconds</option></select><small>Delay the Now Playing and Coming Up Next display after a transition.</small></div>
     </div>
     <div class="toggle-row"><div><b>AI recommendations</b><small>Allow optional AI track suggestions. This does not control automatic playback.</small></div><input class="switch" id="setAI" type="checkbox" ${settings.aiEnabled?"checked":""}></div>
@@ -1099,6 +1099,9 @@ function finishSeek() {
       S.playWindowLastTick=a.paused?null:performance.now();
       S.endTriggered=false; S.endWaiting=false;
     }
+  } else if(settings.playDurationMode==="skip") {
+    // A click/touch without moving the slider must resume the paused countdown.
+    S.playWindowLastTick=a.paused?null:performance.now();
   }
   updateDJStatus();
 }
