@@ -38,6 +38,7 @@ const toast = msg => {
   clearTimeout(toast.timer); toast.timer = setTimeout(() => el.style.display = "none", 3800);
 };
 const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const displaySongTitle = value => { const full=String(value||"Untitled"); const short=full.length>15?full.slice(0,15)+"…":full; return short+" By Vibe Glow AI"; };
 const fmt = n => Number.isFinite(+n) ? `${Math.floor(+n/60)}:${String(Math.floor(+n%60)).padStart(2,"0")}` : "0:00";
 const fmtHook = n => `${fmt(n)}${Math.abs((+n)-Math.round(+n))>.01?".5":""}`;
 const cur = () => S.queue[S.idx] || null;
@@ -508,7 +509,7 @@ function openMixChoices() {
 
 // ---------- Party mode motion + rotating brand line ---------- 
 let partyTaglineTimer=null;
-const PARTY_TAGLINES=["IS YOUR DJ","BY KUSHAGRA","IS YOUR DJ TONIGHT","LET'S PARTY"];
+const PARTY_TAGLINES=["IS YOUR DJ","BY KUSHAGRA","AI IS YOUR DJ TONIGHT","LET'S PARTY"];
 let partyTaglineIndex=0;
 function startPartyBrandLoop(){
   const tagline=$("#partyTagline"), wave=$("#partySoundwave");
@@ -536,7 +537,7 @@ function startPartyBrandLoop(){
     tagline.textContent=PARTY_TAGLINES[partyTaglineIndex];
     void tagline.offsetWidth;
     tagline.classList.add("tagline-change");
-  },2000);
+  },2500);
 }
 function stopPartyBrandLoop(){clearInterval(partyTaglineTimer);partyTaglineTimer=null;}
 function syncPartyMotion(){
@@ -960,7 +961,7 @@ function trackRow(t,i,where) {
       <button type="button" class="track-hook-count" aria-label="${hooks.length} saved hooks" >${hooks.length}</button>
       <div class="track-hook-popover"><div class="hook-popover-title">PLAY NEXT FROM HOOK</div>${hookMenu}</div>
     </div>
-    <div class="track-meta"><b>${esc(t.title)}</b><small>${esc(t.artist||"Unknown")} · ${t.provider==="mine"?"My music":"Audius"}${where==="queue"&&i===S.idx?" · PLAYING":""}</small></div>
+    <div class="track-meta"><b title="${esc(t.title)}">${esc(displaySongTitle(t.title))}</b><small>${esc(t.artist||"Unknown")} · ${t.provider==="mine"?"My music":"Audius"}${where==="queue"&&i===S.idx?" · PLAYING":""}</small></div>
     <div class="track-actions">${buttons}<button class="star" data-fav="${esc(t.id)}">${fav?"★":"☆"}</button></div>
   </div>`;
 }
@@ -979,7 +980,7 @@ function visibleTracks() {
 }
 function render() {
   const t=cur();
-  $("#title").textContent=t?.title||"Nothing playing yet";
+  $("#title").textContent=t?displaySongTitle(t.title):"Nothing playing yet";
   $("#artist").textContent=t?.artist||"Choose a track from Discover or My music";
   const art=$("#art"), cover=art.closest(".cover-wrap"), vinyl=$("#vinylFallback");
   cover.classList.toggle("no-art",!t?.art);
@@ -987,9 +988,9 @@ function render() {
   art.onerror=()=>cover.classList.add("no-art");
   art.onload=()=>cover.classList.remove("no-art");
   art.src=t?.art||"";
-  $("#miniTitle").textContent=t?.title||"Nothing playing";
+  $("#miniTitle").textContent=t?displaySongTitle(t.title):"Nothing playing";
   $("#miniArtist").textContent=t?.artist||"VibeFlow";
-  if($("#partySong")) $("#partySong").textContent=t?.title||"Nothing playing yet";
+  if($("#partySong")) $("#partySong").textContent=t?displaySongTitle(t.title):"Nothing playing yet";
   if($("#partyArtist")) $("#partyArtist").textContent=t?.artist||"Choose your first track";
   if($("#partyPlay")) $("#partyPlay").textContent=audio().paused?"▶":"Ⅱ";
   $("#playState").textContent=audio().paused?"· PAUSED":"· PLAYING";
@@ -1007,7 +1008,7 @@ function render() {
   $("#list").innerHTML=tracks.length?tracks.map((x,i)=>trackRow(x,i,"list")).join(""):'<div class="empty-state">Nothing here yet. Add songs to your GitHub songs folder or search Audius.</div>';
   const queuedNext=S.queue[S.idx+1] || null;
   const nextLabel=queuedNext
-    ? `<div class="queue-next-preview"><span class="live-dot"></span><div><small>COMING UP NEXT</small><b>${esc(queuedNext.title)}</b><span>${esc(queuedNext.artist||"Unknown")}</span></div></div>`
+    ? `<div class="queue-next-preview"><span class="live-dot"></span><div><small>COMING UP NEXT</small><b title="${esc(queuedNext.title)}">${esc(displaySongTitle(queuedNext.title))}</b><span>${esc(queuedNext.artist||"Unknown")}</span></div></div>`
     : `<div class="queue-next-preview queue-next-random"><span class="live-dot"></span><div><small>COMING UP NEXT</small><b>Auto shuffle</b><span>Another track will be selected automatically</span></div></div>`;
   $("#queue").innerHTML=nextLabel+(S.queue.length?S.queue.map((x,i)=>trackRow(x,i,"queue")).join(""):'<div class="empty-state">Queue is empty. Add a track to get started.</div>');
   updateUpcomingCard(queuedNext);
@@ -1063,7 +1064,7 @@ function updateUpcomingCard(track) {
   } else {
     const changed=card.dataset.trackId!==track.id;
     card.dataset.trackId=track.id;
-    title.textContent=track.title;
+    title.textContent=displaySongTitle(track.title);
     sub.textContent=(track.artist||"Unknown")+" · "+(hooksOf(track).length?hooksOf(track).length+" hooks ready":"no saved hook");
     card.classList.add("has-track");
     if(changed) {card.classList.remove("upcoming-blink");void card.offsetWidth;card.classList.add("upcoming-blink");}
