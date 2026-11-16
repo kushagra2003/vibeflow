@@ -752,7 +752,8 @@ async function nextAutomatic() {
     showPartyMessage("Finding the hook line… 🎧");
     await scanCurrentSongHooks({automatic:true,trackOverride:t});
   }
-  if(S.transitioning) return;
+  // Settings may have changed while the async hook scan was running.
+  if (!automaticSwitchingEnabled() || S.transitioning) return;
   const chosen = queuedNext?._chosenHook || null;
   const hook = chosen
     ? (hooksOf(t).find(h => String(h.id) === String(chosen.id)) || chosen)
