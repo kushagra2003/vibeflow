@@ -410,6 +410,8 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
   const idx=ensureQueued(track);
   S.idx=idx;
   render(); // Keep the upcoming queue visible while the next track is prepared.
+  document.querySelector(".queue-list .track-row.current")?.classList.add("track-entering");
+  $(".dj-upcoming")?.classList.add("upcoming-mixing");
   const startAt=hook ? mixStartForHook(hook) : ((automatic || mode==="no-hook") ? settings.noHookStartSeconds : 0);
   showTransition(track,hook,automatic);
   try {
@@ -429,11 +431,13 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
       // Crossfade disabled: switch decks instantly without overlapping audio.
       old.pause(); old.removeAttribute("src"); old.load();
       nextAudio.volume=vol(); S.mixing=false; S.transitioning=false;
+      document.querySelector(".queue-list .track-row.current")?.classList.add("track-arrived");
+      $(".dj-upcoming")?.classList.remove("upcoming-mixing");
     } else {
       S.mixing=true;
       if(wasPlaying) fade(old,0,mixSec()*1000,()=>{old.pause();old.removeAttribute("src");old.load();});
       else old.pause();
-      fade(nextAudio,vol(),mixSec()*1000,()=>{S.mixing=false;S.transitioning=false;});
+      fade(nextAudio,vol(),mixSec()*1000,()=>{S.mixing=false;S.transitioning=false;document.querySelector(".queue-list .track-row.current")?.classList.add("track-arrived");$(".dj-upcoming")?.classList.remove("upcoming-mixing");});
     }
     S.activeHook=hook?{trackId:track.id,hookId:hook.id,t:hook.t,end:hook.end??null,lyric:hook.lyric||"Hook"}:null;
     S.activeNoHookDeadline=hook?null:{trackId:track.id,at:startAt+settings.noHookSeconds};
@@ -446,6 +450,7 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
     save();
     if(settings.aiEnabled) suggest();
     render(); renderHooks();
+    document.querySelector(".queue-list .track-row.current")?.classList.add("track-arrived");
   } catch(e) {
     S.transitioning=false; S.mixing=false;
     if(token===S.tok) toast(`Couldn't play ${track.title}: ${e.message}`);
@@ -643,7 +648,7 @@ function trackRow(t,i,where) {
   const buttons=where==="queue"
     ? `<button data-queue-play-next="${i}" class="queue-play-next">Play next</button><button data-remove="${i}">Remove</button>`
     : `<button data-play="${esc(t.id)}">Play</button><button data-play-next="${esc(t.id)}">Play next</button><button data-add="${esc(t.id)}">Queue</button>`;
-  return `<div class="track-row ${current?"current":""}" ${where==="queue"?`draggable="true" data-queue-index="${i}"`:""}>
+  return `<div class="track-row ${current?"current":""}" data-track-id="${esc(t.id)}" ${where==="queue"?`draggable="true" data-queue-index="${i}"`:""}>
     <div class="track-hook-wrap">
       <button type="button" class="track-hook-count" aria-label="${hooks.length} saved hooks" title="Hover to choose a hook">${hooks.length}</button>
       <div class="track-hook-popover"><div class="hook-popover-title">PLAY NEXT FROM HOOK</div>${hookMenu}</div>
@@ -686,12 +691,50 @@ function render() {
     ? `<div class="queue-next-preview"><span class="live-dot"></span><div><small>COMING UP NEXT</small><b>${esc(queuedNext.title)}</b><span>${esc(queuedNext.artist||"Unknown")}</span></div></div>`
     : `<div class="queue-next-preview queue-next-random"><span class="live-dot"></span><div><small>COMING UP NEXT</small><b>Auto shuffle</b><span>Another track will be selected automatically</span></div></div>`;
   $("#queue").innerHTML=nextLabel+(S.queue.length?S.queue.map((x,i)=>trackRow(x,i,"queue")).join(""):'<div class="empty-state">Queue is empty. Add a track to get started.</div>');
+  updateUpcomingCard(queuedNext);
   renderHooks();
   $("#waveform").classList.toggle("paused",audio().paused);
   if(!$("#waveform").children.length) $("#waveform").innerHTML=Array.from({length:36},(_,i)=>`<i style="height:${8+((i*17)%34)}px;animation-delay:${-(i%9)*.13}s"></i>`).join("");
   syncControls();
   bindTrackActions();
   updateDJStatus();
+}
+function animateNextShadow(sourceRow) {
+  const source=sourceRow?.getBoundingClientRect();
+  const target=document.querySelector(".queue-list .track-row.current")?.getBoundingClientRect()
+    || document.querySelector(".now-card .now-info")?.getBoundingClientRect();
+  if(!source || !target) return;
+  const ghost=sourceRow.cloneNode(true);
+  ghost.classList.add("queue-shadow-flight");
+  ghost.style.left=source.left+"px"; ghost.style.top=source.top+"px";
+  ghost.style.width=source.width+"px"; ghost.style.height=source.height+"px";
+  document.body.appendChild(ghost);
+  const dx=(target.left+target.width/2)-(source.left+source.width/2);
+  const dy=(target.top+target.height/2)-(source.top+source.height/2);
+  const animation=ghost.animate([
+    {transform:"translate(0,0) scale(1)",opacity:.92,filter:"drop-shadow(0 0 0 #b987ff)"},
+    {transform:"translate("+dx*.55+"px,"+dy*.55+"px) scale(.82)",opacity:.9,filter:"drop-shadow(0 0 18px #c48aff)"},
+    {transform:"translate("+dx+"px,"+dy+"px) scale(.25)",opacity:0,filter:"drop-shadow(0 0 25px #e3c4ff)"}
+  ],{duration:760,easing:"cubic-bezier(.18,.78,.22,1)"});
+  target.classList.add("queue-impact");
+  animation.onfinish=()=>{ghost.remove();target.classList.remove("queue-impact");};
+}
+function updateUpcomingCard(track) {
+  const card=$("#djUpcoming");
+  if(!card) return;
+  const title=$("#djUpcomingTitle"), sub=$("#djUpcomingSub");
+  if(!track) {
+    title.textContent="Auto shuffle";
+    sub.textContent="Next track will be selected automatically";
+    card.classList.remove("has-track");
+  } else {
+    const changed=card.dataset.trackId!==track.id;
+    card.dataset.trackId=track.id;
+    title.textContent=track.title;
+    sub.textContent=(track.artist||"Unknown")+" · "+(hooksOf(track).length?hooksOf(track).length+" hooks ready":"no saved hook");
+    card.classList.add("has-track");
+    if(changed) {card.classList.remove("upcoming-blink");void card.offsetWidth;card.classList.add("upcoming-blink");}
+  }
 }
 function bindTrackActions() {
   document.querySelectorAll("[data-select-next-hook]").forEach(b=>b.onclick=()=>{
@@ -714,7 +757,7 @@ function bindTrackActions() {
   document.querySelectorAll("[data-play-next]").forEach(b=>b.onclick=()=>{
     const id=b.dataset.playNext;
     const track=[...S.lib.map(toTrack),...S.results,...S.recs,...S.favs,...S.hist].find(x=>x.id===id);
-    if(track){addQueue(track,"next");toast(`${track.title} will play next.`);}
+    if(track){animateNextShadow(b.closest(".track-row"));addQueue(track,"next");toast(`${track.title} will play next.`);}
   });
   document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>{
     const id=b.dataset.add;
