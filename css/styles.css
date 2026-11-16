@@ -240,3 +240,12 @@ body.party-mode-open{overflow:hidden}
 @keyframes handRightMix{from{transform:translate(0,0) rotate(1deg)}to{transform:translate(-5px,-13px) rotate(-2deg)}}
 @media(max-width:700px){.party-center-title{top:29%}.party-soundwave{height:42px;width:82vw;gap:2px}.party-soundwave i{max-width:4px}}
 @media(prefers-reduced-motion:reduce){.party-soundwave i,.party-stage.dj-active .party-hand-left,.party-stage.dj-active .party-hand-right,.party-stage.dj-mixing .party-hand-left,.party-stage.dj-mixing .party-hand-right{animation:none}}
+
+/* Party waveform: luminous centre line with clustered, audio-reactive-style purple/teal peaks. */
+.party-soundwave{position:relative;isolation:isolate}
+.party-soundwave:before{content:"";position:absolute;left:2%;right:2%;top:50%;height:2px;z-index:0;background:linear-gradient(90deg,transparent,#6f4fa8 12%,#c7a2ff 34%,#63e6dc 50%,#c7a2ff 66%,#6f4fa8 88%,transparent);box-shadow:0 0 7px #9f7cff,0 0 18px #5a9fe8aa;opacity:.9}
+.party-soundwave i{position:relative;z-index:1}
+.party-stage.dj-mixing .party-soundwave i{filter:brightness(1.3);animation-duration:calc(var(--wave-speed,.85s)*.52)}
+.party-stage.dj-mixing .party-hand-left{animation-duration:.58s}
+.party-stage.dj-mixing .party-hand-right{animation-duration:.66s}
+@media(prefers-reduced-motion:reduce){.party-soundwave:before{box-shadow:none}}
