@@ -77,3 +77,20 @@ input,select{color:var(--text);background:#100d18;border:1px solid var(--line);b
 .force-mix-btn{display:block;margin:9px auto 0;padding:7px 13px;border:1px solid #6e4a9a;border-radius:10px;background:#241a31;color:#d9c2f5;font-size:11px;font-weight:750;cursor:pointer;transition:background .16s,transform .16s}
 .force-mix-btn:hover{background:#3a2750;transform:translateY(-1px)}
 .track-row .track-hook-popover{z-index:60}
+
+
+/* Futuristic live DJ-engine telemetry */
+.wave-panel{position:relative;overflow:visible}
+.dj-live-feed{display:flex;align-items:center;gap:11px;margin-top:19px;padding:12px 14px;border:1px solid #7950a044;border-radius:13px;background:linear-gradient(100deg,#241832bb,#17121fdd);min-width:0;box-shadow:inset 0 1px #ffffff08,0 8px 28px #0002}
+.dj-live-pulse{width:9px;height:9px;flex:0 0 9px;border-radius:50%;background:#8d63c6;box-shadow:0 0 0 4px #8d63c622,0 0 14px #a66dff;animation:djPulse 1.5s infinite}
+.dj-live-copy{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
+.dj-live-copy strong{font-size:10px;letter-spacing:1.25px;font-weight:900;color:#cda8ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dj-live-copy small{font-size:11px;line-height:1.45;color:#b6a5ca;white-space:normal}
+.dj-countdown{font-variant-numeric:tabular-nums;font-size:15px;font-weight:850;letter-spacing:.6px;color:#f2e7ff;padding:6px 9px;border-radius:8px;background:#8d63c61b;border:1px solid #a779dc33;white-space:nowrap}
+.wave-panel[data-dj-state="sync"] .dj-live-pulse{background:#e4b45d;box-shadow:0 0 0 4px #e4b45d22,0 0 15px #e4b45d;animation:djPulse .65s infinite}
+.wave-panel[data-dj-state="sync"] .dj-live-copy strong{color:#f0c878}
+.wave-panel[data-dj-state="mix"] .dj-live-pulse{background:#48e6bd;box-shadow:0 0 0 4px #48e6bd22,0 0 16px #48e6bd}
+.wave-panel[data-dj-state="mix"] .dj-live-copy strong{color:#65f0c6}
+.wave-panel[data-dj-state="paused"] .dj-live-pulse{background:#8a8195;box-shadow:none;animation:none}
+@keyframes djPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.72);opacity:.55}}
+@media(max-width:650px){.dj-live-feed{padding:10px}.dj-live-copy small{font-size:10px}.dj-countdown{font-size:13px}}
