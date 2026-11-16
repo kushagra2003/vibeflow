@@ -29,7 +29,7 @@ const S = {
   hookScans: store.get("hookScans", {}), autoHookInFlight: new Set(), autoHookStartedAt: {},
   aiHookTrackId: null, aiHookScanning: false,
   playWindowRemaining: null, playWindowLastTick: null, preparedNext: null,
-  preparingNext: null, preparationToken: 0, endTriggered: false
+  preparingNext: null, preparationToken: 0, endTriggered: false, endWaiting: false
 };
 const save = () => {
   for (const [k, v] of Object.entries({
@@ -463,8 +463,9 @@ function ensureQueued(track) {
   return i;
 }
 function mixStartForHook(hook,mixDuration=mixSec()) {
-  const lead=Math.max(0,mixDuration-settings.leadSubtract);
-  return Math.max(0,hook.t-lead);
+  // 2 seconds is the neutral sync setting: the hook lands as the crossfade ends.
+  const fineTune=settings.leadSubtract-2;
+  return Math.max(0,hook.t-mixDuration+fineTune);
 }
 
 // ---------- Mix choice dialog ----------
@@ -474,7 +475,7 @@ function openMixChoices() {
   if(!nextTrack) return toast("Add songs to your library first.");
   const hooks=hooksOf(nextTrack);
   if(!hooks.length) {
-    toast(`No saved hooks for ${nextTrack.title}; starting at ${settings.noHookStartSeconds} seconds.`);
+    toast(`No saved hooks for ${nextTrack.title}; starting at 0:00.`);
     transitionTo(nextTrack,null,{manual:true,mode:"no-hook"});
     return;
   }
@@ -762,7 +763,7 @@ function tickPlaybackEnd() {
     return;
   }
   // Start local analysis early enough that the cue is ready before the transition.
-  if(remaining<=20&&!S.preparedNext&&!S.preparingNext)prepareUpcomingTrack();
+  if(remaining<=Math.max(10,mixSec()+4)&&!S.preparedNext&&!S.preparingNext)prepareUpcomingTrack();
   if(remaining<=mixSec()&&S.preparedNext)startPreparedTransition(remaining);
   else if(remaining<=0&&!S.preparedNext) {
     S.endWaiting=true; pausePlaybackWindow(); a.pause();
@@ -1116,7 +1117,7 @@ seekSlider.addEventListener("pointercancel",finishSeek);
 seekSlider.addEventListener("touchend",finishSeek);
 seekSlider.addEventListener("keyup",e=>{if(S.seeking && ["ArrowLeft","ArrowRight","Home","End","PageUp","PageDown"].includes(e.key))finishSeek();});
 window.addEventListener("blur",finishSeek);
-$("#mixsec").onchange=e=>{settings.mixLength=[0,3,6,9].includes(+e.target.value)?+e.target.value:6;saveSettings();};
+$("#mixsec").onchange=e=>{settings.mixLength=[0,3,6,9].includes(+e.target.value)?+e.target.value:6;S.preparedNext=null;S.preparingNext=null;S.preparationToken++;saveSettings();};
 $("#searchForm").onsubmit=e=>{e.preventDefault();const q=$("#searchInput").value.trim();searchAudius(q);};
 document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=()=>switchView(b.dataset.view));
 $("#refreshLibrary").onclick=async()=>{await initLib();toast(`Found ${S.lib.length} songs in GitHub.`);};
