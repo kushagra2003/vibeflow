@@ -12,8 +12,8 @@
   <aside class="sidebar">
     <a class="brand" href="#"><span class="brand-mark">V</span><span class="brand-copy"><strong>VIBE FLOW</strong><small>by DJ Kushagra</small><em>trained in REWA</em></span></a>
     <div class="nav-label">LIBRARY</div>
-    <button class="nav-btn active" data-view="discover"><span>◈</span> Discover</button>
-    <button class="nav-btn" data-view="library"><span>♫</span> My music</button>
+    <button class="nav-btn" data-view="discover"><span>◈</span> Discover</button>
+    <button class="nav-btn active" data-view="library"><span>♫</span> My music</button>
     <button class="nav-btn" data-view="favs"><span>★</span> Favourites</button>
     <button class="nav-btn" data-view="history"><span>◷</span> Listening history</button>
     <button id="openSettings" class="nav-btn settings-nav"><span>⚙</span> Settings</button>
@@ -22,12 +22,13 @@
 
   <main class="main-content">
     <header class="topbar">
-      <div><div class="eyebrow">YOUR PERSONAL DJ</div><h1 id="pageTitle">Discover music</h1></div>
+      <div><div class="eyebrow">YOUR PERSONAL DJ</div><h1 id="pageTitle">My music</h1></div>
       <form id="searchForm" class="search-box">
         <span>⌕</span><input id="searchInput" placeholder="Search Audius tracks or artists…" autocomplete="off">
         <button type="submit">Search</button>
       </form>
       <button id="aiStatus" class="ai-pill" title="Toggle continuous AI DJ"><span class="ai-dot"></span> AI DJ OFF</button>
+      <button id="partyModeButton" class="party-launch">✦ Party mode</button>
     </header>
 
     <section class="now-card">
@@ -74,6 +75,7 @@
         <button id="addHook" class="primary-btn">＋ Mark hook here</button>
       </div>
       <div id="hooksList" class="hooks-list"><div class="empty-state">Play a song and mark its best moments as hooks.</div></div>
+      <div class="hook-data-actions"><button id="exportHooks" type="button">↓ Export hook backup</button><button id="importHooks" type="button">↑ Restore hook backup</button><input id="importHooksFile" type="file" accept="application/json,.json" hidden></div>
       <div class="ai-hook-tools"><div class="ai-hook-tools-copy"><b>VIBE FLOW · LOCAL HOOK ANALYSIS</b><small>Detect repeated musical sections and high-energy moments directly in your browser. No AI API key or audio upload required.</small></div><button id="scanHooks" class="primary-btn" type="button">⌕ Analyse for hooks</button></div>
       <div id="aiHookResults" class="ai-hook-results" aria-live="polite"><div class="ai-hook-status">Click Analyse for hooks to scan this song. AI DJ can also scan an unmarked upcoming song automatically.</div></div>
     </section>
@@ -95,6 +97,31 @@
     </section>
   </main>
 </div>
+
+<section id="partyMode" class="party-mode" hidden aria-label="VIBE FLOW Party DJ">
+  <div class="party-top"><div class="party-brand"><span class="party-brand-mark">V</span><div><b>VIBE FLOW</b><small>YOUR DJ · YOUR PARTY</small></div></div><div class="party-top-tag">LIVE PARTY MODE</div><button id="closeParty" class="party-close" aria-label="Close party mode">×</button></div>
+  <div class="party-stage">
+    <div class="party-light party-light-one"></div><div class="party-light party-light-two"></div>
+    <div class="party-decks">
+      <div class="party-deck left-deck"><div class="party-platter"><i></i></div><div class="party-deck-controls"></div></div>
+      <div class="party-mixer"><span></span><span></span><span></span><i></i><i></i><i></i></div>
+      <div class="party-deck right-deck"><div class="party-platter"><i></i></div><div class="party-deck-controls"></div></div>
+    </div>
+    <svg class="party-hands" viewBox="0 0 1200 480" role="img" aria-label="Illustrated DJ hands mixing on two turntables">
+      <defs><linearGradient id="skinL" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f3c7a2"/><stop offset="1" stop-color="#9d604b"/></linearGradient><linearGradient id="skinR" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffd5b2"/><stop offset="1" stop-color="#a96b54"/></linearGradient></defs>
+      <path d="M0 470 C90 390 150 320 240 250 L365 155 C395 132 430 144 438 174 C445 201 422 224 398 245 L325 310 L440 250 C470 235 500 250 500 280 C500 300 482 314 456 330 L320 430 L0 500Z" fill="url(#skinL)" opacity=".92"/>
+      <path d="M1200 470 C1110 390 1050 320 960 250 L835 155 C805 132 770 144 762 174 C755 201 778 224 802 245 L875 310 L760 250 C730 235 700 250 700 280 C700 300 718 314 744 330 L880 430 L1200 500Z" fill="url(#skinR)" opacity=".92"/>
+      <path d="M360 155 Q405 95 450 145 L520 235 Q540 265 515 286 Q490 306 465 278 L395 220Z" fill="url(#skinL)"/>
+      <path d="M840 155 Q795 95 750 145 L680 235 Q660 265 685 286 Q710 306 735 278 L805 220Z" fill="url(#skinR)"/>
+    </svg>
+    <div class="party-center-title"><span>VIBE FLOW</span><b>IS YOUR DJ</b><small>LET THE NIGHT MOVE</small></div>
+    <div class="party-now"><small>NOW PLAYING</small><b id="partySong">Nothing playing yet</b><span id="partyArtist">Choose your first track</span></div>
+  </div>
+  <div class="party-bottom">
+    <div class="party-telemetry"><b id="partyActivity">DJ ENGINE READY</b><span id="partyDetail">Waiting for the first beat.</span><strong id="partyMessage">Surprise incoming… 🪩</strong></div>
+    <div class="party-controls"><button id="partyPrev" aria-label="Previous track">⏮</button><button id="partyPlay" class="party-play" aria-label="Play or pause">▶</button><button id="partyNext" aria-label="Next track">⏭</button><button id="partyAI" class="party-ai">AI DJ: OFF</button></div>
+  </div>
+</section>
 
 <footer class="player-bar">
   <div class="mini-track"><div class="mini-cover">♫</div><div><b id="miniTitle">Nothing playing</b><small id="miniArtist">VibeFlow</small></div></div>
