@@ -19,7 +19,8 @@ const S = {
   trackPlays: store.get("trackPlays", {}), radio: false, shuffle: false,
   repeat: false, view: "discover", results: [], recs: [], busy: false,
   tok: 0, mixing: false, transitioning: false, activeHook: null,
-  transitionTimer: null, env: {}, lib: [], dragIndex: null
+  transitionTimer: null, env: {}, lib: [], dragIndex: null,
+  seeking: false, seekResetMediaTime: null, seekResetDelay: 0, seekResumeAt: 0
 };
 const save = () => {
   for (const [k, v] of Object.entries({
@@ -218,10 +219,11 @@ function fairHook(track) {
   return pool[Math.floor(Math.random()*pool.length)];
 }
 function rememberPattern(from,to,hook) {
-  if(!from || !to || !hook) return;
-  const found=S.patterns.find(p=>p.from===from.id && p.to===to.id && String(p.hookId)===String(hook.id));
+  if(!from || !to || from.id===to.id) return;
+  const hookId=hook?.id ?? null;
+  const found=S.patterns.find(p=>p.from===from.id && p.to===to.id && String(p.hookId??"")===String(hookId??""));
   if(found) found.count++;
-  else S.patterns.push({from:from.id,to:to.id,hookId:hook.id,hookT:hook.t,label:hook.lyric||"Hook",count:1});
+  else S.patterns.push({from:from.id,to:to.id,hookId,hookT:hook?.t??null,label:hook?.lyric||"Song transition",count:1});
   if(S.patterns.length>500) S.patterns.sort((a,b)=>b.count-a.count).length=500;
   save();
 }
@@ -244,7 +246,7 @@ function pickNextTrack() {
   const patterns=rememberedFor(current);
   for(const p of patterns) {
     const f=pool.find(x=>"my:"+x.file===p.to);
-    if(f && hooksOf(f).some(h=>String(h.id)===String(p.hookId))) return toTrack(f);
+    if(f && (!p.hookId || hooksOf(f).some(h=>String(h.id)===String(p.hookId)))) return toTrack(f);
   }
   const least=Math.min(...pool.map(f=>S.trackPlays["my:"+f.file]||0));
   const fair=pool.filter(f=>(S.trackPlays["my:"+f.file]||0)===least);
@@ -358,7 +360,7 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
     }
     S.activeHook=hook?{trackId:track.id,hookId:hook.id,t:hook.t,end:hook.end??null,lyric:hook.lyric||"Hook"}:null;
     if(hook) markHookPlayed(track,hook);
-    if(previous && hook) rememberPattern(previous,track,hook);
+    if(previous) rememberPattern(previous,track,hook);
     S.hist=[track,...S.hist.filter(x=>x.id!==track.id)].slice(0,100);
     save();
     if(settings.aiEnabled) suggest();
@@ -407,12 +409,15 @@ function nextAutomatic() {
   const t=pickNextTrack();
   if(!t) { toast("Add more tracks to My music for automatic DJ playback."); return; }
   let hook=null;
-  if(settings.autoMode==="hook") {
+  const learned=rememberedFor(cur()).find(p=>p.to===t.id);
+  if(learned?.hookId) hook=hooksOf(t).find(h=>String(h.id)===String(learned.hookId)) || null;
+  if(!hook && settings.autoMode==="hook") {
     const remembered=rememberedFor(cur()).find(p=>p.to===t.id);
     const candidate=remembered && hooksOf(t).find(h=>String(h.id)===String(remembered.hookId));
     const least=hooksOf(t).length?Math.min(...hooksOf(t).map(h=>S.hookPlays[hookKey(t,h)]||0)):Infinity;
     hook=candidate && (S.hookPlays[hookKey(t,candidate)]||0)===least ? candidate : fairHook(t);
   }
+  if(learned) toast(`Your usual follow-up: ${t.title}${hook?` · ${hook.lyric||"saved hook"}`:""} — playing next.`);
   transitionTo(t,hook,{automatic:true,mode:settings.autoMode});
 }
 function handleAutoAdvance() {
@@ -420,7 +425,11 @@ function handleAutoAdvance() {
   nextAutomatic();
 }
 function checkHookTimer() {
-  const t=cur(), a=audio(); if(!t || a.paused || S.transitioning || S.mixing) return;
+  const t=cur(), a=audio(); if(!t || a.paused || S.transitioning || S.mixing || S.seeking) return;
+  if(S.seekResumeAt) {
+    if(a.currentTime-S.seekResetMediaTime>=S.seekResetDelay) { S.seekResumeAt=0; handleAutoAdvance(); }
+    return;
+  }
   const h=S.activeHook && S.activeHook.trackId===t.id ? S.activeHook : null;
   if(h) {
     const deadline=h.end!=null ? h.end : h.t+settings.hookPlaySeconds;
@@ -526,7 +535,7 @@ function trackRow(t,i,where) {
   const fav=S.favs.some(x=>x.id===t.id), current=cur()?.id===t.id;
   const art=t.art||"";
   const buttons=where==="queue"
-    ? `<button data-remove="${i}">Remove</button>`
+    ? `<button data-queue-play-next="${i}" class="queue-play-next">Play next</button><button data-remove="${i}">Remove</button>`
     : `<button data-play="${esc(t.id)}">Play</button><button data-play-next="${esc(t.id)}">Play next</button><button data-add="${esc(t.id)}">Queue</button>`;
   return `<div class="track-row ${current?"current":""}" ${where==="queue"?`draggable="true" data-queue-index="${i}"`:""}>
     <img class="track-art" src="${esc(art)}" alt="">
@@ -597,6 +606,15 @@ function bindTrackActions() {
     S.favs=S.favs.some(x=>x.id===id)?S.favs.filter(x=>x.id!==id):[track,...S.favs];
     save();render();
   });
+  document.querySelectorAll("[data-queue-play-next]").forEach(b=>b.onclick=()=>{
+    const index=+b.dataset.queuePlayNext;
+    const chosen=S.queue[index];
+    if(!chosen || index===S.idx) return;
+    const [item]=S.queue.splice(index,1);
+    if(index<S.idx) S.idx--;
+    S.queue.splice(Math.max(0,S.idx+1),0,item);
+    save(); render(); toast(`${chosen.title} will play next.`);
+  });
   document.querySelectorAll("[data-remove]").forEach(b=>b.onclick=()=>removeQueue(+b.dataset.remove));
   document.querySelectorAll("[data-queue-index]").forEach(el=>{
     el.addEventListener("dragstart",e=>{S.dragIndex=+el.dataset.queueIndex;el.classList.add("dragging");e.dataTransfer.effectAllowed="move";});
@@ -623,7 +641,36 @@ function togglePlay() {
 $("#shuffle").onclick=()=>{S.shuffle=!S.shuffle;$("#shuffle").classList.toggle("active",S.shuffle);};
 $("#repeat").onclick=()=>{S.repeat=!S.repeat;$("#repeat").classList.toggle("active",S.repeat);};
 $("#vol").oninput=()=>{if(!S.mixing)audio().volume=vol();};
-$("#seek").oninput=e=>{if(audio().duration)audio().currentTime=audio().duration*e.target.value/1000;};
+const seekSlider=$("#seek");
+function beginSeek() { S.seeking=true; S.seekResumeAt=0; }
+function updateSeek(value) {
+  const a=audio();
+  if(!Number.isFinite(a.duration) || !a.duration) return;
+  const target=Math.max(0,Math.min(a.duration,a.duration*(+value/1000)));
+  try { a.currentTime=target; } catch(e) { console.warn("Seek unavailable during media transition",e); }
+  $("#time").textContent=`${fmt(target)} / ${fmt(a.duration)}`;
+}
+function finishSeek() {
+  const a=audio(), t=cur();
+  if(!S.seeking) return;
+  S.seeking=false;
+  const h=S.activeHook && S.activeHook.trackId===t?.id ? S.activeHook : null;
+  const mediaDeadline=h ? (h.end!=null ? h.end : h.t+settings.hookPlaySeconds) : settings.noHookSeconds;
+  S.seekResetMediaTime=a.currentTime;
+  S.seekResetDelay=Math.max(0,mediaDeadline-a.currentTime);
+  if(S.seekResetDelay===0) S.seekResetDelay=h?settings.hookPlaySeconds:settings.noHookSeconds;
+  S.seekResumeAt=performance.now();
+}
+seekSlider.addEventListener("pointerdown",beginSeek);
+seekSlider.addEventListener("touchstart",beginSeek,{passive:true});
+seekSlider.addEventListener("keydown",e=>{if(["ArrowLeft","ArrowRight","Home","End","PageUp","PageDown"].includes(e.key))beginSeek();});
+seekSlider.addEventListener("input",e=>{if(!S.seeking)beginSeek();updateSeek(e.target.value);});
+seekSlider.addEventListener("change",finishSeek);
+seekSlider.addEventListener("pointerup",finishSeek);
+seekSlider.addEventListener("pointercancel",finishSeek);
+seekSlider.addEventListener("touchend",finishSeek);
+seekSlider.addEventListener("keyup",e=>{if(S.seeking && ["ArrowLeft","ArrowRight","Home","End","PageUp","PageDown"].includes(e.key))finishSeek();});
+window.addEventListener("blur",finishSeek);
 $("#mixsec").onchange=e=>{settings.mixLength=[0,3,6,9].includes(+e.target.value)?+e.target.value:6;saveSettings();};
 $("#autoMode").onchange=e=>{settings.autoMode=e.target.value;saveSettings();};
 $("#searchForm").onsubmit=e=>{e.preventDefault();const q=$("#searchInput").value.trim();searchAudius(q);};
@@ -637,8 +684,8 @@ A.forEach(a=>{
   a.onplay=render; a.onpause=render;
   a.ontimeupdate=()=>{
     if(a!==audio())return;
-    if(a.duration){$("#seek").value=a.currentTime/a.duration*1000;$("#time").textContent=`${fmt(a.currentTime)} / ${fmt(a.duration)}`;}
-    checkHookTimer();
+    if(a.duration){if(!S.seeking) $("#seek").value=a.currentTime/a.duration*1000;$("#time").textContent=`${fmt(a.currentTime)} / ${fmt(a.duration)}`;}
+    if(!S.seeking) checkHookTimer();
   };
   a.onended=()=>{if(a===audio()&&!S.transitioning&&settings.autoAdvance&&settings.autoMode!=="off")nextAutomatic();};
   a.onerror=()=>{if(a===audio()&&a.src)toast("This audio file could not be played. Check the file URL and format.");};
