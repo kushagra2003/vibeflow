@@ -343,11 +343,6 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null,force=fa
     render();
   }
 }
-function maybeAutoScanUpcoming(track) {
-  if(!S.radio || !track || track.provider!=="mine" || hooksOf(track).length) return;
-  if(S.hookScans[track.id] || S.autoHookInFlight.has(track.id) || S.aiHookScanning) return;
-  scanCurrentSongHooks({automatic:true,trackOverride:track});
-}
 function renderAIHookSuggestions() {
   const root=$("#aiHookResults"); if(!root) return;
   if(S.aiHookScanning) {
@@ -931,13 +926,13 @@ function render() {
   if($("#partySong")) $("#partySong").textContent=t?.title||"Nothing playing yet";
   if($("#partyArtist")) $("#partyArtist").textContent=t?.artist||"Choose your first track";
   if($("#partyPlay")) $("#partyPlay").textContent=audio().paused?"▶":"Ⅱ";
-  if($("#partyAI")) $("#partyAI").textContent="AI DJ: "+(S.radio?"ON":"OFF");
+  if($("#partyAI")) $("#partyAI").textContent="Smart Mix: "+(settings.endAction==="smart"?"ON":"OFF");
   $("#shuffle").classList.toggle("active",S.shuffle);
   $("#repeat").classList.toggle("active",S.repeat);
   $("#queueCount").textContent=S.queue.length;
   const tracks=visibleTracks();
   $("#list").innerHTML=tracks.length?tracks.map((x,i)=>trackRow(x,i,"list")).join(""):'<div class="empty-state">Nothing here yet. Add songs to your GitHub songs folder or search Audius.</div>';
-  const queuedNext=S.queue[S.idx+1] || null;
+  const queuedNext=S.preparedNext?.track || S.preparingNext || S.queue[S.idx+1] || null;
   const nextLabel=queuedNext
     ? `<div class="queue-next-preview"><span class="live-dot"></span><div><small>COMING UP NEXT</small><b>${esc(queuedNext.title)}</b><span>${esc(queuedNext.artist||"Unknown")}</span></div></div>`
     : `<div class="queue-next-preview queue-next-random"><span class="live-dot"></span><div><small>COMING UP NEXT</small><b>Auto shuffle</b><span>Another track will be selected automatically</span></div></div>`;
