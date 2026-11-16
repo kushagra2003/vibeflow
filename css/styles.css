@@ -162,3 +162,15 @@ input,select{color:var(--text);background:#100d18;border:1px solid var(--line);b
 .ai-hook-tools{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:15px;padding:13px;border:1px solid #594077;border-radius:12px;background:linear-gradient(100deg,#241832,#191321)}
 .ai-hook-tools-copy{display:flex;flex-direction:column;gap:4px}.ai-hook-tools-copy b{font-size:12px;color:#e7d7ff}.ai-hook-tools-copy small,.ai-hook-heading small{font-size:10px;color:var(--muted);line-height:1.5}.ai-hook-tools button:disabled{opacity:.65;cursor:wait}.ai-hook-results{display:flex;flex-direction:column;gap:7px;margin-top:9px}.ai-hook-status{padding:11px 13px;border:1px dashed #4a365f;border-radius:10px;color:var(--muted);font-size:11px}.ai-hook-heading{display:flex;flex-direction:column;gap:3px;padding:5px 2px}.ai-hook-heading b{font-size:12px;color:#d8baff}.ai-hook-candidate{display:flex;align-items:center;gap:11px;padding:10px 12px;background:#1d1729;border:1px solid #49345f;border-radius:10px}.ai-hook-time{font-size:11px;font-weight:850;color:#d7b6ff;white-space:nowrap}.ai-hook-lyric{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}.ai-hook-lyric b{font-size:12px;overflow-wrap:anywhere}.ai-hook-lyric small{font-size:10px;color:var(--muted)}.ai-hook-candidate button{font-size:10px;padding:7px 10px;border-color:#7952a8;color:#e3ceff}
 @media(max-width:600px){.ai-hook-tools{align-items:flex-start;flex-direction:column}.ai-hook-candidate{flex-wrap:wrap}.ai-hook-candidate button{margin-left:auto}}
+
+
+/* Local hook intelligence: distinguish user cues from scanner-generated cues. */
+.hook-item.auto-hook-item{border-color:#267e72;background:linear-gradient(110deg,#12352f,#1b1728 72%)}
+.hook-item.auto-hook-item .hook-time{color:#70e4c2}
+.hook-origin{display:inline-flex;align-items:center;border-radius:99px;padding:2px 6px;font-size:8px;font-weight:900;letter-spacing:.8px;vertical-align:1px}
+.hook-origin.manual{color:#dfc5ff;background:#392650;border:1px solid #67478a}
+.hook-origin.auto{color:#8af0d3;background:#124b40;border:1px solid #247f6d}
+.auto-hook-item .hook-controls [data-hook-delete]{border-color:#287c6e;color:#a6f3dc}
+.ai-hook-tools{border-color:#287c6e;background:linear-gradient(100deg,#12352f,#191321)}
+.ai-hook-tools-copy b{color:#9aefd8}
+.ai-hook-status{border-color:#315f56}
