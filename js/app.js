@@ -20,7 +20,8 @@ const S = {
   repeat: false, view: "discover", results: [], recs: [], busy: false,
   tok: 0, mixing: false, transitioning: false, activeHook: null,
   transitionTimer: null, env: {}, lib: [], dragIndex: null,
-  seeking: false, seekResetMediaTime: null, seekResetDelay: 0, seekResumeAt: 0
+  seeking: false, seekResetMediaTime: null, seekResetDelay: 0, seekResumeAt: 0,
+  activeNoHookDeadline: null
 };
 const save = () => {
   for (const [k, v] of Object.entries({
@@ -130,10 +131,10 @@ function openSettings() {
 function syncControls() {
   $("#mixsec").value = String(settings.mixLength);
   $("#autoMode").value = settings.autoMode;
-  $("#aiStatus").classList.toggle("off",!settings.aiEnabled);
-  $("#aiStatus").innerHTML = `<span class="ai-dot"></span> AI ${settings.aiEnabled?"ON":"OFF"}`;
-  $("#aiRadio").style.display = settings.aiEnabled ? "" : "none";
-  if (!settings.aiEnabled && S.radio) { S.radio=false; $("#aiRadio").textContent="AI Radio: Off"; }
+  $("#aiStatus").classList.toggle("off",!S.radio);
+  $("#aiStatus").classList.toggle("active",S.radio);
+  $("#aiStatus").innerHTML = `<span class="ai-dot"></span> AI DJ ${S.radio?"ON":"OFF"}`;
+  $("#aiRadio").textContent = `AI DJ: ${S.radio?"ON":"OFF"}`;
 }
 
 // ---------- API ----------
@@ -165,11 +166,9 @@ function adjustHookStart(id,delta) {
   t.hooks=entry.hooks;
   if(S.activeHook?.trackId===t.id && String(S.activeHook.hookId)===String(id)) {
     S.activeHook.t=h.t; S.activeHook.end=h.end ?? null;
-    try { if(audio().src) audio().currentTime=h.t; } catch(e) {}
   }
   saveLib(); save();
   renderHooks();
-  toast(`Hook start updated to ${fmt(h.t)}.`);
 }
 function markHookEnd(id) {
   const t=cur(), entry=t && getLibTrack(t.id);
@@ -212,7 +211,11 @@ function renderHooks() {
   $("#hooksList").innerHTML=hooks.map((h,i)=>`
     <div class="hook-item">
       <div class="hook-main">
-        <span class="hook-time">${fmt(h.t)}</span>
+        <div class="hook-time-control" aria-label="Adjust hook start time">
+          <button type="button" data-hook-start-adjust="${esc(h.id)}" data-delta="-0.5" aria-label="Move hook start back half a second" title="−0.5 seconds">−</button>
+          <span class="hook-time">${fmt(h.t)}</span>
+          <button type="button" data-hook-start-adjust="${esc(h.id)}" data-delta="0.5" aria-label="Move hook start forward half a second" title="+0.5 seconds">+</button>
+        </div>
         <div class="hook-detail">
           <b title="${esc(h.lyric || "Hook "+(i+1))}">${esc(h.lyric || "Hook "+(i+1))}</b>
           <small>${h.end!=null?`Ends ${fmt(h.end)}${h.endLyric?" · "+esc(h.endLyric):""}`:"End not marked"}</small>
@@ -224,15 +227,7 @@ function renderHooks() {
         <button data-hook-end="${esc(h.id)}" title="Mark hook end here">Mark end</button>
         <button data-hook-delete="${esc(h.id)}" title="Delete hook">×</button>
       </div>
-      <div class="hook-start-adjust" aria-label="Adjust hook start time">
-        <span>Adjust start</span>
-        <button type="button" data-hook-start-adjust="${esc(h.id)}" data-delta="-1" title="Move back 1 second">−1s</button>
-        <button type="button" data-hook-start-adjust="${esc(h.id)}" data-delta="-0.5" title="Move back half a second">−0.5s</button>
-        <strong>${fmt(h.t)}</strong>
-        <button type="button" data-hook-start-adjust="${esc(h.id)}" data-delta="0.5" title="Move forward half a second">+0.5s</button>
-        <button type="button" data-hook-start-adjust="${esc(h.id)}" data-delta="1" title="Move forward 1 second">+1s</button>
-      </div>
-    </div>`).join("");
+remove old adjustment row    </div>`).join("");
   $("#hooksList").querySelectorAll("[data-hook-go]").forEach(b=>b.onclick=()=>playHookDirect(hooks.find(h=>String(h.id)===b.dataset.hookGo)));
   $("#hooksList").querySelectorAll("[data-hook-start-adjust]").forEach(b=>b.onclick=()=>adjustHookStart(b.dataset.hookStartAdjust,Number(b.dataset.delta)));
   $("#hooksList").querySelectorAll("[data-hook-end]").forEach(b=>b.onclick=()=>markHookEnd(b.dataset.hookEnd));
@@ -277,7 +272,6 @@ function pickNextTrack() {
   }
   const pool=S.lib.filter(f=>"my:"+f.file!==current?.id);
   if(!pool.length) return null;
-  if(S.radio && settings.aiEnabled && S.recs.length) return S.recs.shift();
   // Randomise across the full available library, while avoiding immediate repeats.
   const least=Math.min(...pool.map(f=>S.trackPlays["my:"+f.file]||0));
   const fair=pool.filter(f=>(S.trackPlays["my:"+f.file]||0)===least);
@@ -390,6 +384,7 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
       fade(nextAudio,vol(),mixSec()*1000,()=>{S.mixing=false;S.transitioning=false;});
     }
     S.activeHook=hook?{trackId:track.id,hookId:hook.id,t:hook.t,end:hook.end??null,lyric:hook.lyric||"Hook"}:null;
+    S.activeNoHookDeadline=hook?null:{trackId:track.id,at:startAt+settings.noHookSeconds};
     if(hook) markHookPlayed(track,hook);
     if(previous) rememberPattern(previous,track,hook);
     S.hist=[track,...S.hist.filter(x=>x.id!==track.id)].slice(0,100);
@@ -458,8 +453,11 @@ function checkHookTimer() {
   if(h) {
     const deadline=h.end!=null ? h.end : h.t+settings.hookPlaySeconds;
     if(a.currentTime>=deadline) handleAutoAdvance();
-  } else if(a.currentTime>=settings.noHookSeconds) {
-    handleAutoAdvance();
+  } else {
+    const fallback=S.activeNoHookDeadline?.trackId===t.id
+      ? S.activeNoHookDeadline.at
+      : settings.noHookSeconds;
+    if(a.currentTime>=fallback) handleAutoAdvance();
   }
 }
 
@@ -655,7 +653,14 @@ $("#mix").onclick=mixNext;
 $("#prev").onclick=previous; $("#barPrev").onclick=previous;
 $("#next").onclick=next; $("#barNext").onclick=next;
 $("#pp").onclick=togglePlay; $("#barPlay").onclick=togglePlay;
-function togglePlay() {
+function togglePlay(smash=false) {
+  if(smash) {
+    document.body.classList.remove("spacebar-smash");
+    void document.body.offsetWidth;
+    document.body.classList.add("spacebar-smash");
+    clearTimeout(togglePlay.smashTimer);
+    togglePlay.smashTimer=setTimeout(()=>document.body.classList.remove("spacebar-smash"),460);
+  }
   const a=audio();
   if(a.paused) {
     if(!a.src && cur()) playTrack(cur());
@@ -700,8 +705,23 @@ $("#searchForm").onsubmit=e=>{e.preventDefault();const q=$("#searchInput").value
 document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=()=>switchView(b.dataset.view));
 $("#refreshLibrary").onclick=async()=>{await initLib();toast(`Found ${S.lib.length} songs in GitHub.`);};
 $("#openSettings").onclick=openSettings; $("#footerSettings").onclick=openSettings;
-$("#aiStatus").onclick=()=>{settings.aiEnabled=!settings.aiEnabled;saveSettings();syncControls();toast(`AI ${settings.aiEnabled?"enabled":"disabled"}.`);if(settings.aiEnabled)suggest();};
-$("#aiRadio").onclick=()=>{if(!settings.aiEnabled)return;S.radio=!S.radio;$("#aiRadio").textContent=`AI Radio: ${S.radio?"On":"Off"}`;if(S.radio)suggest();};
+function toggleAIDJ() {
+  S.radio=!S.radio;
+  settings.autoAdvance=S.radio;
+  if(S.radio) settings.autoMode="random";
+  saveSettings();
+  syncControls();
+  if(S.radio) {
+    if(!cur()) nextAutomatic();
+    else if(audio().paused) audio().play().then(()=>{audio().volume=vol();render();}).catch(()=>toast("Press play to start the AI DJ."));
+    if(settings.aiEnabled) suggest();
+    toast("AI DJ is mixing random tracks.");
+  } else {
+    toast("AI DJ stopped. Current song will continue.");
+  }
+}
+$("#aiStatus").onclick=toggleAIDJ;
+$("#aiRadio").onclick=toggleAIDJ;
 A.forEach(a=>{
   a.volume=.8;
   a.onplay=render; a.onpause=render;
@@ -714,7 +734,14 @@ A.forEach(a=>{
   a.onerror=()=>{if(a===audio()&&a.src)toast("This audio file could not be played. Check the file URL and format.");};
 });
 $("#modalRoot").addEventListener("click",e=>{if(e.target.classList.contains("modal-backdrop")&&e.target.dataset.dismiss)$("#modalRoot").innerHTML="";});
-window.addEventListener("keydown",e=>{if(e.key==="Escape")$("#modalRoot").innerHTML="";});
+window.addEventListener("keydown",e=>{
+  if(e.key==="Escape") $("#modalRoot").innerHTML="";
+  if(e.code==="Space" && !e.repeat) {
+    const target=e.target;
+    const typing=target?.closest?.('input,textarea,select,button,a,[contenteditable="true"],[role="textbox"]');
+    if(!typing) { e.preventDefault(); togglePlay(true); }
+  }
+});
 
 // ---------- Start ----------
 (async()=>{
