@@ -1,9 +1,11 @@
-// Cloudflare Pages Function: resolve an Audius track ID into a playable stream URL.
-const json = (body, status = 200) => Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
+// Cloudflare Pages Function: resolve an Audius track ID into a browser-playable stream URL.
+const json = (body, status = 200) => Response.json(body, {
+  status,
+  headers: { "Cache-Control": "no-store" }
+});
 
 export async function onRequest({ request, env }) {
   const id = new URL(request.url).searchParams.get("id") || "";
-  // Audius track IDs are opaque numeric/alphanumeric identifiers.
   if (!/^[A-Za-z0-9_-]{3,80}$/.test(id)) {
     return json({ error: "Invalid Audius track ID." }, 400);
   }
@@ -14,27 +16,29 @@ export async function onRequest({ request, env }) {
   const endpoint = `https://api.audius.co/v1/tracks/${encodeURIComponent(id)}/stream?${params}`;
 
   try {
-    // Audius normally responds with a redirect to the actual audio host.
-    const upstream = await fetch(endpoint, { redirect: "manual" });
-    const location = upstream.headers.get("location");
+    // Follow Audius' redirect to the actual audio CDN. Return the final CDN URL
+    // so the browser's <audio> element can request the stream and seek normally.
+    const upstream = await fetch(endpoint, { redirect: "follow" });
 
-    if (location && upstream.status >= 300 && upstream.status < 400) {
-      return json({ url: location });
+    if (!upstream.ok) {
+      return json({
+        error: `Audius stream request failed (${upstream.status}).`,
+        detail: upstream.status === 404
+          ? "This track may be unavailable for streaming."
+          : "Audius could not resolve a playable stream."
+      }, upstream.status === 404 ? 404 : 502);
     }
 
-    // Some Audius nodes may follow/serve the stream directly.
-    if (upstream.ok && upstream.url && upstream.url !== endpoint) {
-      return json({ url: upstream.url });
+    const streamUrl = upstream.url;
+    if (!streamUrl || streamUrl === endpoint) {
+      return json({ error: "Audius did not return a playable stream URL." }, 502);
     }
 
-    const detail = await upstream.text().catch(() => "");
-    return json({
-      error: upstream.status === 404
-        ? "Audius could not find a playable stream for this track."
-        : `Audius stream request failed (${upstream.status}).`,
-      detail: detail.slice(0, 180)
-    }, upstream.status === 404 ? 404 : 502);
+    return json({ url: streamUrl });
   } catch (error) {
-    return json({ error: "Could not reach Audius stream service.", detail: String(error).slice(0, 180) }, 502);
+    return json({
+      error: "Could not reach Audius stream service.",
+      detail: String(error).slice(0, 160)
+    }, 502);
   }
 }
