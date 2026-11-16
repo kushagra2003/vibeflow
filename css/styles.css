@@ -58,3 +58,22 @@ input,select{color:var(--text);background:#100d18;border:1px solid var(--line);b
   .brand-copy em{font-size:7px;letter-spacing:1px;margin-top:3px}
   .brand{gap:8px}
 }
+
+
+/* Song hook-count badge replaces missing artwork; hover to reveal selectable cue points */
+.track-hook-wrap{position:relative;flex:0 0 48px;width:48px;height:48px;display:grid;place-items:center;z-index:2}
+.track-hook-count{width:46px;height:46px;border-radius:50%;border:1px solid #8d63c6;background:linear-gradient(145deg,#39244f,#21172e);color:#f4eaff;font-size:18px;font-weight:850;display:grid;place-items:center;cursor:pointer;box-shadow:inset 0 1px 0 #ffffff18;transition:transform .16s,border-color .16s,background .16s}
+.track-hook-count:hover,.track-hook-wrap:focus-within .track-hook-count{transform:scale(1.06);border-color:#c49aff;background:linear-gradient(145deg,#59347a,#2a1b3b)}
+.track-hook-popover{display:none;position:absolute;left:0;top:calc(100% + 7px);width:min(300px,75vw);max-height:270px;overflow:auto;padding:9px;background:#1b1524;border:1px solid #62428b;border-radius:13px;box-shadow:0 16px 40px #0009;z-index:50}
+.track-hook-wrap:hover .track-hook-popover,.track-hook-wrap:focus-within .track-hook-popover{display:block}
+.hook-popover-title{font-size:9px;font-weight:850;letter-spacing:1.2px;color:#ad91ce;padding:3px 5px 8px}
+.hook-pick-option{display:flex;align-items:center;gap:9px;width:100%;padding:9px 7px;border:0;border-radius:9px;background:transparent;color:#f5efff;text-align:left;cursor:pointer}
+.hook-pick-option:hover,.hook-pick-option:focus{background:#352346;outline:none}
+.hook-pick-number{width:25px;height:25px;flex:0 0 25px;border-radius:50%;display:grid;place-items:center;background:#8050b6;color:white;font-size:11px;font-weight:850}
+.hook-pick-option b,.hook-pick-option small{display:block}
+.hook-pick-option b{font-size:11px;line-height:1.35}
+.hook-pick-option small{font-size:10px;color:#b5a6c8;margin-top:2px}
+.hook-pick-empty{font-size:11px;color:#b5a6c8;padding:8px}
+.force-mix-btn{display:block;margin:9px auto 0;padding:7px 13px;border:1px solid #6e4a9a;border-radius:10px;background:#241a31;color:#d9c2f5;font-size:11px;font-weight:750;cursor:pointer;transition:background .16s,transform .16s}
+.force-mix-btn:hover{background:#3a2750;transform:translateY(-1px)}
+.track-row .track-hook-popover{z-index:60}
