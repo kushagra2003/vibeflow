@@ -145,7 +145,7 @@ function openSettings() {
     <div class="settings-grid" style="margin-top:14px">
       <div class="setting-field"><label for="setMix">Crossfade length</label><select id="setMix"><option value="0">Off (no crossfade)</option><option value="3">3 seconds</option><option value="6">6 seconds</option><option value="9">9 seconds</option></select><small>How long both songs overlap.</small></div>
       <div class="setting-field"><label for="setLead">Seconds to subtract from mix length</label><input id="setLead" type="number" min="0" max="8" step="1" value="${settings.leadSubtract}"><small>Default 2. Hook starts at hook time − (mix length − this value).</small></div>
-      <div class="setting-field"><label for="setHookDuration">Play time after hook start</label><input id="setHookDuration" type="number" min="5" max="300" step="1" value="${settings.hookPlaySeconds}"><div class="seconds-stepper" aria-label="Adjust hook seconds"><button type="button" id="hookSecondsDown" title="Decrease by 1 second" aria-label="Decrease hook seconds">▼</button><span>−1 sec</span><button type="button" id="hookSecondsUp" title="Increase by 1 second" aria-label="Increase hook seconds">▲</button></div><small>Used when that hook has no marked end. Use the arrows to adjust by exactly 1 second.</small></div>
+      <div class="setting-field"><label for="setHookDuration">Play time after hook start</label><input id="setHookDuration" type="number" min="5" max="300" step="1" value="${settings.hookPlaySeconds}"><div class="seconds-stepper" aria-label="Adjust hook seconds"><button type="button" id="hookSecondsDown" title="Decrease by 1 second" aria-label="Decrease hook seconds">▼</button><span>−1 sec</span><button type="button" id="hookSecondsUp" title="Increase by 1 second" aria-label="Increase hook seconds">▲</button></div><small>Play the selected hook for this many seconds from its start, even if an end point is marked. Use the arrows to adjust by exactly 1 second.</small></div>
       <div class="setting-field"><label for="setNoHook">Fallback time without a hook end</label><input id="setNoHook" type="number" min="5" max="600" step="5" value="${settings.noHookSeconds}"><small>Switch after this many seconds if no hook end is available.</small></div>
       <div class="setting-field"><label for="setNoHookStart">Start position when no hook is saved</label><input id="setNoHookStart" type="number" min="0" max="300" step="1" value="${settings.noHookStartSeconds}"><small>Start unmarked songs at this position. Default: 20 seconds.</small></div>
       <div class="setting-field"><label for="setDisplayDelay">Update current / next song details</label><select id="setDisplayDelay"><option value="0">Immediately (0 seconds)</option><option value="1">After 1 second</option><option value="2">After 2 seconds</option><option value="3">After 3 seconds</option><option value="4">After 4 seconds</option><option value="5">After 5 seconds</option></select><small>Wait this long after the new track starts before refreshing the Now Playing and Coming Up Next details.</small></div>
@@ -593,7 +593,7 @@ function updateDJStatus() {
     return;
   }
   const hook=S.activeHook?.trackId===t.id?S.activeHook:null;
-  const deadline=hook?(hook.end!=null?hook.end:hook.t+settings.hookPlaySeconds):(S.activeNoHookDeadline?.trackId===t.id?S.activeNoHookDeadline.at:settings.noHookSeconds);
+  const deadline=hook?(hook.t+settings.hookPlaySeconds):(S.activeNoHookDeadline?.trackId===t.id?S.activeNoHookDeadline.at:settings.noHookSeconds);
   const resetCountdown=S.seeking
     ? S.seekResetDelay
     : (S.seekResumeAt ? S.seekResetDelay-(a.currentTime-S.seekResetMediaTime) : null);
@@ -818,7 +818,8 @@ function handleAutoAdvance() {
 function seekResetDuration() {
   const t=cur();
   const h=S.activeHook && S.activeHook.trackId===t?.id ? S.activeHook : null;
-  if(h) return h.end!=null ? Math.max(0.5,h.end-h.t) : settings.hookPlaySeconds;
+  // The configured play window is measured from the hook start, not its marked end.
+  if(h) return settings.hookPlaySeconds;
   return settings.noHookSeconds;
 }
 function checkHookTimer() {
@@ -834,7 +835,8 @@ function checkHookTimer() {
   }
   const h=S.activeHook && S.activeHook.trackId===t.id ? S.activeHook : null;
   if(h) {
-    const deadline=h.end!=null ? h.end : h.t+settings.hookPlaySeconds;
+    // A marked hook end is a cue annotation, not an instruction to skip early.
+    const deadline=h.t+settings.hookPlaySeconds;
     if(a.currentTime>=deadline) handleAutoAdvance();
   } else {
     const fallback=S.activeNoHookDeadline?.trackId===t.id
