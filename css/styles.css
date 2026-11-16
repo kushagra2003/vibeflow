@@ -31,3 +31,16 @@ input,select{color:var(--text);background:#100d18;border:1px solid var(--line);b
 .hook-controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap;width:100%}
 .hook-controls input{flex:1 1 100px;min-width:90px;max-width:180px}
 .hook-controls button{flex:0 0 auto}
+
+
+/* Compact hook timestamp nudge controls */
+.hook-time-control{display:inline-flex;align-items:center;gap:5px;flex:0 0 auto}
+.hook-time-control button{width:25px;height:25px;padding:0;display:grid;place-items:center;border-radius:8px;font-size:15px;font-weight:800;line-height:1}
+.hook-time-control .hook-time{font-size:11px;min-width:31px;text-align:center;padding:0}
+.hook-main{align-items:center}
+
+/* Spacebar transport feedback: a short tactile-looking punch and glow */
+.spacebar-smash .play-btn,.spacebar-smash .bar-play{animation:spacebarSmash .42s cubic-bezier(.2,.9,.25,1.25)}
+.spacebar-smash .now-card{animation:spacebarPulse .42s ease-out}
+@keyframes spacebarSmash{0%{transform:scale(1);box-shadow:0 0 0 0 #b88aff00}35%{transform:scale(.82);box-shadow:0 0 0 9px #a879ff33}70%{transform:scale(1.12);box-shadow:0 0 24px 5px #a879ff66}100%{transform:scale(1);box-shadow:0 0 0 0 #a879ff00}}
+@keyframes spacebarPulse{0%{filter:brightness(1)}35%{filter:brightness(1.32)}100%{filter:brightness(1)}}
