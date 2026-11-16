@@ -216,3 +216,27 @@ input,select{color:var(--text);background:#100d18;border:1px solid var(--line);b
 body.party-mode-open{overflow:hidden}
 @media(max-width:700px){.party-mode{padding:12px}.party-top-tag{display:none}.party-stage{min-height:260px}.party-decks{inset:20% -10% 12%;gap:8%}.party-deck{width:43%;height:45%;min-height:130px}.party-mixer{height:35%;min-width:85px}.party-hands{width:130%;height:75%}.party-center-title{top:35%}.party-bottom{align-items:flex-start;flex-direction:column}.party-controls{align-self:center}.party-telemetry strong{font-size:16px}}
 @media(prefers-reduced-motion:reduce){.party-light,.party-platter,.party-message-pop{animation:none}}
+
+/* Party mode identity: animated slogan, luminous audio pulse and DJ hand movement */
+.party-center-title{top:29%;width:min(760px,92%);gap:3px}
+.party-center-title span{position:relative;z-index:2}
+.party-center-title b{min-height:1.35em;display:block;transition:opacity .25s ease,transform .25s ease}
+.party-center-title b.tagline-change{animation:taglineChange .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes taglineChange{0%{opacity:0;transform:translateY(9px);filter:blur(4px)}100%{opacity:1;transform:translateY(0);filter:blur(0)}}
+.party-soundwave{width:min(560px,78vw);height:58px;display:flex;align-items:center;justify-content:center;gap:3px;margin-top:4px;opacity:.9;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.party-soundwave i{display:block;flex:1;max-width:5px;height:var(--wave-h,24%);border-radius:99px;background:linear-gradient(180deg,#cda8ff 0%,#8c5be4 42%,#35d5d0 100%);box-shadow:0 0 8px #8f65ff99,0 0 18px #42bfe966;transform:scaleY(.24);transform-origin:center;animation:partyWave var(--wave-speed, .85s) ease-in-out infinite alternate;animation-delay:var(--wave-delay,0s)}
+.party-soundwave i:nth-child(3n){background:linear-gradient(180deg,#e2caff,#9b70ff 55%,#48d6ce)}
+@keyframes partyWave{0%{transform:scaleY(.16);opacity:.55}100%{transform:scaleY(1);opacity:1}}
+.party-stage.dj-active .party-soundwave i{animation-duration:calc(var(--wave-speed, .85s) * .72)}
+.party-stage:not(.dj-active) .party-soundwave i{animation-play-state:paused;opacity:.4}
+.party-hand-left,.party-hand-right{transform-box:fill-box;transform-origin:center;will-change:transform}
+.party-stage.dj-active .party-hand-left{animation:handLeftGroove 2.8s ease-in-out infinite}
+.party-stage.dj-active .party-hand-right{animation:handRightGroove 3.1s ease-in-out infinite}
+.party-stage.dj-mixing .party-hand-left{animation:handLeftMix .72s ease-in-out infinite alternate}
+.party-stage.dj-mixing .party-hand-right{animation:handRightMix .86s ease-in-out infinite alternate}
+@keyframes handLeftGroove{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(0,-8px) rotate(-1.2deg)}}
+@keyframes handRightGroove{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(0,-10px) rotate(1.2deg)}}
+@keyframes handLeftMix{from{transform:translate(0,0) rotate(-1deg)}to{transform:translate(5px,-12px) rotate(2deg)}}
+@keyframes handRightMix{from{transform:translate(0,0) rotate(1deg)}to{transform:translate(-5px,-13px) rotate(-2deg)}}
+@media(max-width:700px){.party-center-title{top:29%}.party-soundwave{height:42px;width:82vw;gap:2px}.party-soundwave i{max-width:4px}}
+@media(prefers-reduced-motion:reduce){.party-soundwave i,.party-stage.dj-active .party-hand-left,.party-stage.dj-active .party-hand-right,.party-stage.dj-mixing .party-hand-left,.party-stage.dj-mixing .party-hand-right{animation:none}}
