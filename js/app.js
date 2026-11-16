@@ -244,9 +244,11 @@ function pickNextTrack() {
   if(!pool.length) return null;
   if(S.radio && settings.aiEnabled && S.recs.length) return S.recs.shift();
   const patterns=rememberedFor(current);
+  const knownTracks=[...S.lib.map(toTrack),...S.results,...S.recs,...S.favs,...S.hist];
   for(const p of patterns) {
-    const f=pool.find(x=>"my:"+x.file===p.to);
-    if(f && (!p.hookId || hooksOf(f).some(h=>String(h.id)===String(p.hookId)))) return toTrack(f);
+    const learnedTrack=knownTracks.find(x=>x.id===p.to);
+    if(learnedTrack && learnedTrack.id!==current?.id &&
+      (!p.hookId || hooksOf(learnedTrack).some(h=>String(h.id)===String(p.hookId)))) return learnedTrack;
   }
   const least=Math.min(...pool.map(f=>S.trackPlays["my:"+f.file]||0));
   const fair=pool.filter(f=>(S.trackPlays["my:"+f.file]||0)===least);
@@ -409,7 +411,7 @@ function nextAutomatic() {
   const t=pickNextTrack();
   if(!t) { toast("Add more tracks to My music for automatic DJ playback."); return; }
   let hook=null;
-  const learned=rememberedFor(cur()).find(p=>p.to===t.id);
+  const learned=settings.autoMode!=="beginning" ? rememberedFor(cur()).find(p=>p.to===t.id) : null;
   if(learned?.hookId) hook=hooksOf(t).find(h=>String(h.id)===String(learned.hookId)) || null;
   if(!hook && settings.autoMode==="hook") {
     const remembered=rememberedFor(cur()).find(p=>p.to===t.id);
