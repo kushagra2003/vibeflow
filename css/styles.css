@@ -259,3 +259,14 @@ body.party-mode-open{overflow:hidden}
 @keyframes handIdleLeft{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(0,-5px) rotate(-.65deg)}}
 @keyframes handIdleRight{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(0,-6px) rotate(.65deg)}}
 @media(prefers-reduced-motion:reduce){.party-center-title span,.party-hand-left,.party-hand-right{animation:none!important}}
+
+/* My Music library filtering and pagination */
+.library-tools{display:flex;align-items:end;flex-wrap:wrap;gap:12px;margin:0 0 12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#120f1a}
+.library-tools[hidden]{display:none}
+.library-tools label{display:flex;flex-direction:column;gap:5px;color:var(--muted);font-size:11px;font-weight:700}
+.library-tools select{min-width:170px;padding:8px 10px}
+.library-pagination{display:flex;align-items:center;gap:7px;flex:1;justify-content:flex-end;flex-wrap:wrap}
+.library-pagination span{color:var(--muted);font-size:11px;margin-right:auto}
+.library-pagination button{font-size:11px;padding:7px 10px}
+.library-pagination button:disabled{opacity:.35;cursor:not-allowed}
+@media(max-width:650px){.library-tools{align-items:stretch}.library-tools label,.library-tools select{width:100%}.library-pagination{justify-content:space-between;width:100%}}

@@ -1,6 +1,8 @@
 // VibeFlow DJ Console — hooks, fair hook rotation, transition memory, AI toggle and drag/drop queue.
 const $ = s => document.querySelector(s);
 const A = [$("#a1"), $("#a2")];
+// Both decks start at full volume; transitions still apply their own fades.
+A.forEach(deck => { deck.volume = 1; });
 let ci = 0;
 const audio = () => A[ci];
 const store = {
@@ -17,7 +19,10 @@ const S = {
   favs: store.get("favs", []), hist: store.get("hist", []),
   patterns: store.get("patterns", []), hookPlays: store.get("hookPlays", {}),
   trackPlays: store.get("trackPlays", {}), radio: false, shuffle: false,
-  repeat: false, view: "discover", results: [], recs: [], busy: false,
+  repeat: false, view: "library", results: [], recs: [], busy: false,
+  libraryHookFilter: store.get("libraryHookFilter", "all"),
+  libraryPageSize: store.get("libraryPageSize", 10),
+  libraryPage: 1,
   tok: 0, mixing: false, transitioning: false, activeHook: null, autoTransitionPending:false,
   transitionTimer: null, env: {}, lib: [], dragIndex: null,
   seeking: false, seekResetMediaTime: null, seekResetDelay: 0, seekResumeAt: 0,
@@ -973,10 +978,42 @@ function renderRecommendations() {
   bindTrackActions();
 }
 function visibleTracks() {
-  if(S.view==="library") return S.lib.map(toTrack);
+  if(S.view==="library") {
+    let tracks=S.lib.map(toTrack);
+    if(S.libraryHookFilter==="with-hooks") tracks=tracks.filter(t=>hooksOf(t).length>0);
+    if(S.libraryHookFilter==="without-hooks") tracks=tracks.filter(t=>hooksOf(t).length===0);
+    const pageSize=S.libraryPageSize==="all"?"all":Math.max(1,+S.libraryPageSize||10);
+    const totalPages=pageSize==="all"?1:Math.max(1,Math.ceil(tracks.length/pageSize));
+    S.libraryPage=Math.max(1,Math.min(S.libraryPage,totalPages));
+    const start=pageSize==="all"?0:(S.libraryPage-1)*pageSize;
+    const pageTracks=pageSize==="all"?tracks:tracks.slice(start,start+pageSize);
+    const tools=$("#libraryTools");
+    if(tools) {
+      tools.hidden=false;
+      $("#libraryHookFilter").value=S.libraryHookFilter;
+      $("#libraryPageSize").value=String(S.libraryPageSize);
+      $("#libraryPageInfo").textContent=tracks.length
+        ? (pageSize==="all"?"Showing all "+tracks.length+" songs":"Showing "+(start+1)+"–"+Math.min(start+pageSize,tracks.length)+" of "+tracks.length+" songs · Page "+S.libraryPage+" of "+totalPages)
+        : "No songs match this filter";
+      $("#libraryPrev").disabled=pageSize==="all"||S.libraryPage<=1;
+      $("#libraryNext").disabled=pageSize==="all"||S.libraryPage>=totalPages;
+      $("#libraryPrev").hidden=pageSize==="all"||totalPages<=1;
+      $("#libraryNext").hidden=pageSize==="all"||totalPages<=1;
+    }
+    return pageTracks;
+  }
+  const tools=$("#libraryTools"); if(tools) tools.hidden=true;
   if(S.view==="favs") return S.favs;
   if(S.view==="history") return S.hist;
   return S.results;
+}
+function bindLibraryControls() {
+  const filter=$("#libraryHookFilter"), size=$("#libraryPageSize");
+  if(!filter || !size) return;
+  filter.onchange=()=>{S.libraryHookFilter=filter.value;S.libraryPage=1;store.set("libraryHookFilter",S.libraryHookFilter);render();};
+  size.onchange=()=>{S.libraryPageSize=size.value;S.libraryPage=1;store.set("libraryPageSize",S.libraryPageSize);render();};
+  $("#libraryPrev").onclick=()=>{S.libraryPage=Math.max(1,S.libraryPage-1);render();};
+  $("#libraryNext").onclick=()=>{S.libraryPage++;render();};
 }
 function render() {
   const t=cur();
@@ -1017,8 +1054,8 @@ function render() {
   if(!$("#waveform").children.length) $("#waveform").innerHTML=Array.from({length:36},(_,i)=>`<i style="height:${8+((i*17)%34)}px;animation-delay:${-(i%9)*.13}s"></i>`).join("");
   syncControls();
   bindTrackActions();
-  updateDJStatus();
-}
+  bindLibraryControls();
+  updateDJStatus();}
 function animateNextShadow(sourceRow) {
   const source=sourceRow?.getBoundingClientRect();
   const target=document.querySelector(".now-card .cover-wrap");
@@ -1149,6 +1186,7 @@ function togglePlay(smash=false) {
 $("#shuffle").onclick=()=>{S.shuffle=!S.shuffle;$("#shuffle").classList.toggle("active",S.shuffle);};
 $("#repeat").onclick=()=>{S.repeat=!S.repeat;$("#repeat").classList.toggle("active",S.repeat);};
 $("#vol").oninput=()=>{if(!S.mixing)audio().volume=vol();};
+A.forEach(deck=>{deck.volume=1;});
 const seekSlider=$("#seek");
 function beginSeek() {
   if(S.seeking) return;
