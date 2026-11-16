@@ -557,7 +557,11 @@ function render() {
   $("#queueCount").textContent=S.queue.length;
   const tracks=visibleTracks();
   $("#list").innerHTML=tracks.length?tracks.map((x,i)=>trackRow(x,i,"list")).join(""):'<div class="empty-state">Nothing here yet. Add songs to your GitHub songs folder or search Audius.</div>';
-  $("#queue").innerHTML=S.queue.length?S.queue.map((x,i)=>trackRow(x,i,"queue")).join(""):'<div class="empty-state">Queue is empty. Add a track to get started.</div>';
+  const queuedNext=S.queue[S.idx+1] || null;
+  const nextLabel=queuedNext
+    ? `<div class="queue-next-preview"><span class="live-dot"></span><div><small>COMING UP NEXT</small><b>${esc(queuedNext.title)}</b><span>${esc(queuedNext.artist||"Unknown")}</span></div></div>`
+    : `<div class="queue-next-preview queue-next-random"><span class="live-dot"></span><div><small>COMING UP NEXT</small><b>Auto shuffle</b><span>Another track will be selected automatically</span></div></div>`;
+  $("#queue").innerHTML=nextLabel+(S.queue.length?S.queue.map((x,i)=>trackRow(x,i,"queue")).join(""):'<div class="empty-state">Queue is empty. Add a track to get started.</div>');
   renderHooks();
   $("#waveform").classList.toggle("paused",audio().paused);
   if(!$("#waveform").children.length) $("#waveform").innerHTML=Array.from({length:36},(_,i)=>`<i style="height:${8+((i*17)%34)}px;animation-delay:${-(i%9)*.13}s"></i>`).join("");
