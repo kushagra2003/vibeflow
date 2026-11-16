@@ -99,7 +99,7 @@ function openSettings() {
     <div class="settings-grid" style="margin-top:14px">
       <div class="setting-field"><label for="setMix">Crossfade length</label><select id="setMix"><option value="0">Off (no crossfade)</option><option value="3">3 seconds</option><option value="6">6 seconds</option><option value="9">9 seconds</option></select><small>How long both songs overlap.</small></div>
       <div class="setting-field"><label for="setLead">Seconds to subtract from mix length</label><input id="setLead" type="number" min="0" max="8" step="1" value="${settings.leadSubtract}"><small>Default 2. Hook starts at hook time − (mix length − this value).</small></div>
-      <div class="setting-field"><label for="setHookDuration">Play time after hook start</label><input id="setHookDuration" type="number" min="5" max="300" step="1" value="${settings.hookPlaySeconds}"><small>Used when that hook has no marked end.</small></div>
+      <div class="setting-field"><label for="setHookDuration">Play time after hook start</label><input id="setHookDuration" type="number" min="5" max="300" step="1" value="${settings.hookPlaySeconds}"><div class="seconds-stepper" aria-label="Adjust hook seconds"><button type="button" id="hookSecondsDown" title="Decrease by 1 second" aria-label="Decrease hook seconds">▼</button><span>−1 sec</span><button type="button" id="hookSecondsUp" title="Increase by 1 second" aria-label="Increase hook seconds">▲</button></div><small>Used when that hook has no marked end. Use the arrows to adjust by exactly 1 second.</small></div>
       <div class="setting-field"><label for="setNoHook">Fallback time without a hook end</label><input id="setNoHook" type="number" min="5" max="600" step="5" value="${settings.noHookSeconds}"><small>Switch after this many seconds if no hook end is available.</small></div>
       <div class="setting-field"><label for="setNoHookStart">Start position when no hook is saved</label><input id="setNoHookStart" type="number" min="0" max="300" step="1" value="${settings.noHookStartSeconds}"><small>Start unmarked songs at this position. Default: 20 seconds.</small></div>
       <div class="setting-field"><label for="setMode">Automatic mix mode</label><select id="setMode"><option value="random">Random / smart</option><option value="hook">Always choose a saved hook</option><option value="beginning">Start at song beginning</option><option value="off">Off</option></select><small>Controls how automatic transitions choose the next start point.</small></div>
@@ -108,6 +108,9 @@ function openSettings() {
   </div></div>`;
   $("#setMix").value = String(settings.mixLength);
   $("#setMode").value = settings.autoMode;
+  const hookSecondsInput=$("#setHookDuration");
+  $("#hookSecondsDown").onclick=()=>{hookSecondsInput.value=String(Math.max(5,(+hookSecondsInput.value||settings.hookPlaySeconds)-1));};
+  $("#hookSecondsUp").onclick=()=>{hookSecondsInput.value=String(Math.min(300,(+hookSecondsInput.value||settings.hookPlaySeconds)+1));};
   root.querySelectorAll("[data-close]").forEach(x=>x.addEventListener("click",e=>{
     if (x.classList.contains("modal-backdrop") ? e.target === x : true) root.innerHTML="";
   }));
@@ -250,13 +253,7 @@ function pickNextTrack() {
   const pool=S.lib.filter(f=>"my:"+f.file!==current?.id);
   if(!pool.length) return null;
   if(S.radio && settings.aiEnabled && S.recs.length) return S.recs.shift();
-  const patterns=rememberedFor(current);
-  const knownTracks=[...S.lib.map(toTrack),...S.results,...S.recs,...S.favs,...S.hist];
-  for(const p of patterns) {
-    const learnedTrack=knownTracks.find(x=>x.id===p.to);
-    if(learnedTrack && learnedTrack.id!==current?.id &&
-      (!p.hookId || hooksOf(learnedTrack).some(h=>String(h.id)===String(p.hookId)))) return learnedTrack;
-  }
+  // Randomise across the full available library, while avoiding immediate repeats.
   const least=Math.min(...pool.map(f=>S.trackPlays["my:"+f.file]||0));
   const fair=pool.filter(f=>(S.trackPlays["my:"+f.file]||0)===least);
   return toTrack(fair[Math.floor(Math.random()*fair.length)]);
@@ -417,16 +414,9 @@ function nextAutomatic() {
   if(!settings.autoAdvance || settings.autoMode==="off") return;
   const t=pickNextTrack();
   if(!t) { toast("Add more tracks to My music for automatic DJ playback."); return; }
-  let hook=null;
-  const learned=settings.autoMode!=="beginning" ? rememberedFor(cur()).find(p=>p.to===t.id) : null;
-  if(learned?.hookId) hook=hooksOf(t).find(h=>String(h.id)===String(learned.hookId)) || null;
-  if(!hook && settings.autoMode==="hook") {
-    const remembered=rememberedFor(cur()).find(p=>p.to===t.id);
-    const candidate=remembered && hooksOf(t).find(h=>String(h.id)===String(remembered.hookId));
-    const least=hooksOf(t).length?Math.min(...hooksOf(t).map(h=>S.hookPlays[hookKey(t,h)]||0)):Infinity;
-    hook=candidate && (S.hookPlays[hookKey(t,candidate)]||0)===least ? candidate : fairHook(t);
-  }
-  if(learned) toast(`Your usual follow-up: ${t.title}${hook?` · ${hook.lyric||"saved hook"}`:""} — playing next.`);
+  // Random / smart mode uses saved hooks when available, rotating fairly.
+  // Learned pairings remain recorded, but never override random selection.
+  const hook=settings.autoMode==="beginning" ? null : fairHook(t);
   transitionTo(t,hook,{automatic:true,mode:settings.autoMode});
 }
 function handleAutoAdvance() {
