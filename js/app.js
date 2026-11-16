@@ -275,12 +275,17 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
     if(!automatic) toast("Could not locate this song in your GitHub music folder.");
     return;
   }
-  if(S.aiHookScanning || (automatic && (S.autoHookInFlight.has(track.id)||S.hookScans[track.id]))) return;
+  const previousScan=S.hookScans[track.id];
+  const recentFailure=previousScan?.error && Date.now()-previousScan.at<5*60*1000;
+  const scanAlreadyHandled=previousScan && (!previousScan.error || recentFailure);
+  if(S.aiHookScanning || (automatic && (S.autoHookInFlight.has(track.id)||scanAlreadyHandled))) return;
   const button=$("#scanHooks");
   if(automatic) {
     S.autoHookInFlight.add(track.id);
     S.autoHookStartedAt[track.id]=Date.now();
-    setDJActivity("AUTO SCAN · NEXT TRACK","No saved hooks on "+track.title+" · analysing musical patterns locally","SCAN","sync");
+    const isCurrent=track.id===cur()?.id;
+    setDJActivity(isCurrent?"AUTO SCAN · NOW PLAYING":"AUTO SCAN · NEXT TRACK",
+      "No saved hooks on "+track.title+" · analysing musical patterns locally","SCAN","sync");
   } else {
     S.aiHookScanning=true;
     S.aiHookTrackId=track.id;
@@ -348,9 +353,18 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
     render();
   }
 }
+function maybeAutoScanCurrent(track) {
+  if(!track || track.provider!=="mine" || hooksOf(track).length) return;
+  const prior=S.hookScans[track.id];
+  if(prior && (!prior.error || Date.now()-prior.at<5*60*1000)) return;
+  if(S.autoHookInFlight.has(track.id) || S.aiHookScanning) return;
+  scanCurrentSongHooks({automatic:true,trackOverride:track});
+}
 function maybeAutoScanUpcoming(track) {
   if(!S.radio || !track || track.provider!=="mine" || hooksOf(track).length) return;
-  if(S.hookScans[track.id] || S.autoHookInFlight.has(track.id) || S.aiHookScanning) return;
+  const prior=S.hookScans[track.id];
+  if(prior && (!prior.error || Date.now()-prior.at<5*60*1000)) return;
+  if(S.autoHookInFlight.has(track.id) || S.aiHookScanning) return;
   scanCurrentSongHooks({automatic:true,trackOverride:track});
 }
 function renderAIHookSuggestions() {
@@ -362,7 +376,8 @@ function renderAIHookSuggestions() {
   const active=[...S.autoHookInFlight][0];
   if(active) {
     const song=getLibTrack(active);
-    root.innerHTML='<div class="ai-hook-status">◌ AI DJ is scanning the upcoming track: '+esc(song?.title||"next song")+'. Generated cues will be saved automatically.</div>';
+    const isCurrent=active===cur()?.id;
+    root.innerHTML='<div class="ai-hook-status">◌ Automatically scanning '+(isCurrent?"the currently playing song: ":"the upcoming song: ")+esc(song?.title||"track")+'. Generated cue points will be saved to your library automatically.</div>';
     return;
   }
   const track=cur(), scan=track&&S.hookScans[track.id];
@@ -692,6 +707,10 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
       : "Now playing "+track.title+" · keep the party moving","LIVE","mix");
     S.hist=[track,...S.hist.filter(x=>x.id!==track.id)].slice(0,100);
     save();
+    // Scan every hookless local track as soon as it becomes the active song,
+    // independently of AI DJ / Radio mode. This only analyses and saves cue
+    // points; it does not change playback position or trigger a track switch.
+    maybeAutoScanCurrent(track);
     if(S.radio) ensureAINextTrack();
     if(settings.aiEnabled) suggest();
     scheduleTrackDisplayUpdate(token);
@@ -1233,7 +1252,7 @@ $("#aiStatus").onclick=toggleAIDJ;
 $("#aiRadio").onclick=toggleAIDJ;
 A.forEach(a=>{
   a.volume=.8;
-  a.onplay=()=>{if(a===audio()){render();syncPartyMotion();}}; a.onpause=()=>{if(a===audio()){render();syncPartyMotion();}};
+  a.onplay=()=>{if(a===audio()){render();syncPartyMotion();maybeAutoScanCurrent(cur());}}; a.onpause=()=>{if(a===audio()){render();syncPartyMotion();}};
   a.ontimeupdate=()=>{
     if(a!==audio())return;
     if(a.duration){if(!S.seeking) $("#seek").value=a.currentTime/a.duration*1000;$("#time").textContent=`${fmt(a.currentTime)} / ${fmt(a.duration)}`;}
