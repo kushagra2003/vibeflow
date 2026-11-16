@@ -74,8 +74,8 @@
         <button id="addHook" class="primary-btn">＋ Mark hook here</button>
       </div>
       <div id="hooksList" class="hooks-list"><div class="empty-state">Play a song and mark its best moments as hooks.</div></div>
-      <div class="ai-hook-tools"><div class="ai-hook-tools-copy"><b>AI Hook Scanner</b><small>Transcribe the song and find repeated lyric lines that may be choruses or hooks.</small></div><button id="scanHooks" class="primary-btn" type="button">✦ AI Scan hooks</button></div>
-      <div id="aiHookResults" class="ai-hook-results" aria-live="polite"><div class="ai-hook-status">AI suggestions will appear here for review. Existing saved hooks are never modified by a scan.</div></div>
+      <div class="ai-hook-tools"><div class="ai-hook-tools-copy"><b>VIBE FLOW · LOCAL HOOK ANALYSIS</b><small>Detect repeated musical sections and high-energy moments directly in your browser. No AI API key or audio upload required.</small></div><button id="scanHooks" class="primary-btn" type="button">⌕ Analyse for hooks</button></div>
+      <div id="aiHookResults" class="ai-hook-results" aria-live="polite"><div class="ai-hook-status">Click Analyse for hooks to scan this song. AI DJ can also scan an unmarked upcoming song automatically.</div></div>
     </section>
 
     <section class="content-grid">
@@ -113,6 +113,7 @@
 <div id="toast" role="status"></div>
 <audio id="a1" preload="auto"></audio>
 <audio id="a2" preload="auto"></audio>
+<script src="js/hook-scanner.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
