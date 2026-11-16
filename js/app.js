@@ -713,7 +713,27 @@ async function nextAutomatic() {
   }
   if (!queuedNext && (!settings.autoAdvance || settings.autoMode === "off")) return;
 
-  const t = queuedNext || (S.radio ? pickRandomDJTrack() : pickNextTrack());
+  let t = queuedNext || (S.radio ? pickRandomDJTrack() : pickNextTrack());
+  let globallyChosenHook = null;
+  if(!queuedNext && S.radio) {
+    const allHookChoices=S.lib.flatMap(file=>{
+      const track=toTrack(file);
+      return track.id===cur()?.id ? [] : hooksOf(track).map(h=>({track,hook:h}));
+    });
+    if(allHookChoices.length) {
+      const pick=allHookChoices[Math.floor(Math.random()*allHookChoices.length)];
+      t=pick.track; globallyChosenHook=pick.hook;
+    }
+  }
+  if(!queuedNext && !S.radio && settings.autoMode==="hook") {
+    const verifiedChoices=S.lib.flatMap(file=>{
+      const track=toTrack(file);
+      return track.id===cur()?.id ? [] : hooksOf(track).filter(h=>h.source!=="auto").map(h=>({track,hook:h}));
+    });
+    if(!verifiedChoices.length) { toast("No saved or verified hooks are available. Add or verify a hook first."); return; }
+    const pick=verifiedChoices[Math.floor(Math.random()*verifiedChoices.length)];
+    t=pick.track; globallyChosenHook=pick.hook;
+  }
   if (!t) { toast("Add more tracks to My music for automatic DJ playback."); return; }
 
   if(S.radio && t.provider==="mine" && !hooksOf(t).length && !S.hookScans[t.id]) {
@@ -725,11 +745,11 @@ async function nextAutomatic() {
   const chosen = queuedNext?._chosenHook || null;
   const hook = chosen
     ? (hooksOf(t).find(h => String(h.id) === String(chosen.id)) || chosen)
-    : (S.radio
+    : (globallyChosenHook || (S.radio
       ? (hooksOf(t).length ? hooksOf(t)[Math.floor(Math.random()*hooksOf(t).length)] : null)
       : settings.autoMode === "hook"
         ? verifiedRandomHook(t)
-        : (settings.autoMode === "beginning" ? null : fairHook(t)));
+        : (settings.autoMode === "beginning" ? null : fairHook(t))));
 
   if (chosen) { delete t._chosenHook; save(); }
   if(hook && S.radio) { setDJActivity("HOOK LINE FOUND · MIXING NOW","Cue locked on "+t.title+" · preparing the drop","READY","ready"); showPartyMessage("Hook line found. Bass drop on the way! 🔊"); }
@@ -919,6 +939,10 @@ function render() {
   $("#pp").textContent=audio().paused?"▶":"Ⅱ";
   $("#barPlay").textContent=audio().paused?"▶":"Ⅱ";
   $("#hookStatus").textContent=S.activeHook?`${S.activeHook.lyric||"Hook"} · ${fmt(S.activeHook.t)}`:"No hook selected";
+  if($("#partySong")) $("#partySong").textContent=t?.title||"Nothing playing yet";
+  if($("#partyArtist")) $("#partyArtist").textContent=t?.artist||"Choose your first track";
+  if($("#partyPlay")) $("#partyPlay").textContent=audio().paused?"▶":"Ⅱ";
+  if($("#partyAI")) $("#partyAI").textContent="AI DJ: "+(S.radio?"ON":"OFF");
   $("#shuffle").classList.toggle("active",S.shuffle);
   $("#repeat").classList.toggle("active",S.repeat);
   $("#queueCount").textContent=S.queue.length;
