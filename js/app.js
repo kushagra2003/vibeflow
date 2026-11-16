@@ -336,7 +336,7 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
       const upcoming=S.queue[S.idx+1];
       if(S.radio && upcoming?.id===track.id && !audio().paused && !S.transitioning) {
         const active=S.activeHook?.trackId===cur()?.id?S.activeHook:null;
-        const deadline=active?(active.end??active.t+settings.hookPlaySeconds):(S.activeNoHookDeadline?.at??settings.noHookSeconds);
+        const deadline=active?(active.t+settings.hookPlaySeconds):(S.activeNoHookDeadline?.at??settings.noHookSeconds);
         if(audio().currentTime>=deadline-2) setTimeout(()=>nextAutomatic(),0);
       }
     } else {
