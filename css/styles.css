@@ -147,3 +147,13 @@ input,select{color:var(--text);background:#100d18;border:1px solid var(--line);b
 .vinyl-fallback.paused .vinyl-disc{animation-play-state:paused}
 @keyframes vinylSpin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.vinyl-disc{animation:none}}
+
+
+/* Final hook-picker stacking fix: lift the active row out of neighbouring rows. */
+.content-grid,.tracks-panel,.queue-panel,.track-list,.queue-list{overflow:visible!important;isolation:auto!important}
+.track-row{position:relative;z-index:0;overflow:visible!important}
+.track-row:has(.track-hook-wrap:hover),
+.track-row:has(.track-hook-wrap:focus-within){position:relative!important;z-index:2147483000!important;isolation:isolate!important}
+.track-hook-wrap{position:relative!important;z-index:1}
+.track-hook-wrap:hover,.track-hook-wrap:focus-within{z-index:2147483001!important}
+.track-hook-popover{position:absolute!important;z-index:2147483002!important;isolation:isolate;background:linear-gradient(145deg,#3a2455 0%,#241633 72%,#1b1427 100%)!important;border:1px solid #d0a0ff!important;box-shadow:0 20px 60px #000e,0 0 0 2px #a76be766,0 0 34px #a76be755!important;pointer-events:auto!important}
