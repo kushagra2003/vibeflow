@@ -22,12 +22,13 @@ const S = {
   transitionTimer: null, env: {}, lib: [], dragIndex: null,
   seeking: false, seekResetMediaTime: null, seekResetDelay: 0, seekResumeAt: 0,
   activeNoHookDeadline: null, displayUpdateTimer: null,
-  aiHookSuggestions: [], aiHookTrackId: null, aiHookScanning: false
+  hookScans: store.get("hookScans", {}), autoHookInFlight: new Set(), autoHookStartedAt: {},
+  aiHookTrackId: null, aiHookScanning: false
 };
 const save = () => {
   for (const [k, v] of Object.entries({
     queue:S.queue, idx:S.idx, favs:S.favs, hist:S.hist,
-    patterns:S.patterns, hookPlays:S.hookPlays, trackPlays:S.trackPlays
+    patterns:S.patterns, hookPlays:S.hookPlays, trackPlays:S.trackPlays, hookScans:S.hookScans
   })) store.set(k, v);
 };
 const saveSettings = () => store.set("settings", settings);
@@ -203,64 +204,118 @@ function playHookDirect(h) {
   $("#hookStatus").textContent=`${h.lyric || "Hook"} · ${fmt(h.t)}`;
   toast(`Jumped directly to ${fmt(h.t)}.`);
 }
-async function scanCurrentSongHooks() {
-  const track=cur();
-  if(!track || track.provider!=="mine") return toast("AI Hook Scanner currently scans songs in My music.");
-  const entry=getLibTrack(track.id);
-  if(!entry?.file) return toast("Could not locate this song in your GitHub music folder.");
-  const button=$("#scanHooks");
-  if(S.aiHookScanning) return;
-  S.aiHookScanning=true; S.aiHookSuggestions=[]; S.aiHookTrackId=track.id;
-  if(button){button.disabled=true;button.textContent="◌ Scanning audio…";}
-  renderAIHookSuggestions();
-  try {
-    const response=await fetch("songs/"+encodeURIComponent(entry.file),{cache:"no-store"});
-    if(!response.ok) throw new Error("Could not download this song from the GitHub music folder.");
-    const blob=await response.blob();
-    if(blob.size>24*1024*1024) throw new Error("This song is larger than 24 MB. Use a smaller audio file for transcription.");
-    if(!blob.size) throw new Error("The audio file is empty.");
-    const form=new FormData(); form.append("audio",blob,entry.file);
-    const result=await fetch("/api/ai-hook-scan",{method:"POST",body:form});
-    const data=await result.json().catch(()=>({}));
-    if(!result.ok) throw new Error(data.error||"AI transcription failed.");
-    const segments=Array.isArray(data.segments)?data.segments:[];
-    const normalize=s=>String(s||"").toLowerCase().replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
-    const groups=new Map();
-    for(const seg of segments) {
-      const lyric=String(seg.text||"").trim(), key=normalize(lyric);
-      if(!lyric || key.split(" ").length<2 || !Number.isFinite(+seg.start)) continue;
-      if(!groups.has(key)) groups.set(key,{lyric,start:+seg.start,count:0});
-      const group=groups.get(key); group.count++;
-      if(+seg.start<group.start){group.start=+seg.start;group.lyric=lyric;}
-    }
-    S.aiHookSuggestions=[...groups.values()].filter(x=>x.count>=2)
-      .map(x=>({id:crypto.randomUUID?.()||String(Date.now()+Math.random()),t:Math.max(0,Math.round(x.start*2)/2),lyric:x.lyric,count:x.count,confidence:Math.min(0.98,0.55+0.12*(x.count-2))}))
-      .sort((x,y)=>y.confidence-x.confidence||x.t-y.t).slice(0,12);
-    if(!S.aiHookSuggestions.length) toast("Scan complete. No clearly repeated lyric lines were detected; your saved hooks are untouched.");
-    else toast("Found "+S.aiHookSuggestions.length+" possible hook cue(s). Review and approve the ones you want.");
-  } catch(error) { toast(error.message||"AI Hook Scanner could not analyse this song."); S.aiHookSuggestions=[]; }
-  finally { S.aiHookScanning=false; if(button){button.disabled=false;button.textContent="✦ AI Scan hooks";} renderAIHookSuggestions(); }
+function syncTrackHooks(trackId, hooks) {
+  for (const list of [S.queue, S.results, S.recs, S.favs, S.hist]) {
+    for (const track of list) if (track?.id === trackId) track.hooks = hooks;
+  }
 }
-function approveAIHook(id) {
-  const track=cur(), entry=track && getLibTrack(track.id);
-  if(!entry || S.aiHookTrackId!==track.id) return toast("Select the song that was scanned.");
-  const suggestion=S.aiHookSuggestions.find(x=>x.id===id); if(!suggestion) return;
-  const duplicate=hooksOf(entry).some(h=>Math.abs(Number(h.t)-suggestion.t)<1.5 || String(h.lyric||"").trim().toLowerCase()===suggestion.lyric.trim().toLowerCase());
-  if(duplicate) return toast("A similar saved hook already exists; nothing was changed.");
-  const hook={id:crypto.randomUUID?.()||String(Date.now()),t:suggestion.t,end:null,lyric:suggestion.lyric,endLyric:"",source:"ai",confidence:suggestion.confidence};
-  entry.hooks=[...hooksOf(entry),hook].sort((x,y)=>x.t-y.t); track.hooks=entry.hooks;
-  saveLib(); save(); renderHooks(); render(); toast("AI hook approved and saved. Existing hooks were preserved.");
+async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
+  const track=trackOverride||cur();
+  if(!track || track.provider!=="mine") {
+    if(!automatic) toast("Local hook analysis currently scans songs in My music.");
+    return;
+  }
+  const entry=getLibTrack(track.id);
+  if(!entry?.file) {
+    if(!automatic) toast("Could not locate this song in your GitHub music folder.");
+    return;
+  }
+  if(S.aiHookScanning || (automatic && (S.autoHookInFlight.has(track.id)||S.hookScans[track.id]))) return;
+  const button=$("#scanHooks");
+  if(automatic) {
+    S.autoHookInFlight.add(track.id);
+    S.autoHookStartedAt[track.id]=Date.now();
+    setDJActivity("AUTO SCAN · NEXT TRACK","No saved hooks on "+track.title+" · analysing musical patterns locally","SCAN","sync");
+  } else {
+    S.aiHookScanning=true;
+    S.aiHookTrackId=track.id;
+    if(button){button.disabled=true;button.textContent="◌ Analysing audio…";}
+    renderAIHookSuggestions();
+  }
+  try {
+    const candidates=await window.VibeHookScanner.analyse("songs/"+encodeURIComponent(entry.file));
+    const existing=hooksOf(entry);
+    const accepted=candidates.filter(candidate=>!existing.some(h=>
+      Math.abs(Number(h.t)-candidate.t)<8 ||
+      (String(h.lyric||"").trim().toLowerCase()===candidate.label.toLowerCase())
+    )).slice(0,6);
+    const generated=accepted.map(candidate=>({
+      id:"auto-"+(crypto.randomUUID?.()||String(Date.now()+Math.random())),
+      t:Math.round(candidate.t*2)/2,
+      end:Math.max(candidate.t+1,Math.round(candidate.end*2)/2),
+      lyric:candidate.label,
+      endLyric:"",
+      source:"auto",
+      detector:candidate.type,
+      confidence:candidate.confidence,
+      generatedAt:Date.now()
+    }));
+    if(generated.length) {
+      entry.hooks=[...existing,...generated].sort((a,b)=>a.t-b.t);
+      syncTrackHooks(track.id,entry.hooks);
+      saveLib();
+    }
+    S.hookScans[track.id]={at:Date.now(),generated:generated.length,version:1};
+    save();
+    if(automatic) {
+      setDJActivity(generated.length?"HOOKS AUTO-DETECTED":"SCAN COMPLETE · NO STRONG MATCH",
+        generated.length?generated.length+" local cue point(s) ready on "+track.title:"No strong repeated section found on "+track.title,
+        "READY","ready");
+    } else if(generated.length) {
+      toast("Found "+generated.length+" possible hook(s). They are saved as AUTO cues and ready to mix.");
+    } else {
+      toast("Analysis complete. No strong hook patterns found; your existing hooks were left untouched.");
+    }
+  } catch(error) {
+    if(automatic) {
+      S.hookScans[track.id]={at:Date.now(),generated:0,version:1,error:String(error.message||error).slice(0,180)};
+      save();
+      setDJActivity("AUTO SCAN UNAVAILABLE",String(error.message||error).slice(0,130),"READY","ready");
+    } else {
+      toast(error.message||"Local hook analysis could not scan this song.");
+    }
+  } finally {
+    if(automatic) {
+      S.autoHookInFlight.delete(track.id);
+      delete S.autoHookStartedAt[track.id];
+    } else {
+      S.aiHookScanning=false;
+      if(button){button.disabled=false;button.textContent="⌕ Analyse for hooks";}
+    }
+    renderAIHookSuggestions();
+    renderHooks();
+    render();
+  }
+}
+function maybeAutoScanUpcoming(track) {
+  if(!S.radio || !track || track.provider!=="mine" || hooksOf(track).length) return;
+  if(S.hookScans[track.id] || S.autoHookInFlight.has(track.id) || S.aiHookScanning) return;
+  scanCurrentSongHooks({automatic:true,trackOverride:track});
 }
 function renderAIHookSuggestions() {
   const root=$("#aiHookResults"); if(!root) return;
-  if(S.aiHookScanning){root.innerHTML='<div class="ai-hook-status">◌ Listening to the track and analysing repeated lyric lines…</div>';return;}
-  if(!S.aiHookSuggestions.length){root.innerHTML='<div class="ai-hook-status">AI suggestions will appear here for review. Existing saved hooks are never modified by a scan.</div>';return;}
-  root.innerHTML='<div class="ai-hook-heading"><b>AI-detected hook candidates</b><small>Approve individually to add them to your saved cue points.</small></div>'+S.aiHookSuggestions.map((x)=>'<div class="ai-hook-candidate"><span class="ai-hook-time">'+fmtHook(x.t)+'</span><div class="ai-hook-lyric"><b>'+esc(x.lyric)+'</b><small>Repeated '+x.count+' times · '+Math.round(x.confidence*100)+'% heuristic confidence</small></div><button type="button" data-approve-ai-hook="'+esc(x.id)+'">Approve</button></div>').join("");
-  root.querySelectorAll("[data-approve-ai-hook]").forEach(b=>b.onclick=()=>approveAIHook(b.dataset.approveAiHook));
+  if(S.aiHookScanning) {
+    root.innerHTML='<div class="ai-hook-status">◌ Analysing repeated musical patterns and energy peaks in your browser…</div>';
+    return;
+  }
+  const active=[...S.autoHookInFlight][0];
+  if(active) {
+    const song=getLibTrack(active);
+    root.innerHTML='<div class="ai-hook-status">◌ AI DJ is scanning the upcoming track: '+esc(song?.title||"next song")+'. Generated cues will be saved automatically.</div>';
+    return;
+  }
+  const track=cur(), scan=track&&S.hookScans[track.id];
+  if(scan) {
+    root.innerHTML='<div class="ai-hook-status">'+(scan.generated
+      ? scan.generated+" AUTO hook(s) detected in the last local scan. They are ready for mixing and can be deleted individually."
+      : "Last local scan found no strong repeated or high-energy sections. Your manually saved hooks remain unchanged.")+'</div>';
+    return;
+  }
+  root.innerHTML='<div class="ai-hook-status">Click Analyse for hooks to scan this song locally. AI DJ can also scan an unmarked upcoming song automatically. No API key or audio upload required.</div>';
 }
 function renderHooks() {
   const t=cur(), hooks=hooksOf(t);
-  $("#hookCount").textContent=`${hooks.length} saved`;
+  $("#hookCount").textContent=`${hooks.length} saved · ${hooks.filter(h=>h.source==='auto').length} auto`;
   if(!t || t.provider!=="mine") {
     $("#hooksList").innerHTML='<div class="empty-state">Hooks can be marked on songs in My music.</div>';
     return;
@@ -270,7 +325,7 @@ function renderHooks() {
     return;
   }
   $("#hooksList").innerHTML=hooks.map((h,i)=>`
-    <div class="hook-item">
+    <div class="hook-item ${h.source==="auto"?"auto-hook-item":"manual-hook-item"}">
       <div class="hook-main">
         <div class="hook-time-control" aria-label="Adjust hook start time">
           <button type="button" data-hook-start-adjust="${esc(h.id)}" data-delta="-0.5" aria-label="Move hook start back half a second" title="−0.5 seconds">−</button>
@@ -279,7 +334,7 @@ function renderHooks() {
         </div>
         <div class="hook-detail">
           <b title="${esc(h.lyric || "Hook "+(i+1))}">${esc(h.lyric || "Hook "+(i+1))}</b>
-          <small>${h.end!=null?`Ends ${fmt(h.end)}${h.endLyric?" · "+esc(h.endLyric):""}`:"End not marked"}</small>
+          <small><span class="hook-origin ${h.source==="auto"?"auto":"manual"}">${h.source==="auto"?"AUTO":"MANUAL"}</span> · ${h.source==="auto"?(h.detector==="repeated-section"?"Pattern match":"Energy peak"):"User cue"} · ${h.end!=null?`Ends ${fmt(h.end)}${h.endLyric?" · "+esc(h.endLyric):""}`:"End not marked"}</small>
         </div>
       </div>
       <div class="hook-controls">
@@ -397,6 +452,11 @@ function updateDJStatus() {
   const t=cur(), a=audio();
   if(!t) { setDJActivity("AWAITING SIGNAL","Load a track and the DJ engine will lock onto its rhythm."); return; }
   const upcoming=S.queue[S.idx+1]||null;
+  maybeAutoScanUpcoming(upcoming);
+  if(upcoming && S.autoHookInFlight.has(upcoming.id)) {
+    setDJActivity("AUTO SCAN · NEXT TRACK","Analysing "+upcoming.title+" for repeated sections and high-energy hooks","SCAN","sync");
+    return;
+  }
   const chosen=upcoming && upcoming._chosenHook;
   if(S.transitioning) {
     setDJActivity("LOCKING NEXT TRACK","Preparing "+(upcoming?.title||t.title)+" · buffering audio and cue points…","SYNC","sync");
@@ -510,6 +570,7 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
       : "Now playing "+track.title+" · keep the party moving","LIVE","mix");
     S.hist=[track,...S.hist.filter(x=>x.id!==track.id)].slice(0,100);
     save();
+    if(S.radio) ensureAINextTrack();
     if(settings.aiEnabled) suggest();
     scheduleTrackDisplayUpdate(token);
   } catch(e) {
@@ -562,10 +623,21 @@ function pickRandomDJTrack() {
   const fair=pool.filter(f=>(S.trackPlays["my:"+f.file]||0)===least);
   return toTrack(fair[Math.floor(Math.random()*fair.length)]);
 }
+function ensureAINextTrack() {
+  if(!S.radio || !cur() || S.queue[S.idx+1]) return;
+  const nextTrack=pickRandomDJTrack();
+  if(nextTrack) addQueue(nextTrack,"next");
+}
+
 function nextAutomatic() {
   // A queued track always has priority over AI/random selection.
   // This keeps the "Coming up next" display and actual playback in sync.
   const queuedNext = S.queue[S.idx + 1] || null;
+  if (S.radio && queuedNext && S.autoHookInFlight.has(queuedNext.id) &&
+      Date.now() - (S.autoHookStartedAt[queuedNext.id] || Date.now()) < 15000) {
+    setDJActivity("WAITING FOR HOOK SCAN","Letting the local scanner finish on "+queuedNext.title+" before the drop","SCAN","sync");
+    return;
+  }
   if (!queuedNext && (!settings.autoAdvance || settings.autoMode === "off")) return;
 
   const t = queuedNext || (S.radio ? pickRandomDJTrack() : pickNextTrack());
@@ -886,7 +958,7 @@ function bindTrackActions() {
 
 // ---------- Player events ----------
 $("#addHook").onclick=addHook;
-$("#scanHooks").onclick=scanCurrentSongHooks;
+$("#scanHooks").onclick=()=>scanCurrentSongHooks();
 $("#mix").onclick=mixNext;
 $("#forceMix").onclick=forceMixNow;
 $("#prev").onclick=previous; $("#barPrev").onclick=previous;
@@ -964,6 +1036,7 @@ function toggleAIDJ() {
   if(S.radio) {
     if(!cur()) nextAutomatic();
     else if(audio().paused) audio().play().then(()=>{audio().volume=vol();render();}).catch(()=>toast("Press play to start the AI DJ."));
+    ensureAINextTrack();
     if(settings.aiEnabled) suggest();
     toast("AI DJ is mixing random tracks.");
   } else {
