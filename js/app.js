@@ -229,7 +229,7 @@ function renderHooks() {
         <button data-hook-end="${esc(h.id)}" title="Mark hook end here">Mark end</button>
         <button data-hook-delete="${esc(h.id)}" title="Delete hook">×</button>
       </div>
-remove old adjustment row    </div>`).join("");
+    </div>`).join("");
   $("#hooksList").querySelectorAll("[data-hook-go]").forEach(b=>b.onclick=()=>playHookDirect(hooks.find(h=>String(h.id)===b.dataset.hookGo)));
   $("#hooksList").querySelectorAll("[data-hook-start-adjust]").forEach(b=>b.onclick=()=>adjustHookStart(b.dataset.hookStartAdjust,Number(b.dataset.delta)));
   $("#hooksList").querySelectorAll("[data-hook-end]").forEach(b=>b.onclick=()=>markHookEnd(b.dataset.hookEnd));
@@ -444,16 +444,21 @@ function pickRandomDJTrack() {
   return toTrack(fair[Math.floor(Math.random()*fair.length)]);
 }
 function nextAutomatic() {
-  if(!settings.autoAdvance || settings.autoMode==="off") return;
-  const t=S.radio ? pickRandomDJTrack() : pickNextTrack();
+  const explicitlyChosen=S.queue[S.idx+1]?._chosenHook ? S.queue[S.idx+1] : null;
+  if(!explicitlyChosen && (!settings.autoAdvance || settings.autoMode==="off")) return;
+  const t=explicitlyChosen || (S.radio ? pickRandomDJTrack() : pickNextTrack());
   if(!t) { toast("Add more tracks to My music for automatic DJ playback."); return; }
-  // Random / smart mode uses saved hooks when available, rotating fairly.
-  // Learned pairings remain recorded, but never override random selection.
-  const hook=settings.autoMode==="beginning" ? null : fairHook(t);
-  transitionTo(t,hook,{automatic:true,mode:settings.autoMode});
+  const chosen=t._chosenHook;
+  const hook=chosen
+    ? (hooksOf(t).find(h=>String(h.id)===String(chosen.id)) || chosen)
+    : (settings.autoMode==="beginning" && !S.radio ? null : fairHook(t));
+  if(chosen) { delete t._chosenHook; save(); }
+  transitionTo(t,hook,{automatic:true,mode:hook?"hook":(settings.autoMode==="beginning"?"beginning":"no-hook")});
 }
 function handleAutoAdvance() {
-  if(!settings.autoAdvance || settings.autoMode==="off" || S.transitioning || S.mixing) return;
+  if(S.transitioning || S.mixing) return;
+  const explicitlyChosen=!!S.queue[S.idx+1]?._chosenHook;
+  if(!explicitlyChosen && (!settings.autoAdvance || settings.autoMode==="off")) return;
   nextAutomatic();
 }
 function checkHookTimer() {
@@ -521,6 +526,16 @@ function previous() {
   }
 }
 function mixNext() { openMixChoices(); }
+function forceMixNow() {
+  const nextTrack=S.queue[S.idx+1] || pickNextTrack();
+  if(!nextTrack) return toast("Add a song to the queue first.");
+  const chosen=nextTrack._chosenHook;
+  const hook=chosen
+    ? (hooksOf(nextTrack).find(h=>String(h.id)===String(chosen.id)) || chosen)
+    : (hooksOf(nextTrack).length ? fairHook(nextTrack) : null);
+  if(chosen) { delete nextTrack._chosenHook; save(); }
+  transitionTo(nextTrack,hook,{manual:true,mode:hook?"hook":"no-hook"});
+}
 
 // ---------- AI recommendations (fully disabled by toggle) ----------
 async function suggest() {
@@ -568,12 +583,18 @@ function switchView(view) {
 // ---------- Render ----------
 function trackRow(t,i,where) {
   const fav=S.favs.some(x=>x.id===t.id), current=cur()?.id===t.id;
-  const art=t.art||"";
+  const hooks=hooksOf(t);
+  const hookMenu=hooks.length
+    ? hooks.map((h,n)=>`<button type="button" class="hook-pick-option" data-select-next-hook="${esc(t.id)}" data-hook-id="${esc(h.id)}"><span class="hook-pick-number">${n+1}</span><span><b>${esc(h.lyric||"Hook "+(n+1))}</b><small>Starts at ${fmtHook(h.t)}${h.end!=null?" · ends "+fmt(h.end):""}</small></span></button>`).join("")
+    : '<div class="hook-pick-empty">No saved hooks for this song yet.</div>';
   const buttons=where==="queue"
     ? `<button data-queue-play-next="${i}" class="queue-play-next">Play next</button><button data-remove="${i}">Remove</button>`
     : `<button data-play="${esc(t.id)}">Play</button><button data-play-next="${esc(t.id)}">Play next</button><button data-add="${esc(t.id)}">Queue</button>`;
   return `<div class="track-row ${current?"current":""}" ${where==="queue"?`draggable="true" data-queue-index="${i}"`:""}>
-    <img class="track-art" src="${esc(art)}" alt="">
+    <div class="track-hook-wrap">
+      <button type="button" class="track-hook-count" aria-label="${hooks.length} saved hooks" title="Hover to choose a hook">${hooks.length}</button>
+      <div class="track-hook-popover"><div class="hook-popover-title">PLAY NEXT FROM HOOK</div>${hookMenu}</div>
+    </div>
     <div class="track-meta"><b>${esc(t.title)}</b><small>${esc(t.artist||"Unknown")} · ${t.provider==="mine"?"My music":"Audius"}${where==="queue"&&i===S.idx?" · PLAYING":""}</small></div>
     <div class="track-actions">${buttons}<button class="star" data-fav="${esc(t.id)}">${fav?"★":"☆"}</button></div>
   </div>`;
@@ -619,6 +640,18 @@ function render() {
   bindTrackActions();
 }
 function bindTrackActions() {
+  document.querySelectorAll("[data-select-next-hook]").forEach(b=>b.onclick=()=>{
+    const id=b.dataset.selectNextHook, hookId=b.dataset.hookId;
+    const track=[...S.lib.map(toTrack),...S.results,...S.recs,...S.favs,...S.hist].find(x=>x.id===id);
+    const hook=track && hooksOf(track).find(h=>String(h.id)===String(hookId));
+    if(!track || !hook) return;
+    if(track.id===cur()?.id) return toast("Choose a hook from a different song.");
+    addQueue(track,"next");
+    const queued=S.queue.find(x=>x.id===track.id);
+    if(queued) queued._chosenHook={id:hook.id,t:hook.t,end:hook.end??null,lyric:hook.lyric||"Hook"};
+    save(); render();
+    toast(`${track.title} is next from ${hook.lyric||"Hook"} after the current cue finishes.`);
+  });
   document.querySelectorAll("[data-play]").forEach(b=>b.onclick=()=>{
     const id=b.dataset.play;
     const track=[...S.lib.map(toTrack),...S.results,...S.recs,...S.favs,...S.hist].find(x=>x.id===id);
@@ -663,6 +696,7 @@ function bindTrackActions() {
 // ---------- Player events ----------
 $("#addHook").onclick=addHook;
 $("#mix").onclick=mixNext;
+$("#forceMix").onclick=forceMixNow;
 $("#prev").onclick=previous; $("#barPrev").onclick=previous;
 $("#next").onclick=next; $("#barNext").onclick=next;
 $("#pp").onclick=togglePlay; $("#barPlay").onclick=togglePlay;
