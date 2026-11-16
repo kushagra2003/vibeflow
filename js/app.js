@@ -503,6 +503,45 @@ function openMixChoices() {
   root.querySelector("[data-mix-start]").onclick=()=>{root.innerHTML="";transitionTo(nextTrack,null,{manual:true});};
 }
 
+// ---------- Party mode motion + rotating brand line ---------- 
+let partyTaglineTimer=null;
+const PARTY_TAGLINES=["BY KUSHAGRA","IS YOUR DJ TONIGHT","LET'S PARTY"];
+let partyTaglineIndex=0;
+function startPartyBrandLoop(){
+  const tagline=$("#partyTagline"), wave=$("#partySoundwave");
+  if(!tagline) return;
+  clearInterval(partyTaglineTimer);
+  partyTaglineIndex=0;
+  tagline.textContent=PARTY_TAGLINES[partyTaglineIndex];
+  tagline.classList.remove("tagline-change");
+  if(wave && !wave.childElementCount){
+    const bars=Array.from({length:64},(_,i)=>{
+      const center=1-Math.abs((i-31.5)/31.5);
+      const envelope= Math.max(.12,center*(.52+Math.abs(Math.sin(i*2.17))*.48));
+      const h=Math.round(12+envelope*82);
+      const delay=(-Math.abs(Math.sin(i*1.71))*1.2).toFixed(2);
+      const speed=(.62+Math.abs(Math.sin(i*.83))*.62).toFixed(2);
+      return '<i style="--wave-h:'+h+'%;--wave-delay:'+delay+'s;--wave-speed:'+speed+'s"></i>';
+    }).join("");
+    wave.innerHTML=bars;
+  }
+  partyTaglineTimer=setInterval(()=>{
+    if($("#partyMode")?.hidden){clearInterval(partyTaglineTimer);partyTaglineTimer=null;return;}
+    partyTaglineIndex=(partyTaglineIndex+1)%PARTY_TAGLINES.length;
+    tagline.classList.remove("tagline-change");
+    tagline.textContent=PARTY_TAGLINES[partyTaglineIndex];
+    void tagline.offsetWidth;
+    tagline.classList.add("tagline-change");
+  },2000);
+}
+function stopPartyBrandLoop(){clearInterval(partyTaglineTimer);partyTaglineTimer=null;}
+function syncPartyMotion(){
+  const stage=$("#partyMode .party-stage");
+  if(!stage)return;
+  stage.classList.toggle("dj-active",!audio().paused);
+  stage.classList.toggle("dj-mixing",!!(S.mixing||S.transitioning));
+}
+
 // ---------- Transition animation + two-deck playback ----------
 function showPartyMessage(message) {
   const el=$("#partyMessage");
@@ -515,6 +554,7 @@ function setDJActivity(title,detail,countdown="--:--",state="ready") {
   if(countEl) countEl.textContent=countdown;
   const panel=$(".wave-panel");
   if(panel) panel.dataset.djState=state;
+  syncPartyMotion();
   if($("#partyMode") && !$("#partyMode").hidden) {
     $("#partyActivity").textContent=title;
     $("#partyDetail").textContent=detail;
@@ -1152,18 +1192,19 @@ $("#importHooks").onclick=()=>$("#importHooksFile").click();
 $("#importHooksFile").onchange=e=>{importHooksBackup(e.target.files?.[0]);e.target.value="";};
 $("#partyModeButton").onclick=async()=>{
   $("#partyMode").hidden=false; document.body.classList.add("party-mode-open");
+  startPartyBrandLoop(); syncPartyMotion();
   showPartyMessage("Surprise incoming… VIBE FLOW is taking over! 🪩");
   try { if(!document.fullscreenElement) await document.documentElement.requestFullscreen?.(); } catch {}
 };
 $("#closeParty").onclick=async()=>{
-  $("#partyMode").hidden=true; document.body.classList.remove("party-mode-open");
+  $("#partyMode").hidden=true; document.body.classList.remove("party-mode-open"); stopPartyBrandLoop();
   try { if(document.fullscreenElement) await document.exitFullscreen?.(); } catch {}
 };
 $("#partyPlay").onclick=togglePlay;
 $("#partyNext").onclick=()=>{if(S.radio) nextAutomatic(); else next();};
 $("#partyPrev").onclick=previous;
 $("#partyAI").onclick=toggleAIDJ;
-document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement && !$("#partyMode").hidden){$("#partyMode").hidden=true;document.body.classList.remove("party-mode-open");}});
+document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement && !$("#partyMode").hidden){$("#partyMode").hidden=true;document.body.classList.remove("party-mode-open");stopPartyBrandLoop();}});
 $("#openSettings").onclick=openSettings; $("#footerSettings").onclick=openSettings;
 function toggleAIDJ() {
   S.radio=!S.radio;
@@ -1185,7 +1226,7 @@ $("#aiStatus").onclick=toggleAIDJ;
 $("#aiRadio").onclick=toggleAIDJ;
 A.forEach(a=>{
   a.volume=.8;
-  a.onplay=()=>{if(a===audio())render();}; a.onpause=()=>{if(a===audio())render();};
+  a.onplay=()=>{if(a===audio()){render();syncPartyMotion();}}; a.onpause=()=>{if(a===audio()){render();syncPartyMotion();}};
   a.ontimeupdate=()=>{
     if(a!==audio())return;
     if(a.duration){if(!S.seeking) $("#seek").value=a.currentTime/a.duration*1000;$("#time").textContent=`${fmt(a.currentTime)} / ${fmt(a.duration)}`;}
