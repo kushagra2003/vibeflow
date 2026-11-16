@@ -8,7 +8,7 @@ const store = {
   set(k, v) { try { localStorage.setItem("vf_" + k, JSON.stringify(v)); } catch {} }
 };
 const defaults = {
-  mixLength: 6, leadSubtract: 2, hookPlaySeconds: 24, noHookSeconds: 45,
+  mixLength: 6, leadSubtract: 2, hookPlaySeconds: 24, noHookSeconds: 45, noHookStartSeconds: 20,
   aiEnabled: true, autoMode: "random", autoAdvance: true
 };
 const settings = { ...defaults, ...store.get("settings", {}) };
@@ -100,6 +100,7 @@ function openSettings() {
       <div class="setting-field"><label for="setLead">Seconds to subtract from mix length</label><input id="setLead" type="number" min="0" max="8" step="1" value="${settings.leadSubtract}"><small>Default 2. Hook starts at hook time − (mix length − this value).</small></div>
       <div class="setting-field"><label for="setHookDuration">Play time after hook start</label><input id="setHookDuration" type="number" min="5" max="300" step="1" value="${settings.hookPlaySeconds}"><small>Used when that hook has no marked end.</small></div>
       <div class="setting-field"><label for="setNoHook">Fallback time without a hook end</label><input id="setNoHook" type="number" min="5" max="600" step="5" value="${settings.noHookSeconds}"><small>Switch after this many seconds if no hook end is available.</small></div>
+      <div class="setting-field"><label for="setNoHookStart">Start position when no hook is saved</label><input id="setNoHookStart" type="number" min="0" max="300" step="1" value="${settings.noHookStartSeconds}"><small>Start unmarked songs at this position. Default: 20 seconds.</small></div>
       <div class="setting-field"><label for="setMode">Automatic mix mode</label><select id="setMode"><option value="random">Random / smart</option><option value="hook">Always choose a saved hook</option><option value="beginning">Start at song beginning</option><option value="off">Off</option></select><small>Controls how automatic transitions choose the next start point.</small></div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px"><button data-close="1">Cancel</button><button id="saveSettings" class="primary-btn">Save settings</button></div>
@@ -116,6 +117,7 @@ function openSettings() {
     settings.leadSubtract = Math.max(0,Math.min(8,+$("#setLead").value || 0));
     settings.hookPlaySeconds = Math.max(5,Math.min(300,+$("#setHookDuration").value || 24));
     settings.noHookSeconds = Math.max(5,Math.min(600,+$("#setNoHook").value || 45));
+    settings.noHookStartSeconds = Math.max(0,Math.min(300,+$("#setNoHookStart").value || 0));
     settings.autoMode = $("#setMode").value;
     saveSettings(); root.innerHTML=""; syncControls(); render();
     toast("DJ settings saved.");
@@ -229,6 +231,8 @@ function rememberedFor(track) {
 function pickNextTrack() {
   const current=cur();
   if(S.queue.length) {
+    // Explicit Play next always takes priority, even when shuffle is enabled.
+    if(S.idx+1<S.queue.length) return S.queue[S.idx+1];
     if(S.shuffle) {
       const candidates=S.queue.map((t,i)=>({t,i})).filter(x=>x.i!==S.idx);
       if(candidates.length) return candidates[Math.floor(Math.random()*candidates.length)].t;
@@ -260,8 +264,13 @@ function mixStartForHook(hook) {
 function openMixChoices() {
   const from=cur(); if(!from) return toast("Play a track first.");
   const nextTrack=pickNextTrack();
-  if(!nextTrack) return toast("Add songs with hooks to My music first.");
+  if(!nextTrack) return toast("Add songs to your library first.");
   const hooks=hooksOf(nextTrack);
+  if(!hooks.length) {
+    toast(`No saved hooks for ${nextTrack.title}; starting at ${settings.noHookStartSeconds} seconds.`);
+    transitionTo(nextTrack,null,{manual:true,mode:"no-hook"});
+    return;
+  }
   const patterns=rememberedFor(from).filter(p=>p.to===nextTrack.id);
   const root=$("#modalRoot");
   const hookChoices=hooks.length ? hooks.map(h=>{
@@ -324,9 +333,9 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
   const previous=cur(), token=++S.tok;
   const idx=ensureQueued(track);
   S.idx=idx;
-  const startAt=hook ? mixStartForHook(hook) : (mode==="random" ? await randomEnergyStart(track).catch(()=>0) : 0);
+  render(); // Keep the upcoming queue visible while the next track is prepared.
+  const startAt=hook ? mixStartForHook(hook) : ((automatic || mode==="no-hook") ? settings.noHookStartSeconds : 0);
   showTransition(track,hook,automatic);
-  render();
   try {
     const url=await getUrl(track);
     if(token!==S.tok) return;
@@ -417,9 +426,14 @@ function checkHookTimer() {
 
 // ---------- Queue ----------
 function addQueue(track,where="end") {
-  if(!track) return;
-  if(S.queue.some(x=>x.id===track.id)) return;
-  if(where==="next") S.queue.splice(Math.max(0,S.idx+1),0,track);
+  if(!track || track.id===cur()?.id) return;
+  const existing=S.queue.findIndex(x=>x.id===track.id);
+  if(existing>=0) {
+    if(where!=="next") return;
+    const [item]=S.queue.splice(existing,1);
+    if(existing<S.idx) S.idx--;
+    S.queue.splice(Math.max(0,S.idx+1),0,item);
+  } else if(where==="next") S.queue.splice(Math.max(0,S.idx+1),0,track);
   else S.queue.push(track);
   save(); render();
 }
@@ -507,7 +521,7 @@ function trackRow(t,i,where) {
   const art=t.art||"";
   const buttons=where==="queue"
     ? `<button data-remove="${i}">Remove</button>`
-    : `<button data-play="${esc(t.id)}">Play</button><button data-add="${esc(t.id)}">Queue</button>`;
+    : `<button data-play="${esc(t.id)}">Play</button><button data-play-next="${esc(t.id)}">Play next</button><button data-add="${esc(t.id)}">Queue</button>`;
   return `<div class="track-row ${current?"current":""}" ${where==="queue"?`draggable="true" data-queue-index="${i}"`:""}>
     <img class="track-art" src="${esc(art)}" alt="">
     <div class="track-meta"><b>${esc(t.title)}</b><small>${esc(t.artist||"Unknown")} · ${t.provider==="mine"?"My music":"Audius"}${where==="queue"&&i===S.idx?" · PLAYING":""}</small></div>
@@ -555,6 +569,11 @@ function bindTrackActions() {
     const id=b.dataset.play;
     const track=[...S.lib.map(toTrack),...S.results,...S.recs,...S.favs,...S.hist].find(x=>x.id===id);
     if(track) playTrack(track);
+  });
+  document.querySelectorAll("[data-play-next]").forEach(b=>b.onclick=()=>{
+    const id=b.dataset.playNext;
+    const track=[...S.lib.map(toTrack),...S.results,...S.recs,...S.favs,...S.hist].find(x=>x.id===id);
+    if(track){addQueue(track,"next");toast(`${track.title} will play next.`);}
   });
   document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>{
     const id=b.dataset.add;
