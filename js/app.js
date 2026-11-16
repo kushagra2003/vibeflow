@@ -132,7 +132,7 @@ function syncControls() {
 
 // ---------- API ----------
 async function api(fn, opts) {
-  const r = await fetch("/.netlify/functions/"+fn,opts);
+  const r = await fetch("/api/"+fn,opts);
   const d = await r.json().catch(()=>({}));
   if (!r.ok) throw new Error(d.error || `Request failed (${r.status})`);
   return d;
