@@ -731,8 +731,9 @@ async function startPreparedTransition(remaining=0) {
   if(S.transitioning||S.endTriggered||settings.endAction==="pause")return;
   if(!S.preparedNext) {
     S.endWaiting=true; pausePlaybackWindow();
-    if(!S.preparingNext) await prepareUpcomingTrack();
-    if(!S.preparedNext)return;
+    if(!S.preparingNext) prepareUpcomingTrack();
+    // Preparation's finally block resumes this transition exactly once.
+    return;
   }
   const prepared=S.preparedNext;
   if(!prepared)return;
