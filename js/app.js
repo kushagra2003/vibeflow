@@ -96,7 +96,7 @@ function openSettings() {
     <div class="toggle-row"><div><b>AI recommendations</b><small>Turn off AI requests, suggestions and AI Radio completely.</small></div><input class="switch" id="setAI" type="checkbox" ${settings.aiEnabled?"checked":""}></div>
     <div class="toggle-row"><div><b>Automatic track switching</b><small>Keep the music moving without manually pressing next.</small></div><input class="switch" id="setAuto" type="checkbox" ${settings.autoAdvance?"checked":""}></div>
     <div class="settings-grid" style="margin-top:14px">
-      <div class="setting-field"><label for="setMix">Crossfade length</label><select id="setMix"><option value="3">3 seconds</option><option value="6">6 seconds</option><option value="9">9 seconds</option></select><small>How long both songs overlap.</small></div>
+      <div class="setting-field"><label for="setMix">Crossfade length</label><select id="setMix"><option value="0">Off (no crossfade)</option><option value="3">3 seconds</option><option value="6">6 seconds</option><option value="9">9 seconds</option></select><small>How long both songs overlap.</small></div>
       <div class="setting-field"><label for="setLead">Seconds to subtract from mix length</label><input id="setLead" type="number" min="0" max="8" step="1" value="${settings.leadSubtract}"><small>Default 2. Hook starts at hook time − (mix length − this value).</small></div>
       <div class="setting-field"><label for="setHookDuration">Play time after hook start</label><input id="setHookDuration" type="number" min="5" max="300" step="1" value="${settings.hookPlaySeconds}"><small>Used when that hook has no marked end.</small></div>
       <div class="setting-field"><label for="setNoHook">Fallback time without a hook end</label><input id="setNoHook" type="number" min="5" max="600" step="5" value="${settings.noHookSeconds}"><small>Switch after this many seconds if no hook end is available.</small></div>
@@ -113,7 +113,7 @@ function openSettings() {
   $("#saveSettings").onclick = () => {
     settings.aiEnabled = $("#setAI").checked;
     settings.autoAdvance = $("#setAuto").checked;
-    settings.mixLength = [3,6,9].includes(+$("#setMix").value) ? +$("#setMix").value : 6;
+    settings.mixLength = [0,3,6,9].includes(+$("#setMix").value) ? +$("#setMix").value : 6;
     settings.leadSubtract = Math.max(0,Math.min(8,+$("#setLead").value || 0));
     settings.hookPlaySeconds = Math.max(5,Math.min(300,+$("#setHookDuration").value || 24));
     settings.noHookSeconds = Math.max(5,Math.min(600,+$("#setNoHook").value || 45));
@@ -346,10 +346,16 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
     await nextAudio.play();
     if(token!==S.tok){nextAudio.pause();return;}
     ci=1-ci;
-    S.mixing=true;
-    if(wasPlaying) fade(old,0,mixSec()*1000,()=>{old.pause();old.removeAttribute("src");old.load();});
-    else old.pause();
-    fade(nextAudio,vol(),mixSec()*1000,()=>{S.mixing=false;S.transitioning=false;});
+    if(mixSec()===0) {
+      // Crossfade disabled: switch decks instantly without overlapping audio.
+      old.pause(); old.removeAttribute("src"); old.load();
+      nextAudio.volume=vol(); S.mixing=false; S.transitioning=false;
+    } else {
+      S.mixing=true;
+      if(wasPlaying) fade(old,0,mixSec()*1000,()=>{old.pause();old.removeAttribute("src");old.load();});
+      else old.pause();
+      fade(nextAudio,vol(),mixSec()*1000,()=>{S.mixing=false;S.transitioning=false;});
+    }
     S.activeHook=hook?{trackId:track.id,hookId:hook.id,t:hook.t,end:hook.end??null,lyric:hook.lyric||"Hook"}:null;
     if(hook) markHookPlayed(track,hook);
     if(previous && hook) rememberPattern(previous,track,hook);
@@ -618,7 +624,7 @@ $("#shuffle").onclick=()=>{S.shuffle=!S.shuffle;$("#shuffle").classList.toggle("
 $("#repeat").onclick=()=>{S.repeat=!S.repeat;$("#repeat").classList.toggle("active",S.repeat);};
 $("#vol").oninput=()=>{if(!S.mixing)audio().volume=vol();};
 $("#seek").oninput=e=>{if(audio().duration)audio().currentTime=audio().duration*e.target.value/1000;};
-$("#mixsec").onchange=e=>{settings.mixLength=+e.target.value;saveSettings();};
+$("#mixsec").onchange=e=>{settings.mixLength=[0,3,6,9].includes(+e.target.value)?+e.target.value:6;saveSettings();};
 $("#autoMode").onchange=e=>{settings.autoMode=e.target.value;saveSettings();};
 $("#searchForm").onsubmit=e=>{e.preventDefault();const q=$("#searchInput").value.trim();searchAudius(q);};
 document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=()=>switchView(b.dataset.view));
