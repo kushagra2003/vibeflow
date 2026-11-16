@@ -506,21 +506,26 @@ function pickRandomDJTrack() {
   return toTrack(fair[Math.floor(Math.random()*fair.length)]);
 }
 function nextAutomatic() {
-  const explicitlyChosen=S.queue[S.idx+1]?._chosenHook ? S.queue[S.idx+1] : null;
-  if(!explicitlyChosen && (!settings.autoAdvance || settings.autoMode==="off")) return;
-  const t=explicitlyChosen || (S.radio ? pickRandomDJTrack() : pickNextTrack());
-  if(!t) { toast("Add more tracks to My music for automatic DJ playback."); return; }
-  const chosen=t._chosenHook;
-  const hook=chosen
-    ? (hooksOf(t).find(h=>String(h.id)===String(chosen.id)) || chosen)
-    : (settings.autoMode==="beginning" && !S.radio ? null : fairHook(t));
-  if(chosen) { delete t._chosenHook; save(); }
-  transitionTo(t,hook,{automatic:true,mode:hook?"hook":(settings.autoMode==="beginning"?"beginning":"no-hook")});
+  // A queued track always has priority over AI/random selection.
+  // This keeps the "Coming up next" display and actual playback in sync.
+  const queuedNext = S.queue[S.idx + 1] || null;
+  if (!queuedNext && (!settings.autoAdvance || settings.autoMode === "off")) return;
+
+  const t = queuedNext || (S.radio ? pickRandomDJTrack() : pickNextTrack());
+  if (!t) { toast("Add more tracks to My music for automatic DJ playback."); return; }
+
+  const chosen = queuedNext?._chosenHook || null;
+  const hook = chosen
+    ? (hooksOf(t).find(h => String(h.id) === String(chosen.id)) || chosen)
+    : (settings.autoMode === "beginning" && !S.radio ? null : fairHook(t));
+
+  if (chosen) { delete t._chosenHook; save(); }
+  transitionTo(t, hook, {automatic:true, mode:hook ? "hook" : (settings.autoMode === "beginning" ? "beginning" : "no-hook")});
 }
 function handleAutoAdvance() {
-  if(S.transitioning || S.mixing) return;
-  const explicitlyChosen=!!S.queue[S.idx+1]?._chosenHook;
-  if(!explicitlyChosen && (!settings.autoAdvance || settings.autoMode==="off")) return;
+  if (S.transitioning || S.mixing) return;
+  const hasQueuedNext = !!S.queue[S.idx + 1];
+  if (!hasQueuedNext && (!settings.autoAdvance || settings.autoMode === "off")) return;
   nextAutomatic();
 }
 function seekResetDuration() {
@@ -918,7 +923,7 @@ A.forEach(a=>{
     if(!S.seeking) checkHookTimer();
     updateDJStatus();
   };
-  a.onended=()=>{if(a===audio()&&!S.transitioning&&settings.autoAdvance&&settings.autoMode!=="off")nextAutomatic();};
+  a.onended=()=>{if(a===audio()&&!S.transitioning&&(!!S.queue[S.idx+1]||(settings.autoAdvance&&settings.autoMode!=="off")))nextAutomatic();};
   a.onerror=()=>{if(a===audio()&&a.src)toast("This audio file could not be played. Check the file URL and format.");};
 });
 $("#modalRoot").addEventListener("click",e=>{if(e.target.classList.contains("modal-backdrop")&&e.target.dataset.dismiss)$("#modalRoot").innerHTML="";});
