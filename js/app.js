@@ -18,7 +18,7 @@ const S = {
   patterns: store.get("patterns", []), hookPlays: store.get("hookPlays", {}),
   trackPlays: store.get("trackPlays", {}), radio: false, shuffle: false,
   repeat: false, view: "discover", results: [], recs: [], busy: false,
-  tok: 0, mixing: false, transitioning: false, activeHook: null,
+  tok: 0, mixing: false, transitioning: false, activeHook: null, autoTransitionPending:false,
   transitionTimer: null, env: {}, lib: [], dragIndex: null,
   seeking: false, seekResetMediaTime: null, seekResetDelay: 0, seekResumeAt: 0,
   activeNoHookDeadline: null, displayUpdateTimer: null,
@@ -72,10 +72,11 @@ async function initLib() {
       };
     });
     const localMap = new Map((Array.isArray(local)?local:[]).filter(x=>x?.file).map(x=>[x.file,x]));
+    const archivedHooks = store.get("hookArchive", {});
     const merged = new Map();
     for (const song of discovered) {
       const old = localMap.get(song.file) || {};
-      merged.set(song.file, {...song,...old,hooks:old.hooks || song.hooks});
+      merged.set(song.file, {...song,...old,hooks:mergeHookLists(old.hooks, archivedHooks[song.file], song.hooks)});
     }
     S.lib = [...merged.values()];
     $("#libraryStatus").textContent = `${S.lib.length} songs discovered`;
@@ -88,7 +89,46 @@ async function initLib() {
   }
   render();
 }
-const saveLib = () => store.set("lib", S.lib);
+const saveLib = () => {
+  store.set("lib", S.lib);
+  const archive = Object.fromEntries(S.lib.filter(x=>x?.file).map(x=>[x.file, hooksOf(x)]));
+  store.set("hookArchive", archive);
+};
+function mergeHookLists(...lists) {
+  const merged=[];
+  for(const list of lists) for(const h of Array.isArray(list)?list:[]) {
+    const duplicate=merged.some(x=>String(x.id||"")===String(h.id||"") ||
+      (Math.abs(Number(x.t)-Number(h.t))<0.35 && String(x.lyric||"").trim().toLowerCase()===String(h.lyric||"").trim().toLowerCase()));
+    if(!duplicate) merged.push({...h});
+  }
+  return merged.sort((a,b)=>Number(a.t)-Number(b.t));
+}
+function exportHooksBackup() {
+  const payload={app:"VIBE FLOW",version:1,exportedAt:new Date().toISOString(),
+    songs:S.lib.filter(x=>x?.file).map(x=>({file:x.file,title:x.title,artist:x.artist,hooks:hooksOf(x)}))};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob), link=document.createElement("a");
+  link.href=url; link.download="vibeflow-hooks-backup-"+new Date().toISOString().slice(0,10)+".json";
+  link.click(); URL.revokeObjectURL(url);
+  toast("Hook backup exported. Keep this JSON file somewhere safe.");
+}
+async function importHooksBackup(file) {
+  if(!file) return;
+  try {
+    const payload=JSON.parse(await file.text());
+    if(!Array.isArray(payload.songs)) throw new Error("This is not a VIBE FLOW hooks backup.");
+    let restored=0;
+    for(const saved of payload.songs) {
+      const entry=S.lib.find(x=>x.file===saved.file);
+      if(!entry) continue;
+      const before=hooksOf(entry).length;
+      entry.hooks=mergeHookLists(entry.hooks,saved.hooks);
+      restored+=Math.max(0,entry.hooks.length-before);
+    }
+    saveLib(); render();
+    toast("Backup merged safely: "+restored+" hook(s) restored. Existing hooks were not replaced.");
+  } catch(error) { toast(error.message||"Could not import this hook backup."); }
+}
 const getLibTrack = id => S.lib.find(f => "my:"+f.file === id);
 const hooksOf = t => Array.isArray(t?.hooks) ? t.hooks : [];
 
@@ -156,7 +196,7 @@ function addHook() {
   const t=cur(); if(!t || t.provider!=="mine") return toast("Select a song from My music to save hooks.");
   const label=$("#hookLabel").value.trim() || `Hook ${hooksOf(t).length+1}`;
   const entry=getLibTrack(t.id); if(!entry) return;
-  const h={id:crypto.randomUUID?.() || String(Date.now()),t:Math.round(audio().currentTime*2)/2,end:null,lyric:label,endLyric:""};
+  const h={id:crypto.randomUUID?.() || String(Date.now()),t:Math.round(audio().currentTime*2)/2,end:null,lyric:label,endLyric:"",source:"manual"};
   entry.hooks=[...hooksOf(entry),h].sort((a,b)=>a.t-b.t);
   t.hooks=entry.hooks; S.activeNoHookDeadline=null; S.activeHook={trackId:t.id,hookId:h.id,t:h.t,end:null};
   $("#hookLabel").value=""; saveLib(); save(); renderHooks(); render();
@@ -187,6 +227,16 @@ function markHookEnd(id) {
   h.endLyric=$("#endLine-"+CSS.escape(String(id)))?.value?.trim() || h.endLyric || "";
   t.hooks=entry.hooks; saveLib(); renderHooks();
   toast(`Hook ends at ${fmt(end)}.`);
+}
+function verifyAutoHook(id) {
+  const t=cur(), entry=t && getLibTrack(t.id);
+  if(!entry) return;
+  const hook=hooksOf(entry).find(x=>String(x.id)===String(id));
+  if(!hook || hook.source!=="auto") return;
+  hook.source="manual"; hook.verifiedAt=Date.now();
+  t.hooks=entry.hooks; syncTrackHooks(t.id,entry.hooks);
+  saveLib(); save(); renderHooks(); render();
+  toast("Hook saved and verified. It is now marked as a manual cue.");
 }
 function deleteHook(id) {
   const t=cur(), entry=t && getLibTrack(t.id); if(!entry) return;
@@ -341,12 +391,14 @@ function renderHooks() {
         <button data-hook-go="${esc(h.id)}" title="Jump exactly to hook">Go</button>
         <input id="endLine-${esc(h.id)}" aria-label="Hook ending lyric" placeholder="End line" value="${esc(h.endLyric||"")}" style="width:110px;padding:6px;font-size:10px">
         <button data-hook-end="${esc(h.id)}" title="Mark hook end here">Mark end</button>
+        ${h.source==="auto"?`<button data-hook-verify="${esc(h.id)}" title="Save and verify this generated hook">Save hook</button>`:""}
         <button data-hook-delete="${esc(h.id)}" title="Delete hook">×</button>
       </div>
     </div>`).join("");
   $("#hooksList").querySelectorAll("[data-hook-go]").forEach(b=>b.onclick=()=>playHookDirect(hooks.find(h=>String(h.id)===b.dataset.hookGo)));
   $("#hooksList").querySelectorAll("[data-hook-start-adjust]").forEach(b=>b.onclick=()=>adjustHookStart(b.dataset.hookStartAdjust,Number(b.dataset.delta)));
   $("#hooksList").querySelectorAll("[data-hook-end]").forEach(b=>b.onclick=()=>markHookEnd(b.dataset.hookEnd));
+  $("#hooksList").querySelectorAll("[data-hook-verify]").forEach(b=>b.onclick=()=>verifyAutoHook(b.dataset.hookVerify));
   $("#hooksList").querySelectorAll("[data-hook-delete]").forEach(b=>b.onclick=()=>deleteHook(b.dataset.hookDelete));
   renderAIHookSuggestions();
 }
@@ -364,6 +416,11 @@ function fairHook(track) {
   const min=Math.min(...counts);
   const pool=hooks.filter(h=>(S.hookPlays[hookKey(track,h)]||0)===min);
   return pool[Math.floor(Math.random()*pool.length)];
+}
+function verifiedRandomHook(track) {
+  const verified=hooksOf(track).filter(h=>h.source!=="auto");
+  if(!verified.length) return null;
+  return verified[Math.floor(Math.random()*verified.length)];
 }
 function rememberPattern(from,to,hook) {
   if(!from || !to || from.id===to.id) return;
@@ -440,6 +497,10 @@ function openMixChoices() {
 }
 
 // ---------- Transition animation + two-deck playback ----------
+function showPartyMessage(message) {
+  const el=$("#partyMessage");
+  if(el) { el.textContent=message; el.classList.remove("party-message-pop"); void el.offsetWidth; el.classList.add("party-message-pop"); }
+}
 function setDJActivity(title,detail,countdown="--:--",state="ready") {
   const titleEl=$("#djActivity"), detailEl=$("#djDetail"), countEl=$("#djCountdown");
   if(titleEl) titleEl.textContent=title;
@@ -447,6 +508,15 @@ function setDJActivity(title,detail,countdown="--:--",state="ready") {
   if(countEl) countEl.textContent=countdown;
   const panel=$(".wave-panel");
   if(panel) panel.dataset.djState=state;
+  if($("#partyMode") && !$("#partyMode").hidden) {
+    $("#partyActivity").textContent=title;
+    $("#partyDetail").textContent=detail;
+    if(/SCAN|FINDING/.test(title)) showPartyMessage("Finding the hook line… 🎧");
+    else if(/HOOK FOUND|HOOK LINE FOUND/.test(title)) showPartyMessage("Hook line found. Bass drop on the way! 🔊");
+    else if(/CROSSFADING|MIXING/.test(title)) showPartyMessage("Ye hogyi mixing! Ab vibe dekho. 🪩");
+    else if(/DROP|YEAHHH/.test(title)) showPartyMessage("Ab pata hai kya song aane wala hai? LET’S NACHOOOO! 💃");
+    else if(/NO STRONG MATCH|UNAVAILABLE/.test(title)) showPartyMessage("Surprise incoming — letting the beat speak. ✨");
+  }
 }
 function updateDJStatus() {
   const t=cur(), a=audio();
@@ -629,7 +699,10 @@ function ensureAINextTrack() {
   if(nextTrack) addQueue(nextTrack,"next");
 }
 
-function nextAutomatic() {
+async function nextAutomatic() {
+  if(S.transitioning || S.autoTransitionPending) return;
+  S.autoTransitionPending=true;
+  try {
   // A queued track always has priority over AI/random selection.
   // This keeps the "Coming up next" display and actual playback in sync.
   const queuedNext = S.queue[S.idx + 1] || null;
@@ -643,13 +716,26 @@ function nextAutomatic() {
   const t = queuedNext || (S.radio ? pickRandomDJTrack() : pickNextTrack());
   if (!t) { toast("Add more tracks to My music for automatic DJ playback."); return; }
 
+  if(S.radio && t.provider==="mine" && !hooksOf(t).length && !S.hookScans[t.id]) {
+    setDJActivity("FINDING HOOK LINE","Analysing "+t.title+" before playback · no hook is saved yet","SCAN","sync");
+    showPartyMessage("Finding the hook line… 🎧");
+    await scanCurrentSongHooks({automatic:true,trackOverride:t});
+  }
+  if(S.transitioning) return;
   const chosen = queuedNext?._chosenHook || null;
   const hook = chosen
     ? (hooksOf(t).find(h => String(h.id) === String(chosen.id)) || chosen)
-    : (settings.autoMode === "beginning" && !S.radio ? null : fairHook(t));
+    : (S.radio
+      ? (hooksOf(t).length ? hooksOf(t)[Math.floor(Math.random()*hooksOf(t).length)] : null)
+      : settings.autoMode === "hook"
+        ? verifiedRandomHook(t)
+        : (settings.autoMode === "beginning" ? null : fairHook(t)));
 
   if (chosen) { delete t._chosenHook; save(); }
+  if(hook && S.radio) { setDJActivity("HOOK LINE FOUND · MIXING NOW","Cue locked on "+t.title+" · preparing the drop","READY","ready"); showPartyMessage("Hook line found. Bass drop on the way! 🔊"); }
+  else if(S.radio) { showPartyMessage("No hook found — bringing the track in from your fallback point."); }
   transitionTo(t, hook, {automatic:true, mode:hook ? "hook" : (settings.autoMode === "beginning" ? "beginning" : "no-hook")});
+  } finally { S.autoTransitionPending=false; }
 }
 function handleAutoAdvance() {
   if (S.transitioning || S.mixing) return;
@@ -1026,6 +1112,23 @@ $("#autoMode").onchange=e=>{settings.autoMode=e.target.value;saveSettings();};
 $("#searchForm").onsubmit=e=>{e.preventDefault();const q=$("#searchInput").value.trim();searchAudius(q);};
 document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=()=>switchView(b.dataset.view));
 $("#refreshLibrary").onclick=async()=>{await initLib();toast(`Found ${S.lib.length} songs in GitHub.`);};
+$("#exportHooks").onclick=exportHooksBackup;
+$("#importHooks").onclick=()=>$("#importHooksFile").click();
+$("#importHooksFile").onchange=e=>{importHooksBackup(e.target.files?.[0]);e.target.value="";};
+$("#partyModeButton").onclick=async()=>{
+  $("#partyMode").hidden=false; document.body.classList.add("party-mode-open");
+  showPartyMessage("Surprise incoming… VIBE FLOW is taking over! 🪩");
+  try { if(!document.fullscreenElement) await document.documentElement.requestFullscreen?.(); } catch {}
+};
+$("#closeParty").onclick=async()=>{
+  $("#partyMode").hidden=true; document.body.classList.remove("party-mode-open");
+  try { if(document.fullscreenElement) await document.exitFullscreen?.(); } catch {}
+};
+$("#partyPlay").onclick=togglePlay;
+$("#partyNext").onclick=()=>{if(S.radio) nextAutomatic(); else next();};
+$("#partyPrev").onclick=previous;
+$("#partyAI").onclick=toggleAIDJ;
+document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement && !$("#partyMode").hidden){$("#partyMode").hidden=true;document.body.classList.remove("party-mode-open");}});
 $("#openSettings").onclick=openSettings; $("#footerSettings").onclick=openSettings;
 function toggleAIDJ() {
   S.radio=!S.radio;
@@ -1130,6 +1233,6 @@ window.addEventListener("keydown",e=>{
 (async()=>{
   syncControls();
   await initLib();
-  await searchAudius();
+  switchView("library");
   if(cur()) render();
 })();
