@@ -674,7 +674,12 @@ function render() {
   const t=cur();
   $("#title").textContent=t?.title||"Nothing playing yet";
   $("#artist").textContent=t?.artist||"Choose a track from Discover or My music";
-  $("#art").src=t?.art||"";
+  const art=$("#art"), cover=art.closest(".cover-wrap"), vinyl=$("#vinylFallback");
+  cover.classList.toggle("no-art",!t?.art);
+  vinyl.classList.toggle("paused",audio().paused);
+  art.onerror=()=>cover.classList.add("no-art");
+  art.onload=()=>cover.classList.remove("no-art");
+  art.src=t?.art||"";
   $("#miniTitle").textContent=t?.title||"Nothing playing";
   $("#miniArtist").textContent=t?.artist||"VibeFlow";
   $("#playState").textContent=audio().paused?"· PAUSED":"· PLAYING";
