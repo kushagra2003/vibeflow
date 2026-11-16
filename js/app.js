@@ -668,7 +668,7 @@ function trackRow(t,i,where) {
     : `<button data-play="${esc(t.id)}">Play</button><button data-play-next="${esc(t.id)}">Play next</button><button data-add="${esc(t.id)}">Queue</button>`;
   return `<div class="track-row ${current?"current":""}" data-track-id="${esc(t.id)}" ${where==="queue"?`draggable="true" data-queue-index="${i}"`:""}>
     <div class="track-hook-wrap">
-      <button type="button" class="track-hook-count" aria-label="${hooks.length} saved hooks" title="Hover to choose a hook">${hooks.length}</button>
+      <button type="button" class="track-hook-count" aria-label="${hooks.length} saved hooks" >${hooks.length}</button>
       <div class="track-hook-popover"><div class="hook-popover-title">PLAY NEXT FROM HOOK</div>${hookMenu}</div>
     </div>
     <div class="track-meta"><b>${esc(t.title)}</b><small>${esc(t.artist||"Unknown")} · ${t.provider==="mine"?"My music":"Audius"}${where==="queue"&&i===S.idx?" · PLAYING":""}</small></div>
