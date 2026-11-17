@@ -233,7 +233,7 @@ function adjustHookTime(id,delta,target="start") {
   }
   t.hooks=entry.hooks;
   if(S.activeHook?.trackId===t.id && String(S.activeHook.hookId)===String(id)) {
-    S.activeHook.t=h.t; S.activeHook.end=h.end ?? null; S.activeHook.endApproved=h.endApproved===true;
+    S.activeHook.t=h.t; S.activeHook.end=h.end ?? null; S.activeHook.endSource=h.endSource ?? null; S.activeHook.endApproved=h.endApproved===true;
   }
   syncTrackHooks(t.id,entry.hooks);
   saveLib(); save();
@@ -250,7 +250,7 @@ function markHookEnd(id) {
   h.endSource="manual"; h.endApproved=true;
   h.endLyric=$("#endLine-"+CSS.escape(String(id)))?.value?.trim() || h.endLyric || "";
   t.hooks=entry.hooks;
-  if(S.activeHook?.trackId===t.id && String(S.activeHook.hookId)===String(id)) { S.activeHook.end=end; S.activeHook.endApproved=true; }
+  if(S.activeHook?.trackId===t.id && String(S.activeHook.hookId)===String(id)) { S.activeHook.end=end; S.activeHook.endSource="manual"; S.activeHook.endApproved=true; }
   syncTrackHooks(t.id,entry.hooks);
   saveLib(); save(); renderHooks(); render();
   toast(`Hook end saved at ${fmt(end)}. Auto mix will switch at this point.`);
@@ -276,7 +276,7 @@ function playHookDirect(h) {
   const t=cur(); if(!t || !audio().src) return;
   audio().currentTime=h.t;
   S.activeNoHookDeadline=null;
-  S.activeHook={trackId:t.id,hookId:h.id,t:h.t,end:h.end ?? null,endApproved:h.endApproved===true,lyric:h.lyric||"Hook"};
+  S.activeHook={trackId:t.id,hookId:h.id,t:h.t,end:h.end ?? null,endSource:h.endSource ?? null,endApproved:h.endApproved===true || h.endSource==="manual",lyric:h.lyric||"Hook"};
   markHookPlayed(t,h);
   renderHooks();
   $("#hookStatus").textContent=`${h.lyric || "Hook"} · ${fmt(h.t)}`;
