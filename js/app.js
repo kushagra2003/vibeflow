@@ -9,10 +9,11 @@ const store = {
 };
 const defaults = {
   mixLength: 6, leadSubtract: 2, hookPlaySeconds: 24, noHookSeconds: 45, noHookStartSeconds: 20, bpmTolerance: 8,
-  displayUpdateDelay: 0, aiEnabled: true, autoMode: "hook"
+  displayUpdateDelay: 0, aiEnabled: true, autoHookDetection: true, autoMode: "hook"
 };
 const settings = { ...defaults, ...store.get("settings", {}) };
 settings.autoMode = settings.autoMode === "beginning" ? "beginning" : "hook";
+settings.autoHookDetection = settings.autoHookDetection !== false;
 const S = {
   queue: store.get("queue", []), idx: store.get("idx", -1),
   favs: store.get("favs", []), hist: store.get("hist", []),
@@ -143,6 +144,7 @@ function openSettings() {
   <div class="modal-backdrop" data-close="1"><div class="modal-card" role="dialog" aria-modal="true">
     <div class="modal-head"><div><div class="eyebrow">PERSONALISE YOUR DJ</div><h2>VibeFlow settings</h2><p class="modal-sub">Control how tracks are selected, mixed and repeated.</p></div><button class="modal-close" data-close="1">×</button></div>
     <div class="toggle-row"><div><b>AI recommendations</b><small>Control personalised track suggestions.</small></div><input class="switch" id="setAI" type="checkbox" ${settings.aiEnabled?"checked":""}></div>
+    <div class="toggle-row"><div><b>Automatic hook detection</b><small>When off, generated hooks are hidden and only manually saved hooks are used.</small></div><input class="switch" id="setAutoHookDetection" type="checkbox" ${settings.autoHookDetection?"checked":""}></div>
     <div class="settings-grid" style="margin-top:14px">
       <div class="setting-field"><label for="setMix">Crossfade length</label><select id="setMix"><option value="0">Off (no crossfade)</option><option value="3">3 seconds</option><option value="6">6 seconds</option><option value="9">9 seconds</option><option value="random">Random (3 / 6 / 9 seconds)</option></select><small>Random chooses a fresh 3, 6 or 9 second crossfade for each transition.</small></div>
       <div class="setting-field"><label for="setLead">Seconds to subtract from mix length</label><input id="setLead" type="number" min="0" max="8" step="1" value="${settings.leadSubtract}"><small>Default 2. Hook starts at hook time − (mix length − this value).</small></div>
@@ -163,6 +165,7 @@ function openSettings() {
   }));
   $("#saveSettings").onclick = () => {
     settings.aiEnabled = $("#setAI").checked;
+    settings.autoHookDetection = $("#setAutoHookDetection").checked;
     settings.mixLength = $("#setMix").value==="random" ? "random" : ([0,3,6,9].includes(+$("#setMix").value) ? +$("#setMix").value : 6);
     settings.leadSubtract = Math.max(0,Math.min(8,+$("#setLead").value || 0));
     settings.hookPlaySeconds = Math.max(5,Math.min(300,+$("#setHookDuration").value || 24));
@@ -288,6 +291,7 @@ function syncTrackHooks(trackId, hooks) {
   }
 }
 async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
+  if(!settings.autoHookDetection) { if(!automatic) toast("Automatic hook detection is turned off in Settings."); return; }
   const track=trackOverride||cur();
   if(!track || track.provider!=="mine") {
     if(!automatic) toast("Local hook analysis currently scans songs in My music.");
@@ -387,7 +391,7 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
   }
 }
 function maybeAutoScanUpcoming(track) {
-  if(!S.autoMix || settings.autoMode!=="hook" || !track || track.provider!=="mine") return;
+  if(!settings.autoHookDetection || !S.autoMix || settings.autoMode!=="hook" || !track || track.provider!=="mine") return;
   const needsEndUpgrade=hooksOf(track).some(h=>h.source==="auto" && h.end==null);
   if(hooksOf(track).length && !needsEndUpgrade) return;
   if((S.hookScans[track.id]?.version||0)>=2 || S.autoHookInFlight.has(track.id) || S.aiHookScanning) return;
@@ -415,7 +419,8 @@ function renderAIHookSuggestions() {
   root.innerHTML='<div class="ai-hook-status">Click Analyse for hooks to scan this song locally. Auto mix can also scan an unmarked upcoming song in From hook mode. No API key or audio upload required.</div>';
 }
 function renderHooks() {
-  const t=cur(), hooks=hooksOf(t);
+  const t=cur(), allHooks=hooksOf(t);
+  const hooks=settings.autoHookDetection ? allHooks : allHooks.filter(h=>h.source!=="auto");
   $("#hookCount").textContent=`${hooks.length} saved · ${hooks.filter(h=>h.source==='auto').length} auto`;
   if(!t || t.provider!=="mine") {
     $("#hooksList").innerHTML='<div class="empty-state">Hooks can be marked on songs in My music.</div>';
@@ -427,11 +432,12 @@ function renderHooks() {
   }
   $("#hooksList").innerHTML=hooks.map((h,i)=>{
     const isActive=S.activeHook?.trackId===t.id && String(S.activeHook.hookId)===String(h.id);
+    const isManual=h.source!=="auto";
     const target=S.hookEditTarget[h.id]==="end"?"end":"start";
     const editingEnd=target==="end";
     const shown=editingEnd?h.end:h.t;
     return `
-    <div class="hook-item ${h.source==="auto"?"auto-hook-item":"manual-hook-item"} ${isActive?"active-hook-item":""}">
+    <div class="hook-item ${h.source==="auto"?"auto-hook-item":"manual-hook-item"} ${isManual?"saved-manual-hook":""} ${isActive?"active-hook-item":""}">
       <div class="hook-main">
         <div class="hook-time-editor">
           <div class="hook-edit-toggle" role="group" aria-label="Choose hook time to adjust">
@@ -446,7 +452,7 @@ function renderHooks() {
           ${editingEnd&&h.end==null?'<small class="hook-end-help">Mark an end while the song plays to enable adjustment</small>':""}
         </div>
         <div class="hook-detail">
-          <b title="${esc(h.lyric || "Hook "+(i+1))}">${esc(h.lyric || "Hook "+(i+1))}${isActive?'<span class="active-hook-badge">NOW PLAYING · AUTO MIX CUE</span>':""}</b>
+          <b title="${esc(h.lyric || "Hook "+(i+1))}">${esc(h.lyric || "Hook "+(i+1))}${isActive?'<span class="active-hook-badge">CURRENT HOOK</span>':""}</b>
           <small><span class="hook-origin ${h.source==="auto"?"auto":"manual"}">${h.source==="auto"?"AUTO":"MANUAL"}</span> · ${h.source==="auto"?(h.detector==="repeated-section"?"Pattern match":"Energy peak"):"User cue"} · ${h.end!=null?`Ends ${fmt(h.end)}${h.endSource==="manual"?" · approved": " · detected, not used until approved"}${h.endLyric?" · "+esc(h.endLyric):""}`:"End not marked"}</small>
         </div>
       </div>
@@ -479,8 +485,14 @@ function markHookPlayed(track, hook) {
   S.trackPlays[track.id]=(S.trackPlays[track.id]||0)+1;
   save();
 }
+function preferredHooks(track) {
+  const all=hooksOf(track);
+  if(!settings.autoHookDetection) return all.filter(h=>h.source!=="auto");
+  const manual=all.filter(h=>h.source!=="auto");
+  return manual.length ? manual : all;
+}
 function fairHook(track) {
-  const hooks=hooksOf(track); if(!hooks.length) return null;
+  const hooks=preferredHooks(track); if(!hooks.length) return null;
   const counts=hooks.map(h=>S.hookPlays[hookKey(track,h)]||0);
   const min=Math.min(...counts);
   const pool=hooks.filter(h=>(S.hookPlays[hookKey(track,h)]||0)===min);
@@ -944,9 +956,9 @@ async function nextAutomatic() {
     if(!S.autoMix || S.transitioning) return;
 
     const chosen=queuedNext?._chosenHook||null;
-    const hook=settings.autoMode==="beginning" ? null : (chosen
-      ? (hooksOf(track).find(h=>String(h.id)===String(chosen.id))||chosen)
-      : (hooksOf(track).length ? hooksOf(track)[Math.floor(Math.random()*hooksOf(track).length)] : null));
+    const availableHooks=preferredHooks(track);
+    const chosenHook=chosen ? availableHooks.find(h=>String(h.id)===String(chosen.id)) : null;
+    const hook=settings.autoMode==="beginning" ? null : (chosenHook || (availableHooks.length ? fairHook(track) : null));
     if(chosen) { delete track._chosenHook; save(); }
     if(hook) {
       setDJActivity("HOOK LINE FOUND · MIXING NOW","Cue locked on "+track.title+" · preparing the drop","READY","ready");

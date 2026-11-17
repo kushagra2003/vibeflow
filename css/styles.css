@@ -313,3 +313,13 @@ body.party-mode-open{overflow:hidden}
 .crossfade-status{display:inline-flex;align-items:center;justify-content:center;margin:7px auto 0;padding:5px 10px;border:1px solid #554665;border-radius:99px;background:#17121f;color:#bca8ce;font-size:9px;font-weight:900;letter-spacing:1px}
 .crossfade-status.crossfade-active{border-color:#45d9b4;background:#10382f;color:#9af3d8;box-shadow:0 0 14px #45d9b433;animation:crossfadePulse 1.2s ease-in-out infinite alternate}
 @keyframes crossfadePulse{from{box-shadow:0 0 4px #45d9b422}to{box-shadow:0 0 16px #45d9b455}}
+
+
+/* Distinct hook states: manual cues red, generated cues teal, active cue violet. */
+.hook-item.saved-manual-hook{border-color:#a83c55;background:linear-gradient(110deg,#3b1724,#211722 72%);}
+.hook-item.saved-manual-hook .hook-time{color:#ff9aad;text-shadow:0 0 9px #ff547755;}
+.hook-origin.manual{color:#ffd1dc;background:#541d2d;border-color:#a83c55;}
+.hook-origin.auto{color:#8af0d3;background:#124b40;border-color:#247f6d;}
+.hook-item.active-hook-item{border-color:#b98aff!important;background:linear-gradient(110deg,#39244f 0%,#251a36 72%)!important;box-shadow:0 0 0 2px #b98aff88,0 0 24px #a66cff55,inset 4px 0 0 #d7b5ff!important;}
+.hook-item.active-hook-item .hook-time{color:#e9d4ff!important;text-shadow:0 0 12px #c18cffaa!important;}
+.hook-item.active-hook-item .active-hook-badge{color:#fff;background:#7043a5;border-color:#c59aff;}
