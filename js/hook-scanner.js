@@ -67,7 +67,7 @@
     return features;
   }
 
-  function addCandidate(list, candidate, minGapSeconds = 8) {
+  function addCandidate(list, candidate, minGapSeconds = 30) {
     const nearby = list.find(item => Math.abs(item.t - candidate.t) < minGapSeconds);
     if (!nearby) list.push(candidate);
     else if (candidate.confidence > nearby.confidence) Object.assign(nearby, candidate);
@@ -166,7 +166,7 @@
         label: "High-energy section",
         type: "energy-peak",
         confidence: clamp(0.60 + (item.score / Math.max(threshold, 0.0001) - 1) * 0.10, 0.60, 0.82)
-      }, 10);
+      }, 30);
     }
   }
 
@@ -195,10 +195,14 @@
       if (features.length < 24) throw new Error("The song is too short to identify musical sections (minimum 12 seconds).");
       const candidates = findRepeatedSections(features);
       findEnergySections(features, candidates);
-      return candidates
-        .sort((a, b) => b.confidence - a.confidence)
-        .slice(0, 8)
-        .sort((a, b) => a.t - b.t);
+      // Keep only the strongest candidates, with at least 30 seconds between
+      // every accepted hook start across both detection methods.
+      const spaced = [];
+      for (const candidate of [...candidates].sort((a, b) => b.confidence - a.confidence)) {
+        if (spaced.every(item => Math.abs(item.t - candidate.t) >= 30)) spaced.push(candidate);
+        if (spaced.length >= 3) break;
+      }
+      return spaced.sort((a, b) => a.t - b.t);
     } finally {
       try { await context.close(); } catch {}
     }
