@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T15:19:53.059Z",
+  "updatedAt": "2026-11-17T15:19:56.001Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -3785,6 +3785,17 @@
           "generatedAt": 1794928791683
         },
         {
+          "id": "audio-320-1",
+          "t": 32,
+          "end": 40,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:32",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.55,
+          "generatedAt": 1794928793679
+        },
+        {
           "id": "auto-fbc01444-1912-44f5-9b59-0e4bb9077914",
           "t": 56,
           "end": null,
@@ -3857,6 +3868,18 @@
       "title": "Kapoor _ Sons _ Sidharth Malhotra_ Alia Bhatt _ Badshah _ Amaal Mallik _ Fazilpuria(MP3_160K)",
       "artist": "Kar Gayi Chull",
       "hooks": [
+        {
+          "id": "auto-847cfe3f-b198-47e0-94af-b50961988c76",
+          "t": 4,
+          "end": 23,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:04",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794928794191
+        },
         {
           "id": "auto-aaddcd8f-63dd-4548-af66-a14343980c5d",
           "t": 50,
@@ -5958,6 +5981,30 @@
       "title": "Yaha Ke Bahubali (Official Video) Masoom Sharma _ Amar Karnawal _ New Haryanvi Songs Haryanavi 2026(MP3_160K)",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "auto-261306aa-eb71-4b88-9bf4-fb4773d08a29",
+          "t": 14,
+          "end": 45,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:14",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.55,
+          "generatedAt": 1794928793055
+        },
+        {
+          "id": "auto-0e03da63-3596-425c-8ba7-ab63aca2e47d",
+          "t": 30,
+          "end": 45.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:30",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.55,
+          "generatedAt": 1794928793055
+        },
         {
           "id": "auto-158471db-e05d-4f63-8708-65f97233d955",
           "t": 104,
