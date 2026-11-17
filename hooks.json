@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T16:15:55.263Z",
+  "updatedAt": "2026-11-17T16:16:01.404Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -7579,6 +7579,30 @@
       "title": "Wajid(MP3_160K)",
       "artist": "You_Re My Love Full Video _ Partner _ Salman Khan_ Lara Dutta_ Govinda_ Katreena Kaif _Sajid",
       "hooks": [
+        {
+          "id": "auto-5054cd3b-b73f-4f06-9b96-b45c75eb29b5",
+          "t": 24,
+          "end": 59,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:24",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794932160039
+        },
+        {
+          "id": "auto-1f4dbfe2-9751-449e-9e9e-a2bcaf16d8c9",
+          "t": 42,
+          "end": 59,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:42",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794932160039
+        },
         {
           "id": "auto-bda97a91-a330-48a3-8797-3fec458136b4",
           "t": 126,
