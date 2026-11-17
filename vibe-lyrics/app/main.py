@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import subprocess
 import tempfile
 from pathlib import Path
 from typing import Literal
@@ -9,14 +10,14 @@ from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-APP_VERSION = "0.1.0"
+APP_VERSION = "0.2.0"
 MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_MB", "80")) * 1024 * 1024
 ALLOWED_SUFFIXES = {".mp3", ".wav", ".m4a", ".aac", ".ogg", ".flac", ".mp4", ".webm"}
 
 app = FastAPI(
     title="VIBE LYRICS API",
     version=APP_VERSION,
-    description="Transcription and timestamped lyric analysis service for VIBE FLOW.",
+    description="Vocal-aware transcription and timestamped lyric analysis service for VIBE FLOW.",
 )
 
 origins = [x.strip() for x in os.getenv("CORS_ORIGINS", "*").split(",") if x.strip()]
@@ -28,11 +29,13 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 
+
 class LyricWord(BaseModel):
     text: str
     start: float
     end: float
     probability: float | None = None
+
 
 class LyricLine(BaseModel):
     id: str
@@ -44,21 +47,23 @@ class LyricLine(BaseModel):
     confidence: float | None = None
     edited: bool = False
 
+
 class TranscriptionResponse(BaseModel):
     track_name: str
     language: str
     language_probability: float | None
     engine: str
     duration: float
+    vocals_separated: bool = False
     lines: list[LyricLine]
     warnings: list[str] = Field(default_factory=list)
 
+
 def verify_token(authorization: str | None) -> None:
     expected = os.getenv("VIBE_LYRICS_API_TOKEN")
-    if not expected:
-        return
-    if authorization != f"Bearer {expected}":
+    if expected and authorization != f"Bearer {expected}":
         raise HTTPException(status_code=401, detail="Invalid API token")
+
 
 def get_model():
     try:
@@ -68,13 +73,14 @@ def get_model():
     model_name = os.getenv("WHISPER_MODEL", "small")
     device = os.getenv("WHISPER_DEVICE", "cpu")
     compute_type = os.getenv("WHISPER_COMPUTE_TYPE", "int8" if device == "cpu" else "float16")
-    # Cache the model for the lifetime of the worker.
     global _MODEL
     if _MODEL is None:
         _MODEL = WhisperModel(model_name, device=device, compute_type=compute_type)
     return _MODEL
 
+
 _MODEL = None
+
 
 def language_code(language: str) -> str | None:
     return {
@@ -82,11 +88,44 @@ def language_code(language: str) -> str | None:
         "hindi": "hi",
         "english": "en",
         "punjabi": "pa",
-        # Whisper does not expose dedicated Haryanvi/Bhojpuri labels.
-        # Use Hindi as a practical starting point and flag the limitation.
         "haryanvi": "hi",
         "bhojpuri": "hi",
-    }.get(language, None)
+    }.get(language)
+
+
+def separate_vocal_stem(input_path: Path, output_dir: Path) -> Path:
+    """Run Demucs two-stem separation and return its vocals.wav output."""
+    try:
+        import demucs  # noqa: F401
+    except ImportError as exc:
+        raise HTTPException(
+            status_code=503,
+            detail="Vocal isolation is not installed on this deployment. Rebuild with INSTALL_DEMUCS=1.",
+        ) from exc
+
+    model_name = os.getenv("DEMUCS_MODEL", "htdemucs")
+    timeout = int(os.getenv("DEMUCS_TIMEOUT_SECONDS", "900"))
+    command = [
+        os.getenv("PYTHON_EXECUTABLE", "python"),
+        "-m", "demucs",
+        "--two-stems", "vocals",
+        "-n", model_name,
+        "-o", str(output_dir),
+        str(input_path),
+    ]
+    try:
+        result = subprocess.run(command, capture_output=True, text=True, timeout=timeout, check=False)
+    except subprocess.TimeoutExpired as exc:
+        raise HTTPException(status_code=504, detail="Vocal isolation timed out. Try a shorter audio file.") from exc
+    if result.returncode != 0:
+        detail = (result.stderr or result.stdout or "Demucs exited unexpectedly")[-1800:]
+        raise HTTPException(status_code=422, detail=f"Vocal isolation failed: {detail}")
+
+    candidates = list(output_dir.glob("**/vocals.wav"))
+    if not candidates:
+        raise HTTPException(status_code=422, detail="Demucs completed but did not produce a vocals.wav stem.")
+    return candidates[0]
+
 
 def make_lines(segments) -> list[LyricLine]:
     lines: list[LyricLine] = []
@@ -116,7 +155,6 @@ def make_lines(segments) -> list[LyricLine]:
             tags=tags,
             confidence=round(float(segment.avg_logprob), 4) if getattr(segment, "avg_logprob", None) is not None else None,
         ))
-    # Repeated text is a useful review cue, not proof of a chorus or punchline.
     counts: dict[str, int] = {}
     for line in lines:
         key = " ".join(line.text.casefold().split())
@@ -126,14 +164,27 @@ def make_lines(segments) -> list[LyricLine]:
             line.tags.append("repeated-line")
     return lines
 
+
 @app.get("/health")
 def health():
-    return {"status": "ok", "service": "vibe-lyrics", "version": APP_VERSION}
+    try:
+        import demucs  # noqa: F401
+        demucs_available = True
+    except ImportError:
+        demucs_available = False
+    return {
+        "status": "ok",
+        "service": "vibe-lyrics",
+        "version": APP_VERSION,
+        "vocal_isolation_available": demucs_available,
+    }
+
 
 @app.post("/v1/transcribe", response_model=TranscriptionResponse)
 async def transcribe(
     file: UploadFile = File(...),
     language: Literal["auto", "hindi", "english", "punjabi", "haryanvi", "bhojpuri"] = Form("auto"),
+    separate_vocals: bool = Form(False),
     authorization: str | None = Header(default=None),
 ):
     verify_token(authorization)
@@ -150,43 +201,45 @@ async def transcribe(
     if language in {"haryanvi", "bhojpuri"}:
         warnings.append("No dedicated dialect model is configured. Hindi-language decoding is used as a baseline; review the transcript manually.")
     if language in {"hindi", "punjabi", "haryanvi", "bhojpuri"}:
-        warnings.append("IndicConformer is not wired into this MVP yet. This request uses multilingual Whisper; IndicConformer is a planned specialist adapter.")
+        warnings.append("IndicConformer is not wired into this service yet. This request uses multilingual Whisper.")
+    if separate_vocals:
+        warnings.append("Demucs vocal isolation can reduce instrumental interference, but may introduce artifacts or remove quiet vocals. Review the transcript.")
 
-    temp_path = None
     try:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp:
-            temp.write(data)
-            temp_path = temp.name
-        model = get_model()
-        segments, info = model.transcribe(
-            temp_path,
-            language=language_code(language),
-            word_timestamps=True,
-            vad_filter=True,
-            beam_size=5,
-        )
-        # Consume the generator while the temporary file still exists.
-        segments = list(segments)
-        lines = make_lines(segments)
-        duration = float(getattr(info, "duration", 0.0) or (lines[-1].end if lines else 0.0))
-        detected = getattr(info, "language", None) or language_code(language) or "unknown"
-        return TranscriptionResponse(
-            track_name=file.filename or "Uploaded audio",
-            language=detected,
-            language_probability=round(float(info.language_probability), 4) if getattr(info, "language_probability", None) is not None else None,
-            engine=f"faster-whisper:{os.getenv('WHISPER_MODEL', 'small')}",
-            duration=round(duration, 3),
-            lines=lines,
-            warnings=warnings,
-        )
+        with tempfile.TemporaryDirectory(prefix="vibe-lyrics-") as work_dir:
+            work = Path(work_dir)
+            input_path = work / f"input{suffix}"
+            input_path.write_bytes(data)
+            transcription_path = input_path
+            if separate_vocals:
+                transcription_path = separate_vocal_stem(input_path, work / "separated")
+
+            model = get_model()
+            segments, info = model.transcribe(
+                str(transcription_path),
+                language=language_code(language),
+                word_timestamps=True,
+                vad_filter=True,
+                beam_size=5,
+            )
+            segments = list(segments)
+            lines = make_lines(segments)
+            duration = float(getattr(info, "duration", 0.0) or (lines[-1].end if lines else 0.0))
+            detected = getattr(info, "language", None) or language_code(language) or "unknown"
+            engine = f"demucs:{os.getenv('DEMUCS_MODEL', 'htdemucs')}+faster-whisper:{os.getenv('WHISPER_MODEL', 'small')}" if separate_vocals else f"faster-whisper:{os.getenv('WHISPER_MODEL', 'small')}"
+            return TranscriptionResponse(
+                track_name=file.filename or "Uploaded audio",
+                language=detected,
+                language_probability=round(float(info.language_probability), 4) if getattr(info, "language_probability", None) is not None else None,
+                engine=engine,
+                duration=round(duration, 3),
+                vocals_separated=separate_vocals,
+                lines=lines,
+                warnings=warnings,
+            )
     except HTTPException:
         raise
     except Exception as exc:
         raise HTTPException(status_code=422, detail=f"Transcription failed: {type(exc).__name__}: {exc}") from exc
     finally:
         await file.close()
-        if temp_path:
-            try:
-                os.unlink(temp_path)
-            except OSError:
-                pass

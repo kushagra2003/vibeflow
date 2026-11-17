@@ -63,16 +63,18 @@
     transcribeButton.disabled = true;
     exportButton.hidden = true;
     result.replaceChildren();
-    setStatus("Uploading audio and generating timestamped lyrics…", "busy");
+    const isolate = $("#lyricsSeparateVocals").checked;
+    setStatus(isolate ? "Separating vocals, then generating timestamped lyrics. This can take several minutes…" : "Uploading audio and generating timestamped lyrics…", "busy");
     const body = new FormData();
     body.append("file", file);
     body.append("language", $("#lyricsLanguage").value);
+    body.append("separate_vocals", isolate ? "true" : "false");
     try {
       const response = await fetch("/.netlify/functions/lyrics?path=v1/transcribe", { method: "POST", body });
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.detail || payload.error || `Request failed (${response.status})`);
       render(payload);
-      setStatus("Transcript ready. Review the words and export the corrected JSON.", "success");
+      setStatus(payload.vocals_separated ? "Vocals isolated and transcript ready. Review the words and export JSON." : "Transcript ready. Review the words and export the corrected JSON.", "success");
     } catch (error) {
       setStatus(error.message, "error");
     } finally {
@@ -95,6 +97,6 @@
   exportButton.addEventListener("click", exportJson);
   fetch("/.netlify/functions/lyrics?path=health")
     .then(response => response.ok ? response.json() : Promise.reject())
-    .then(() => setStatus("Lyrics service connected. Choose a track to begin.", "success"))
+    .then(data => setStatus(data.vocal_isolation_available ? "Lyrics service connected · vocal isolation available." : "Lyrics service connected · vocal isolation not installed on server yet.", "success"))
     .catch(() => setStatus("Lyrics service is not connected yet. Deploy the Python service and configure Netlify environment variables.", "warning"));
 })();

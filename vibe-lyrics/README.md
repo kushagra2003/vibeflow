@@ -1,14 +1,15 @@
-# VIBE LYRICS service (MVP)
+# VIBE LYRICS service
 
 A separate Python service for timestamped lyric transcription. It is intentionally isolated from the existing VIBE FLOW player and DJ transition engine.
 
-## What this first slice does
+## Current capabilities
 
 - Accepts MP3, WAV, M4A, AAC, OGG, FLAC, MP4 and WebM uploads (80 MB default limit).
 - Runs multilingual transcription with faster-whisper.
 - Returns segment timestamps and word timestamps where the model provides them.
+- Optional Demucs two-stem vocal isolation before ASR.
 - Supports Hindi, English and Punjabi language hints. Haryanvi and Bhojpuri currently use Hindi as a baseline and are explicitly marked for manual review.
-- Adds basic review tags for repeated lines and emphatic punctuation. These are cues for a human reviewer, **not** an AI punchline/emotion classifier.
+- Adds basic review tags for repeated lines and emphatic punctuation. These are human-review cues, not a semantic punchline or emotion classifier.
 - Lets the VIBE FLOW browser UI edit transcript lines and export JSON.
 
 ## Run locally
@@ -21,23 +22,35 @@ python -m venv .venv
 # Windows: .venv\\Scripts\\activate
 # macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
+# Optional: install the large vocal-separation dependency
+pip install -r requirements-separation.txt
 uvicorn app.main:app --reload --port 8000
 ```
 
-Open http://localhost:8000/docs and check http://localhost:8000/health.
+Open http://localhost:8000/docs and check http://localhost:8000/health. The health response reports whether Demucs is installed.
 
-## Deploy the API
+## Docker deployment
 
-Build and deploy this directory as a Docker service on Render, Railway, Fly.io or another container host. Set:
+Build the service directory with vocal isolation enabled:
+
+```bash
+docker build --build-arg INSTALL_DEMUCS=1 -t vibe-lyrics .
+```
+
+For a smaller transcription-only image, omit the build argument (or set it to 0). Demucs and its PyTorch dependencies make the enabled image substantially larger and need more memory, disk and CPU/GPU resources. First use downloads the Demucs model weights.
+
+Set these runtime environment variables:
 
 - `WHISPER_MODEL=small` (use `medium` for better quality with more RAM/latency)
 - `WHISPER_DEVICE=cpu`
 - `WHISPER_COMPUTE_TYPE=int8`
+- `DEMUCS_MODEL=htdemucs`
+- `DEMUCS_TIMEOUT_SECONDS=900`
 - `MAX_UPLOAD_MB=80`
 - `VIBE_LYRICS_API_TOKEN` to a long random secret
 - `CORS_ORIGINS` to the deployed VIBE FLOW origin
 
-The model downloads on first transcription. Provision sufficient disk and memory. CPU deployments are slower; a GPU is recommended for larger models and batch processing.
+CPU separation can be slow. Use a GPU-backed container for production workloads and test the memory limits with representative full-length tracks.
 
 ## Connect Netlify
 
@@ -51,13 +64,13 @@ Redeploy the Netlify site after setting variables. The browser calls the Netlify
 
 ## API
 
-- `GET /health`
-- `POST /v1/transcribe` multipart form fields: `file`, `language`
+- `GET /health` returns service version and whether vocal isolation is installed.
+- `POST /v1/transcribe` multipart fields: `file`, `language`, and optional `separate_vocals=true|false`.
 
-Response contains detected language, engine, duration, line timestamps, word timestamps, tags and warnings.
+When `separate_vocals=true`, Demucs creates a temporary vocals stem and faster-whisper transcribes that stem. Temporary audio and stems are deleted after the request. The response includes `vocals_separated`, the engine chain and warnings.
 
-## Important model limitations / next work
+## Still planned
 
-This MVP uses faster-whisper for every language. It does **not** yet integrate IndicConformer, Demucs vocal separation, WhisperX forced alignment, semantic punchline detection, emotion classification, or DJ cue protection. Haryanvi and Bhojpuri are dialects without dedicated routing in this version; Hindi decoding is only a baseline. Add these as separately benchmarked adapters after collecting a consented evaluation set.
+IndicConformer specialist routing, WhisperX forced alignment, semantic punchline detection, emotion classification, lyric preference learning, persistent song intelligence and direct DJ cue protection remain future milestones. Haryanvi and Bhojpuri use Hindi decoding only as a baseline.
 
-Do not upload copyrighted or private recordings unless you have the rights and permission to process them. Uploaded files are written to a temporary file and deleted after processing; no audio archive is maintained by this service.
+Only upload recordings you have the rights and permission to process. The service does not retain uploaded audio.
