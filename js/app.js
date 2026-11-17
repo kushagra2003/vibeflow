@@ -740,7 +740,18 @@ async function waitMetadata(el) {
     el.addEventListener("error",bad,{once:true});
   });
 }
-async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}={}) {
+function fadeInDeck(deck,target=1,durationMs=2200) {
+  clearInterval(deck._fade);
+  const started=performance.now();
+  deck.volume=0;
+  deck._fade=setInterval(()=>{
+    const progress=Math.min(1,(performance.now()-started)/durationMs);
+    // Smooth ease-in curve; preserve the user's master-volume setting.
+    deck.volume=Math.max(0,Math.min(1,target*(progress*progress*(3-2*progress))));
+    if(progress>=1){clearInterval(deck._fade);deck._fade=null;deck.volume=target;}
+  },40);
+}
+async function transitionTo(track,hook,{manual=false,automatic=false,mode=null,initialFade=false}={}) {
   if(!track || S.transitioning) return;
   S.transitioning=true;
   clearTimeout(S.transitionTimer);
@@ -770,7 +781,7 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
     if(S.currentCrossfadeSeconds===0) {
       // Crossfade disabled: switch decks instantly without overlapping audio.
       old.pause(); old.removeAttribute("src"); old.load();
-      nextAudio.volume=vol(); S.mixing=false; S.transitioning=false; updateCrossfadeIndicator();
+      if(initialFade) fadeInDeck(nextAudio,vol()); else nextAudio.volume=vol(); S.mixing=false; S.transitioning=false; updateCrossfadeIndicator();
       $(".dj-upcoming")?.classList.remove("upcoming-mixing");
     } else {
       S.mixing=true; updateCrossfadeIndicator();
@@ -779,7 +790,7 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
         S.mixing=false;S.transitioning=false;updateCrossfadeIndicator();$(".dj-upcoming")?.classList.remove("upcoming-mixing");
       });
       else {
-        old.pause(); nextAudio.volume=vol();
+        old.pause(); if(initialFade) fadeInDeck(nextAudio,vol()); else nextAudio.volume=vol();
         S.mixing=false; S.transitioning=false;
         $(".dj-upcoming")?.classList.remove("upcoming-mixing");
       }
@@ -1476,7 +1487,7 @@ async function pickRandomManualHookTrack() {
   const track=toTrack(entry);
   const hook=verifiedRandomHook(track);
   if(!hook) return false;
-  transitionTo(track,hook,{manual:true,mode:"hook"});
+  transitionTo(track,hook,{manual:true,mode:"hook",initialFade:true});
   return true;
 }
 function enablePartyDJTools() {
@@ -1540,7 +1551,7 @@ function toggleAutoMix() {
 $("#autoMixToggle").onclick=toggleAutoMix;$("#startTraining").onclick=startTraining;$("#stopTraining").onclick=stopTraining;trainingRefreshStats();trainingSetUi(false);
 
 A.forEach(a=>{
-  a.volume=.8;
+  a.volume=1;
   a.onplay=()=>{if(a===audio()){render();syncPartyMotion();}}; a.onpause=()=>{if(a===audio()){render();syncPartyMotion();}};
   a.ontimeupdate=()=>{
     if(a!==audio())return;
