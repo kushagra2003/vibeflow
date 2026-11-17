@@ -4,7 +4,7 @@
   const empty=()=>({version:1,score:0,transitions:0,outgoing:{},incoming:{},history:[]});
   const read=()=>{try{return {...empty(),...(JSON.parse(localStorage.getItem(KEY))||{})};}catch{return empty();}};
   const write=data=>{try{localStorage.setItem(KEY,JSON.stringify(data));}catch{}}
-  const key=(track,hook)=>String(track?.id||"")+"::"+String(hook?.id??hook?.t??"");
+  const key=(track,hook)=>String(track?.id||"")+"::"+String(hook?.id??hook?.hookId??hook?.t??"");
   const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
   const getOffset=(track,hook,side)=>{const m=read(),entry=(m[side]||{})[key(track,hook)];return clamp(Number(entry?.offset)||0,-3,3);};
   const stats=()=>{const m=read();const mean=o=>{const v=Object.values(o||{});return v.length?Math.round(v.reduce((s,x)=>s+(x.count||0),0)/v.length):0;};return {score:m.score||0,transitions:m.transitions||0,outgoingCount:Object.values(m.outgoing||{}).reduce((s,x)=>s+(x.count||0),0),incomingCount:Object.values(m.incoming||{}).reduce((s,x)=>s+(x.count||0),0),outgoingAccuracy:mean(m.outgoing),incomingAccuracy:mean(m.incoming),history:m.history||[]};};
