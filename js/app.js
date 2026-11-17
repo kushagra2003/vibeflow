@@ -279,7 +279,7 @@ function playHookDirect(h) {
   const t=cur(); if(!t || !audio().src) return;
   audio().currentTime=h.t;
   S.activeNoHookDeadline=null;
-  S.activeHook={trackId:t.id,hookId:h.id,t:h.t,end:h.end ?? null,endSource:h.endSource ?? null,endApproved:h.endApproved===true || h.endSource==="manual",lyric:h.lyric||"Hook"};
+  S.activeHook={trackId:t.id,hookId:h.id,t:h.t,end:h.end ?? null,source:h.source??"manual",endSource:h.endSource ?? null,endApproved:h.endApproved===true || h.endSource==="manual",lyric:h.lyric||"Hook"};
   markHookPlayed(t,h);
   renderHooks();
   $("#hookStatus").textContent=`${h.lyric || "Hook"} · ${fmt(h.t)}`;
@@ -320,7 +320,7 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
     let upgradedEnds=0;
     for(const candidate of candidates) {
       const match=existing.find(h=>h.source==="auto" && (
-        Math.abs(Number(h.t)-candidate.t)<8 ||
+        Math.abs(Number(h.t)-candidate.t)<30 ||
         String(h.lyric||"").trim().toLowerCase()===candidate.label.toLowerCase()
       ));
       if(match && match.end==null && candidate.end!=null && Number(candidate.end)>Number(match.t)) {
@@ -330,9 +330,9 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
       }
     }
     const accepted=candidates.filter(candidate=>!existing.some(h=>
-      Math.abs(Number(h.t)-candidate.t)<8 ||
+      Math.abs(Number(h.t)-candidate.t)<30 ||
       (String(h.lyric||"").trim().toLowerCase()===candidate.label.toLowerCase())
-    )).slice(0,6);
+    )).slice(0,3);
     const generated=accepted.map(candidate=>({
       id:"auto-"+(crypto.randomUUID?.()||String(Date.now()+Math.random())),
       t:Math.round(candidate.t*2)/2,
@@ -780,7 +780,7 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
         $(".dj-upcoming")?.classList.remove("upcoming-mixing");
       }
     }
-    S.activeHook=hook?{trackId:track.id,hookId:hook.id,t:hook.t,end:hook.end??null,endApproved:hook.endApproved===true||hook.endSource==="manual",lyric:hook.lyric||"Hook"}:null;
+    S.activeHook=hook?{trackId:track.id,hookId:hook.id,t:hook.t,end:hook.end??null,source:hook.source??"manual",endSource:hook.endSource??null,endApproved:hook.endApproved===true||hook.endSource==="manual",lyric:hook.lyric||"Hook"}:null;
     renderHooks();
     S.activeNoHookDeadline=hook?null:{trackId:track.id,at:startAt+settings.noHookSeconds};
     if(hook) markHookPlayed(track,hook);
@@ -977,7 +977,7 @@ function seekResetDuration() {
   const t=cur();
   const h=S.activeHook && S.activeHook.trackId===t?.id ? S.activeHook : null;
   // A manually saved ending is the authoritative transition point.
-  if(h && h.endSource==="manual" && h.end!=null) return Math.max(0,Number(h.end)-audio().currentTime);
+  if(h && h.source!=="auto" && h.end!=null && Number.isFinite(Number(h.end))) return Math.max(0,Number(h.end)-audio().currentTime);
   if(h) return settings.hookPlaySeconds;
   return settings.noHookSeconds;
 }
@@ -995,7 +995,7 @@ function checkHookTimer() {
   const h=S.activeHook && S.activeHook.trackId===t.id ? S.activeHook : null;
   if(h) {
     // A manually saved ending always overrides the configured hook-duration fallback.
-    const manuallySavedEnd=h.endSource==="manual" && h.end!==null && h.end!==undefined && Number.isFinite(Number(h.end));
+    const manuallySavedEnd=h.source!=="auto" && h.end!==null && h.end!==undefined && Number.isFinite(Number(h.end));
     const deadline=manuallySavedEnd ? Number(h.end) : h.t+settings.hookPlaySeconds;
     if(a.currentTime>=deadline) handleAutoAdvance();
   } else {
