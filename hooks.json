@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T18:33:46.619Z",
+  "updatedAt": "2026-11-17T18:35:02.084Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -4927,6 +4927,30 @@
       "title": "J STAR _ HULARA _ Full Official Music Video _ Blockbuster Punjabi Song 2014(MP3_160K)",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "auto-584f2d46-a1d3-4efb-aa53-03bc345de442",
+          "t": 12,
+          "end": 41.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:12",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794940500106
+        },
+        {
+          "id": "auto-3beddf27-9937-4403-803b-54176897e6df",
+          "t": 34,
+          "end": 42,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:34",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794940500106
+        },
         {
           "id": "auto-267fc424-39df-4586-8944-435eb8c684e0",
           "t": 101,
