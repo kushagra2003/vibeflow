@@ -326,9 +326,8 @@
         if (spacedHooks.every(item => Math.abs(item.t - candidate.t) >= 24)) spacedHooks.push(candidate);
         if (spacedHooks.length >= 4) break;
       }
-      const onsetAverage = average(centered);
-      const onsetVariance = average(centered.map(x => (x - onsetAverage) ** 2));
-      const bpmConfidence = Math.max(0, Math.min(0.99, (best.score / Math.max(1e-8, bpmScores[Math.min(10, bpmScores.length - 1)]?.score || best.score)) * 0.55));
+      const onsetAverage = average(Array.from(onset));
+      const onsetVariance = average(Array.from(onset, x => (x - onsetAverage) ** 2));
       return {
         version: 1, duration: Number(duration.toFixed(2)), bpm,
         bpmConfidence: Number(bpmConfidence.toFixed(2)),
