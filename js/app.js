@@ -858,8 +858,10 @@ function pickRandomDJTrack() {
 }
 // Estimate tempo locally from onset-strength autocorrelation; no external API.
 async function estimateTrackBpm(track) {
-  if(!track || track.provider!=="mine") return null;
+  if(!track) return null;
+  if(Number.isFinite(Number(track.mixAnalysis?.bpm)) && Number(track.mixAnalysis?.bpmConfidence||0)>=0.12) return Number(track.mixAnalysis.bpm);
   const cached=S.bpmCache[track.id];
+  if(track.provider!=="mine") return null;
   if(cached && Number.isFinite(cached.bpm)) return cached.bpm;
   const url=await getUrl(track);
   const ctx=new (window.AudioContext||window.webkitAudioContext)();
@@ -1195,6 +1197,8 @@ window.VibeFlowDJ = {
     const url=await getUrl(track);
     const analysis=await window.VibeHookScanner.analyseDetailed(url);
     track.mixAnalysis=analysis;
+    S.bpmCache[track.id]={bpm:analysis.bpm,confidence:analysis.bpmConfidence,at:Date.now(),source:"audio-structure"};
+    store.set("bpmCache",S.bpmCache);
     const cues=(analysis.energyHooks||[]).map((candidate,index)=>({
       id:"audio-"+Math.round(candidate.t*10)+"-"+index,
       t:Math.round(candidate.t*2)/2,
