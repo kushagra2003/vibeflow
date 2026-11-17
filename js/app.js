@@ -23,7 +23,7 @@ const S = {
   seeking: false, seekResetMediaTime: null, seekResetDelay: 0, seekResumeAt: 0,
   activeNoHookDeadline: null, displayUpdateTimer: null,
   hookScans: store.get("hookScans", {}), autoHookInFlight: new Set(), autoHookStartedAt: {},
-  aiHookTrackId: null, aiHookScanning: false, bpmCache: store.get("bpmCache", {})
+  aiHookTrackId: null, aiHookScanning: false, bpmCache: store.get("bpmCache", {}), aiNextPromise: null
 };
 const save = () => {
   for (const [k, v] of Object.entries({
@@ -841,9 +841,16 @@ async function pickBpmMatchedDJTrack() {
   return selected.track;
 }
 function ensureAINextTrack() {
-  if(!S.radio || !cur() || S.queue[S.idx+1]) return;
-  const nextTrack=pickRandomDJTrack();
-  if(nextTrack) addQueue(nextTrack,"next");
+  if(!S.radio || !cur() || S.queue[S.idx+1]) return Promise.resolve(null);
+  if(S.aiNextPromise) return S.aiNextPromise;
+  S.aiNextPromise=(async()=>{
+    try {
+      const nextTrack=await pickBpmMatchedDJTrack();
+      if(nextTrack && S.radio && !S.queue[S.idx+1]) addQueue(nextTrack,"next");
+      return nextTrack;
+    } finally { S.aiNextPromise=null; }
+  })();
+  return S.aiNextPromise;
 }
 
 async function nextAutomatic() {
@@ -853,7 +860,11 @@ async function nextAutomatic() {
   try {
   // A queued track always has priority over AI/random selection.
   // This keeps the "Coming up next" display and actual playback in sync.
-  const queuedNext = S.queue[S.idx + 1] || null;
+  let queuedNext = S.queue[S.idx + 1] || null;
+  if(S.radio && !queuedNext) {
+    await ensureAINextTrack();
+    queuedNext=S.queue[S.idx+1]||null;
+  }
   if (S.radio && queuedNext && S.autoHookInFlight.has(queuedNext.id) &&
       Date.now() - (S.autoHookStartedAt[queuedNext.id] || Date.now()) < 15000) {
     setDJActivity("WAITING FOR HOOK SCAN","Letting the local scanner finish on "+queuedNext.title+" before the drop","SCAN","sync");
