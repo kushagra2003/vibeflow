@@ -69,17 +69,18 @@
     </section>
 
     <section id="lyricsStudio" class="panel lyrics-studio">
-      <div class="section-heading"><div><div class="eyebrow">VIBE FLOW · LYRICS INTELLIGENCE</div><h3>VIBE LYRICS Studio</h3></div><span class="lyrics-pill">MVP · WORD ALIGNMENT</span></div>
-      <p class="subtle">Generate timestamped lyrics, review the transcript, correct mistakes and export structured song data. Audio is processed by your connected VIBE LYRICS service.</p>
-      <div class="lyrics-controls">
-        <label class="lyrics-file-label">Audio file <input id="lyricsFile" type="file" accept="audio/*,video/mp4,video/webm"></label>
-        <label>Language <select id="lyricsLanguage"><option value="auto">Auto detect</option><option value="hindi">Hindi</option><option value="english">English</option><option value="punjabi">Punjabi</option><option value="haryanvi">Haryanvi (Hindi baseline)</option><option value="bhojpuri">Bhojpuri (Hindi baseline)</option></select></label>
-        <label class="lyrics-isolation-toggle"><input id="lyricsSeparateVocals" type="checkbox"> Isolate vocals first <small>Demucs · slower, cleaner vocal input</small></label>
-        <label class="lyrics-isolation-toggle"><input id="lyricsAlignWords" type="checkbox"> Refine word timings <small>WhisperX · language dependent</small></label>
-        <button id="lyricsTranscribe" class="primary-btn" type="button">♫ Transcribe lyrics</button>
+      <div class="section-heading"><div><div class="eyebrow">VIBE FLOW · LYRICS INTELLIGENCE</div><h3>VIBE LYRICS Studio</h3></div><span class="lyrics-pill">LYRICS RETRIEVAL · NO AI SERVER</span></div>
+      <p class="subtle">Find existing synced lyrics from Better Lyrics and LRCLIB. Enter track details or use the currently playing song. No audio upload, Python service or API key required.</p>
+      <div class="lyrics-controls lyrics-metadata">
+        <label>Song title <input id="lyricsTrackTitle" type="text" placeholder="Song title"></label>
+        <label>Artist <input id="lyricsTrackArtist" type="text" placeholder="Artist name"></label>
+        <label>Album <input id="lyricsTrackAlbum" type="text" placeholder="Album (optional)"></label>
+        <label>Duration (seconds) <input id="lyricsTrackDuration" type="number" min="1" max="3600" step="1" placeholder="e.g. 214"></label>
+        <button id="lyricsUseCurrent" class="quiet-btn" type="button">Use currently playing</button>
+        <button id="lyricsFind" class="primary-btn" type="button">♫ Find synced lyrics</button>
         <button id="lyricsExport" class="quiet-btn" type="button" hidden>↓ Export JSON</button>
       </div>
-      <p id="lyricsStatus" class="lyrics-status" role="status">Checking lyrics service…</p>
+      <p id="lyricsStatus" class="lyrics-status" role="status">Ready. Search a song to find timestamped lyrics.</p>
       <div id="lyricsResult" class="lyrics-result" aria-live="polite"></div>
     </section>
 
