@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T16:26:57.339Z",
+  "updatedAt": "2026-11-17T16:27:36.094Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -6027,6 +6027,28 @@
       "title": "Nashe Si Chadh Gayi Song _ Befikre _ Ranveer Singh_ Vaani Kapoor _ Arijit Singh _ Vishal and Shekhar(MP3_160K)",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "audio-60-0",
+          "t": 6,
+          "end": 32,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:06",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794932854430
+        },
+        {
+          "id": "audio-220-1",
+          "t": 22,
+          "end": 32,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:22",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794932854430
+        },
         {
           "id": "auto-a08f5d7c-09f0-4b67-b29f-bedb64ad91ee",
           "t": 44,
