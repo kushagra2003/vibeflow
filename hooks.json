@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T17:44:28.416Z",
+  "updatedAt": "2026-11-17T17:46:17.450Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -1338,6 +1338,28 @@
       "title": "Bairi (Official Music Video) Virat_ Miss Parul _ Pradeep Solanki_ Heena _ New Rajasthani Song 2026(MP3_160K)",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "audio-40-0",
+          "t": 4,
+          "end": 41.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:04",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794937575476
+        },
+        {
+          "id": "audio-240-1",
+          "t": 24,
+          "end": 41.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:24",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794937575476
+        },
         {
           "id": "auto-60531dda-5382-46ba-86c8-612f256d0e0a",
           "t": 40,
@@ -6189,6 +6211,17 @@
       "artist": "Otilia",
       "hooks": [
         {
+          "id": "audio-160-0",
+          "t": 16,
+          "end": 41,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:16",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794937575509
+        },
+        {
           "id": "auto-6e182639-975d-44a4-b8a7-df65c2582429",
           "t": 26,
           "end": 41,
@@ -6199,6 +6232,17 @@
           "confidence": 0.6005737482580682,
           "generatedAt": 1794895419931,
           "endSource": "auto"
+        },
+        {
+          "id": "audio-320-1",
+          "t": 32,
+          "end": 40.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:32",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794937575509
         },
         {
           "id": "auto-54b476f2-d7c0-4013-ad03-dc98f85e9517",
