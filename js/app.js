@@ -9,21 +9,22 @@ const store = {
 };
 const defaults = {
   mixLength: 6, leadSubtract: 2, hookPlaySeconds: 24, noHookSeconds: 45, noHookStartSeconds: 20, bpmTolerance: 8,
-  displayUpdateDelay: 0, aiEnabled: true, autoMode: "random", autoAdvance: true
+  displayUpdateDelay: 0, aiEnabled: true, autoMode: "hook"
 };
 const settings = { ...defaults, ...store.get("settings", {}) };
+settings.autoMode = settings.autoMode === "beginning" ? "beginning" : "hook";
 const S = {
   queue: store.get("queue", []), idx: store.get("idx", -1),
   favs: store.get("favs", []), hist: store.get("hist", []),
   patterns: store.get("patterns", []), hookPlays: store.get("hookPlays", {}),
-  trackPlays: store.get("trackPlays", {}), radio: false, shuffle: false,
-  repeat: false, view: "discover", results: [], recs: [], busy: false,
+  trackPlays: store.get("trackPlays", {}), shuffle: false,
+  repeat: false, autoMix: store.get("autoMix", false), view: "discover", results: [], recs: [], busy: false,
   tok: 0, mixing: false, transitioning: false, activeHook: null, autoTransitionPending:false,
   transitionTimer: null, env: {}, lib: [], dragIndex: null,
   seeking: false, seekResetMediaTime: null, seekResetDelay: 0, seekResumeAt: 0,
   activeNoHookDeadline: null, displayUpdateTimer: null,
   hookScans: store.get("hookScans", {}), autoHookInFlight: new Set(), autoHookStartedAt: {},
-  aiHookTrackId: null, aiHookScanning: false, bpmCache: store.get("bpmCache", {}), aiNextPromise: null
+  aiHookTrackId: null, aiHookScanning: false, bpmCache: store.get("bpmCache", {}), autoMixNextPromise: null
 };
 const save = () => {
   for (const [k, v] of Object.entries({
@@ -32,7 +33,7 @@ const save = () => {
   })) store.set(k, v);
 };
 const saveSettings = () => store.set("settings", settings);
-const automaticSwitchingEnabled = () => settings.autoAdvance === true && settings.autoMode !== "off";
+const automaticSwitchingEnabled = () => S.autoMix === true;
 const toast = msg => {
   const el = $("#toast"); el.textContent = msg; el.style.display = "block";
   clearTimeout(toast.timer); toast.timer = setTimeout(() => el.style.display = "none", 3800);
@@ -142,8 +143,7 @@ function openSettings() {
   root.innerHTML = `
   <div class="modal-backdrop" data-close="1"><div class="modal-card" role="dialog" aria-modal="true">
     <div class="modal-head"><div><div class="eyebrow">PERSONALISE YOUR DJ</div><h2>VibeFlow settings</h2><p class="modal-sub">Control how tracks are selected, mixed and repeated.</p></div><button class="modal-close" data-close="1">×</button></div>
-    <div class="toggle-row"><div><b>AI recommendations</b><small>Turn off AI requests, suggestions and AI Radio completely.</small></div><input class="switch" id="setAI" type="checkbox" ${settings.aiEnabled?"checked":""}></div>
-    <div class="toggle-row"><div><b>Automatic track switching</b><small>Keep the music moving without manually pressing next.</small></div><input class="switch" id="setAuto" type="checkbox" ${settings.autoAdvance?"checked":""}></div>
+    <div class="toggle-row"><div><b>AI recommendations</b><small>Control personalised track suggestions.</small></div><input class="switch" id="setAI" type="checkbox" ${settings.aiEnabled?"checked":""}></div>
     <div class="settings-grid" style="margin-top:14px">
       <div class="setting-field"><label for="setMix">Crossfade length</label><select id="setMix"><option value="0">Off (no crossfade)</option><option value="3">3 seconds</option><option value="6">6 seconds</option><option value="9">9 seconds</option></select><small>How long both songs overlap.</small></div>
       <div class="setting-field"><label for="setLead">Seconds to subtract from mix length</label><input id="setLead" type="number" min="0" max="8" step="1" value="${settings.leadSubtract}"><small>Default 2. Hook starts at hook time − (mix length − this value).</small></div>
@@ -151,12 +151,10 @@ function openSettings() {
       <div class="setting-field"><label for="setNoHook">Fallback time without a hook end</label><input id="setNoHook" type="number" min="5" max="600" step="5" value="${settings.noHookSeconds}"><small>Switch after this many seconds if no hook end is available.</small></div>
       <div class="setting-field"><label for="setNoHookStart">Start position when no hook is saved</label><input id="setNoHookStart" type="number" min="0" max="300" step="1" value="${settings.noHookStartSeconds}"><small>Start unmarked songs at this position. Default: 20 seconds.</small></div>
       <div class="setting-field"><label for="setDisplayDelay">Update current / next song details</label><select id="setDisplayDelay"><option value="0">Immediately (0 seconds)</option><option value="1">After 1 second</option><option value="2">After 2 seconds</option><option value="3">After 3 seconds</option><option value="4">After 4 seconds</option><option value="5">After 5 seconds</option></select><small>Wait this long after the new track starts before refreshing the Now Playing and Coming Up Next details.</small></div>
-      <div class="setting-field"><label for="setMode">Automatic mix mode</label><select id="setMode"><option value="random">Smart + random hooks</option><option value="hook">Verified hooks only</option><option value="beginning">Start at song beginning</option><option value="off">Off</option></select><small>Controls how automatic transitions choose the next start point.</small></div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px"><button data-close="1">Cancel</button><button id="saveSettings" class="primary-btn">Save settings</button></div>
   </div></div>`;
   $("#setMix").value = String(settings.mixLength);
-  $("#setMode").value = settings.autoMode;
   $("#setDisplayDelay").value = String([0,1,2,3,4,5].includes(+settings.displayUpdateDelay)?settings.displayUpdateDelay:0);
   const hookSecondsInput=$("#setHookDuration");
   $("#hookSecondsDown").onclick=()=>{hookSecondsInput.value=String(Math.max(5,(+hookSecondsInput.value||settings.hookPlaySeconds)-1));};
@@ -166,16 +164,12 @@ function openSettings() {
   }));
   $("#saveSettings").onclick = () => {
     settings.aiEnabled = $("#setAI").checked;
-    settings.autoAdvance = $("#setAuto").checked;
     settings.mixLength = [0,3,6,9].includes(+$("#setMix").value) ? +$("#setMix").value : 6;
     settings.leadSubtract = Math.max(0,Math.min(8,+$("#setLead").value || 0));
     settings.hookPlaySeconds = Math.max(5,Math.min(300,+$("#setHookDuration").value || 24));
     settings.noHookSeconds = Math.max(5,Math.min(600,+$("#setNoHook").value || 45));
     settings.noHookStartSeconds = Math.max(0,Math.min(300,+$("#setNoHookStart").value || 0));
     settings.displayUpdateDelay = [0,1,2,3,4,5].includes(+$("#setDisplayDelay").value)?+$("#setDisplayDelay").value:0;
-    settings.autoMode = $("#setMode").value;
-    // Turning automatic switching off (or choosing Off mode) also exits AI DJ.
-    if (!automaticSwitchingEnabled()) S.radio = false;
     saveSettings(); root.innerHTML=""; syncControls(); render();
     toast("DJ settings saved.");
   };
@@ -183,11 +177,13 @@ function openSettings() {
 function syncControls() {
   $("#mixsec").value = String(settings.mixLength);
   $("#autoMode").value = settings.autoMode;
-  $("#aiStatus").classList.toggle("off",!S.radio);
-  $("#aiStatus").classList.toggle("active",S.radio);
-  $("#aiStatus").innerHTML = `<span class="ai-dot"></span> AI DJ ${S.radio?"ON":"OFF"}`;
-  $("#aiRadio").textContent = `AI DJ: ${S.radio?"ON":"OFF"}`;
-  if($("#partyAI")) $("#partyAI").textContent=`AI DJ: ${S.radio?"ON":"OFF"}`;
+  const toggle=$("#autoMixToggle");
+  if(toggle) {
+    toggle.classList.toggle("enabled",S.autoMix);
+    toggle.setAttribute("aria-pressed",String(S.autoMix));
+    toggle.querySelector(".auto-mix-switch-state").textContent=S.autoMix?"AUTO MIX ON":"NO AUTO MIX";
+    toggle.querySelector(".auto-mix-switch-thumb").textContent=S.autoMix?"ON":"OFF";
+  }
 }
 
 // ---------- API ----------
@@ -237,7 +233,7 @@ function markHookEnd(id) {
   if(S.activeHook?.trackId===t.id && String(S.activeHook.hookId)===String(id)) S.activeHook.end=end;
   syncTrackHooks(t.id,entry.hooks);
   saveLib(); save(); renderHooks(); render();
-  toast(`Hook end saved at ${fmt(end)}. AI DJ will switch at this point.`);
+  toast(`Hook end saved at ${fmt(end)}. Auto mix will switch at this point.`);
 }
 function verifyAutoHook(id) {
   const t=cur(), entry=t && getLibTrack(t.id);
@@ -341,7 +337,7 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
       S.autoHookInFlight.delete(track.id);
       delete S.autoHookStartedAt[track.id];
       const upcoming=S.queue[S.idx+1];
-      if(S.radio && upcoming?.id===track.id && !audio().paused && !S.transitioning) {
+      if(S.autoMix && upcoming?.id===track.id && !audio().paused && !S.transitioning) {
         const active=S.activeHook?.trackId===cur()?.id?S.activeHook:null;
         const deadline=active?(active.t+settings.hookPlaySeconds):(S.activeNoHookDeadline?.at??settings.noHookSeconds);
         if(audio().currentTime>=deadline-2) setTimeout(()=>nextAutomatic(),0);
@@ -356,7 +352,7 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
   }
 }
 function maybeAutoScanUpcoming(track) {
-  if(!S.radio || !track || track.provider!=="mine" || hooksOf(track).length) return;
+  if(!S.autoMix || settings.autoMode!=="hook" || !track || track.provider!=="mine" || hooksOf(track).length) return;
   if(S.hookScans[track.id] || S.autoHookInFlight.has(track.id) || S.aiHookScanning) return;
   scanCurrentSongHooks({automatic:true,trackOverride:track});
 }
@@ -369,7 +365,7 @@ function renderAIHookSuggestions() {
   const active=[...S.autoHookInFlight][0];
   if(active) {
     const song=getLibTrack(active);
-    root.innerHTML='<div class="ai-hook-status">◌ AI DJ is scanning the upcoming track: '+esc(song?.title||"next song")+'. Generated cues will be saved automatically.</div>';
+    root.innerHTML='<div class="ai-hook-status">◌ Auto mix is scanning the upcoming track: '+esc(song?.title||"next song")+'. Generated cues will be saved automatically.</div>';
     return;
   }
   const track=cur(), scan=track&&S.hookScans[track.id];
@@ -379,7 +375,7 @@ function renderAIHookSuggestions() {
       : "Last local scan found no strong repeated or high-energy sections. Your manually saved hooks remain unchanged.")+'</div>';
     return;
   }
-  root.innerHTML='<div class="ai-hook-status">Click Analyse for hooks to scan this song locally. AI DJ can also scan an unmarked upcoming song automatically. No API key or audio upload required.</div>';
+  root.innerHTML='<div class="ai-hook-status">Click Analyse for hooks to scan this song locally. Auto mix can also scan an unmarked upcoming song in From hook mode. No API key or audio upload required.</div>';
 }
 function renderHooks() {
   const t=cur(), hooks=hooksOf(t);
@@ -403,7 +399,7 @@ function renderHooks() {
           <button type="button" data-hook-start-adjust="${esc(h.id)}" data-delta="0.5" aria-label="Move hook start forward half a second" title="+0.5 seconds">+</button>
         </div>
         <div class="hook-detail">
-          <b title="${esc(h.lyric || "Hook "+(i+1))}">${esc(h.lyric || "Hook "+(i+1))}${isActive?'<span class="active-hook-badge">NOW PLAYING · AI DJ CUE</span>':""}</b>
+          <b title="${esc(h.lyric || "Hook "+(i+1))}">${esc(h.lyric || "Hook "+(i+1))}${isActive?'<span class="active-hook-badge">NOW PLAYING · AUTO MIX CUE</span>':""}</b>
           <small><span class="hook-origin ${h.source==="auto"?"auto":"manual"}">${h.source==="auto"?"AUTO":"MANUAL"}</span> · ${h.source==="auto"?(h.detector==="repeated-section"?"Pattern match":"Energy peak"):"User cue"} · ${h.end!=null?`Ends ${fmt(h.end)}${h.endLyric?" · "+esc(h.endLyric):""}`:"End not marked"}</small>
         </div>
       </div>
@@ -619,7 +615,7 @@ function updateDJStatus() {
   } else if(left<=8) {
     setDJActivity("COUNTDOWN · DROP INCOMING","No saved hook on the next track · preparing the "+settings.noHookStartSeconds+"s fallback start",clock,"sync");
   } else {
-    setDJActivity("AI DJ SCANNING","Playing "+t.title+" · next transition in "+clock+" · scanning your music library",clock,"ready");
+    setDJActivity("AUTO MIX READY","Playing "+t.title+" · next transition in "+clock+" · scanning your music library",clock,"ready");
   }
 }
 function showTransition(track,hook,automatic=true) {
@@ -725,7 +721,7 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
       : "Now playing "+track.title+" · keep the party moving","LIVE","mix");
     S.hist=[track,...S.hist.filter(x=>x.id!==track.id)].slice(0,100);
     save();
-    if(S.radio) ensureAINextTrack();
+    if(S.autoMix) ensureAutoMixNextTrack();
     if(settings.aiEnabled) suggest();
     scheduleTrackDisplayUpdate(token);
   } catch(e) {
@@ -851,81 +847,57 @@ async function pickBpmMatchedDJTrack() {
   if(within.length) setDJActivity("BPM MATCH LOCKED",currentBpm+" BPM → "+selected.bpm+" BPM · closest available tempo","READY","ready");
   return selected.track;
 }
-function ensureAINextTrack() {
-  if(!S.radio || !cur() || S.queue[S.idx+1]) return Promise.resolve(null);
-  if(S.aiNextPromise) return S.aiNextPromise;
-  S.aiNextPromise=(async()=>{
+function ensureAutoMixNextTrack() {
+  if(!S.autoMix || !cur() || S.queue[S.idx+1]) return Promise.resolve(null);
+  if(S.autoMixNextPromise) return S.autoMixNextPromise;
+  S.autoMixNextPromise=(async()=>{
     try {
       const nextTrack=await pickBpmMatchedDJTrack();
-      if(nextTrack && S.radio && !S.queue[S.idx+1]) addQueue(nextTrack,"next");
+      if(nextTrack && S.autoMix && !S.queue[S.idx+1]) addQueue(nextTrack,"next");
       return nextTrack;
-    } finally { S.aiNextPromise=null; }
+    } finally { S.autoMixNextPromise=null; }
   })();
-  return S.aiNextPromise;
+  return S.autoMixNextPromise;
 }
 
 async function nextAutomatic() {
-  // A queued song must never bypass the user's automatic-switching preference.
-  if (!automaticSwitchingEnabled() || S.transitioning || S.autoTransitionPending) return;
+  if (!S.autoMix || S.transitioning || S.autoTransitionPending) return;
   S.autoTransitionPending=true;
   try {
-  // A queued track always has priority over AI/random selection.
-  // This keeps the "Coming up next" display and actual playback in sync.
-  let queuedNext = S.queue[S.idx + 1] || null;
-  if(S.radio && !queuedNext) {
-    await ensureAINextTrack();
-    queuedNext=S.queue[S.idx+1]||null;
-  }
-  if (S.radio && queuedNext && S.autoHookInFlight.has(queuedNext.id) &&
-      Date.now() - (S.autoHookStartedAt[queuedNext.id] || Date.now()) < 15000) {
-    setDJActivity("WAITING FOR HOOK SCAN","Letting the local scanner finish on "+queuedNext.title+" before the drop","SCAN","sync");
-    return;
-  }
-  if (!queuedNext && (!settings.autoAdvance || settings.autoMode === "off")) return;
-
-  let t = queuedNext || (S.radio ? await pickBpmMatchedDJTrack() : pickNextTrack());
-  let globallyChosenHook = null;
-  if(!queuedNext && S.radio) {
-    const allHookChoices=S.lib.flatMap(file=>{
-      const track=toTrack(file);
-      return track.id!==t?.id ? [] : hooksOf(track).map(h=>({track,hook:h}));
-    });
-    if(allHookChoices.length) {
-      const pick=allHookChoices[Math.floor(Math.random()*allHookChoices.length)];
-      t=pick.track; globallyChosenHook=pick.hook;
+    // A manually queued track always has priority; otherwise choose the best BPM match.
+    let queuedNext=S.queue[S.idx+1]||null;
+    if(!queuedNext) {
+      await ensureAutoMixNextTrack();
+      queuedNext=S.queue[S.idx+1]||null;
     }
-  }
-  if(!queuedNext && !S.radio && settings.autoMode==="hook") {
-    const verifiedChoices=S.lib.flatMap(file=>{
-      const track=toTrack(file);
-      return track.id===cur()?.id ? [] : hooksOf(track).filter(h=>h.source!=="auto").map(h=>({track,hook:h}));
-    });
-    if(!verifiedChoices.length) { toast("No saved or verified hooks are available. Add or verify a hook first."); return; }
-    const pick=verifiedChoices[Math.floor(Math.random()*verifiedChoices.length)];
-    t=pick.track; globallyChosenHook=pick.hook;
-  }
-  if (!t) { toast("Add more tracks to My music for automatic DJ playback."); return; }
+    if(settings.autoMode==="hook" && queuedNext && S.autoHookInFlight.has(queuedNext.id) &&
+      Date.now()-(S.autoHookStartedAt[queuedNext.id]||Date.now())<15000) {
+      setDJActivity("WAITING FOR HOOK SCAN","Letting the local scanner finish on "+queuedNext.title+" before the drop","SCAN","sync");
+      return;
+    }
+    let track=queuedNext||await pickBpmMatchedDJTrack();
+    if(!track) { toast("Add more tracks to My music for automatic mixing."); return; }
 
-  if(S.radio && t.provider==="mine" && !hooksOf(t).length && !S.hookScans[t.id]) {
-    setDJActivity("FINDING HOOK LINE","Analysing "+t.title+" before playback · no hook is saved yet","SCAN","sync");
-    showPartyMessage("Finding the hook line… 🎧");
-    await scanCurrentSongHooks({automatic:true,trackOverride:t});
-  }
-  // Settings may have changed while the async hook scan was running.
-  if (!automaticSwitchingEnabled() || S.transitioning) return;
-  const chosen = queuedNext?._chosenHook || null;
-  const hook = chosen
-    ? (hooksOf(t).find(h => String(h.id) === String(chosen.id)) || chosen)
-    : (globallyChosenHook || (S.radio
-      ? (hooksOf(t).length ? hooksOf(t)[Math.floor(Math.random()*hooksOf(t).length)] : null)
-      : settings.autoMode === "hook"
-        ? verifiedRandomHook(t)
-        : (settings.autoMode === "beginning" ? null : fairHook(t))));
+    // From beginning deliberately skips hook analysis. From hook scans only when needed.
+    if(settings.autoMode==="hook" && track.provider==="mine" && !hooksOf(track).length && !S.hookScans[track.id]) {
+      setDJActivity("FINDING HOOK LINE","Analysing "+track.title+" before playback · no saved hook is available","SCAN","sync");
+      showPartyMessage("Finding the hook line… 🎧");
+      await scanCurrentSongHooks({automatic:true,trackOverride:track});
+    }
+    if(!S.autoMix || S.transitioning) return;
 
-  if (chosen) { delete t._chosenHook; save(); }
-  if(hook && S.radio) { setDJActivity("HOOK LINE FOUND · MIXING NOW","Cue locked on "+t.title+" · preparing the drop","READY","ready"); showPartyMessage("Hook line found. Bass drop on the way! 🔊"); }
-  else if(S.radio) { showPartyMessage("No hook found — bringing the track in from your fallback point."); }
-  transitionTo(t, hook, {automatic:true, mode:hook ? "hook" : (settings.autoMode === "beginning" ? "beginning" : "no-hook")});
+    const chosen=queuedNext?._chosenHook||null;
+    const hook=settings.autoMode==="beginning" ? null : (chosen
+      ? (hooksOf(track).find(h=>String(h.id)===String(chosen.id))||chosen)
+      : (hooksOf(track).length ? hooksOf(track)[Math.floor(Math.random()*hooksOf(track).length)] : null));
+    if(chosen) { delete track._chosenHook; save(); }
+    if(hook) {
+      setDJActivity("HOOK LINE FOUND · MIXING NOW","Cue locked on "+track.title+" · preparing the drop","READY","ready");
+      showPartyMessage("Hook line found. Bass drop on the way! 🔊");
+    } else if(settings.autoMode==="hook") {
+      showPartyMessage("No hook found — bringing the track in from your fallback point.");
+    }
+    transitionTo(track,hook,{automatic:true,mode:hook?"hook":"beginning"});
   } finally { S.autoTransitionPending=false; }
 }
 function handleAutoAdvance() {
@@ -1090,7 +1062,7 @@ function renderRecommendations() {
   const panel=$("#aiPanel");
   if(!settings.aiEnabled) { panel.style.display="none"; return; }
   panel.style.display="";
-  $("#recs").innerHTML=S.recs.length ? S.recs.map((t,i)=>trackRow(t,i,"recs")).join("") : '<div class="empty-state">Play a track to receive AI DJ suggestions.</div>';
+  $("#recs").innerHTML=S.recs.length ? S.recs.map((t,i)=>trackRow(t,i,"recs")).join("") : '<div class="empty-state">Play a track to receive AI recommendations.</div>';
   bindTrackActions();
 }
 function visibleTracks() {
@@ -1121,7 +1093,7 @@ function render() {
   if($("#partySong")) $("#partySong").textContent=t?.title||"Nothing playing yet";
   if($("#partyArtist")) $("#partyArtist").textContent=t?.artist||"Choose your first track";
   if($("#partyPlay")) $("#partyPlay").textContent=audio().paused?"▶":"Ⅱ";
-  if($("#partyAI")) $("#partyAI").textContent="AI DJ: "+(S.radio?"ON":"OFF");
+  
   $("#shuffle").classList.toggle("active",S.shuffle);
   $("#repeat").classList.toggle("active",S.repeat);
   $("#queueCount").textContent=S.queue.length;
@@ -1329,29 +1301,25 @@ $("#closeParty").onclick=async()=>{
   try { if(document.fullscreenElement) await document.exitFullscreen?.(); } catch {}
 };
 $("#partyPlay").onclick=togglePlay;
-$("#partyNext").onclick=()=>{if(S.radio) nextAutomatic(); else next();};
+$("#partyNext").onclick=next;
 $("#partyPrev").onclick=previous;
-$("#partyAI").onclick=toggleAIDJ;
 document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement && !$("#partyMode").hidden){$("#partyMode").hidden=true;document.body.classList.remove("party-mode-open");stopPartyBrandLoop();}});
 $("#openSettings").onclick=openSettings; $("#footerSettings").onclick=openSettings;
-function toggleAIDJ() {
-  S.radio=!S.radio;
-  settings.autoAdvance=S.radio;
-  if(S.radio) settings.autoMode="random";
-  saveSettings();
+function toggleAutoMix() {
+  S.autoMix=!S.autoMix;
+  store.set("autoMix",S.autoMix);
   syncControls();
-  if(S.radio) {
-    if(!cur()) nextAutomatic();
-    else if(audio().paused) audio().play().then(()=>{audio().volume=vol();render();}).catch(()=>toast("Press play to start the AI DJ."));
-    ensureAINextTrack();
-    if(settings.aiEnabled) suggest();
-    toast("AI DJ is mixing random tracks.");
+  if(S.autoMix) {
+    const upcoming=S.queue[S.idx+1];
+    if(upcoming && settings.autoMode==="hook") maybeAutoScanUpcoming(upcoming);
+    if(cur() && !upcoming) ensureAutoMixNextTrack();
+    toast("Auto mix enabled. "+(settings.autoMode==="hook"?"Next track will start from a saved or generated hook.":"Next track will start at your configured no-hook start position."));
   } else {
-    toast("AI DJ stopped. Current song will continue.");
+    toast("Auto mix disabled. The current song will play to its end and then pause.");
   }
 }
-$("#aiStatus").onclick=toggleAIDJ;
-$("#aiRadio").onclick=toggleAIDJ;
+$("#autoMixToggle").onclick=toggleAutoMix;
+
 A.forEach(a=>{
   a.volume=.8;
   a.onplay=()=>{if(a===audio()){render();syncPartyMotion();}}; a.onpause=()=>{if(a===audio()){render();syncPartyMotion();}};
@@ -1361,7 +1329,7 @@ A.forEach(a=>{
     if(!S.seeking) checkHookTimer();
     updateDJStatus();
   };
-  a.onended=()=>{if(a===audio()&&!S.transitioning&&automaticSwitchingEnabled())nextAutomatic();};
+  a.onended=()=>{if(a===audio()&&!S.transitioning){if(automaticSwitchingEnabled())nextAutomatic();else{a.pause();setDJActivity("TRACK FINISHED · AUTO MIX OFF","The song has ended. Turn Auto mix on or press play to continue.","PAUSED","paused");render();}}};
   a.onerror=()=>{if(a===audio()&&a.src)toast("This audio file could not be played. Check the file URL and format.");};
 });
 $("#modalRoot").addEventListener("click",e=>{if(e.target.classList.contains("modal-backdrop")&&e.target.dataset.dismiss)$("#modalRoot").innerHTML="";});
@@ -1429,7 +1397,7 @@ window.addEventListener("keydown",e=>{
     return;
   }
   if(key==="?") {
-    toast("VIBE FLOW SHORTCUTS · Space Play/Pause · ←/→ Seek 5s · ↑/↓ Volume · N Next · P Previous · A AI DJ · S Shuffle · R Repeat · M Mute");
+    toast("VIBE FLOW SHORTCUTS · Space Play/Pause · ←/→ Seek 5s · ↑/↓ Volume · N Next · P Previous · S Shuffle · R Repeat · M Mute");
   }
 });
 

@@ -279,3 +279,20 @@ body.party-mode-open{overflow:hidden}
   to{box-shadow:0 0 0 1px #b98aff88,0 0 24px #a66cff55,inset 3px 0 0 #d7b5ff}
 }
 @media(prefers-reduced-motion:reduce){.hook-item.active-hook-item{animation:none}}
+
+
+/* Prominent single Auto mix control: the only automatic-switching master switch. */
+.auto-mix-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:12px;padding:13px 15px;border:1px solid #57446c;border-radius:14px;background:linear-gradient(105deg,#211a2d,#171320);color:#eee5fa;text-align:left;cursor:pointer;transition:border-color .2s,background .2s,box-shadow .2s}
+.auto-mix-switch-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
+.auto-mix-switch-copy b{font-size:12px;font-weight:950;letter-spacing:1.1px}
+.auto-mix-switch-copy small{font-size:10px;color:var(--muted);line-height:1.4}
+.auto-mix-switch-track{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:126px;height:44px;padding:4px 7px 4px 12px;border:1px solid #6a5b7c;border-radius:99px;background:#332b3e;transition:background .2s,border-color .2s;flex:0 0 auto}
+.auto-mix-switch-state{font-size:8px;font-weight:900;letter-spacing:.7px;color:#c8bbd5;white-space:nowrap}
+.auto-mix-switch-thumb{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:linear-gradient(145deg,#d7cddd,#82778d);color:#241b2c;font-size:9px;font-weight:950;box-shadow:0 2px 8px #0008;transition:transform .22s,background .22s}
+.auto-mix-toggle.enabled{border-color:#48d8b2;background:linear-gradient(105deg,#123b35,#1b1728);box-shadow:0 0 0 1px #48d8b233,0 0 22px #35d9ae22}
+.auto-mix-toggle.enabled .auto-mix-switch-copy b{color:#80f0d0}
+.auto-mix-toggle.enabled .auto-mix-switch-track{border-color:#3bd5ac;background:#0e5547}
+.auto-mix-toggle.enabled .auto-mix-switch-state{color:#a7f4df}
+.auto-mix-toggle.enabled .auto-mix-switch-thumb{background:linear-gradient(145deg,#b9ffe9,#42d9b0)}
+.auto-mix-toggle:focus-visible{outline:2px solid #c89cff;outline-offset:3px}
+@media(max-width:600px){.auto-mix-toggle{padding:11px 12px}.auto-mix-switch-track{min-width:112px;gap:6px}.auto-mix-switch-copy b{font-size:11px}}
