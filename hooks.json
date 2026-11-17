@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T16:01:25.018Z",
+  "updatedAt": "2026-11-17T16:04:50.447Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -701,6 +701,17 @@
       "artist": "Unknown",
       "hooks": [
         {
+          "id": "audio-80-0",
+          "t": 8,
+          "end": 31,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:08",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794931487730
+        },
+        {
           "id": "audio-160-0",
           "t": 16,
           "end": 28.5,
@@ -734,6 +745,28 @@
           "generatedAt": 1794895108564
         },
         {
+          "id": "auto-c9ba6a7d-dc65-4e8e-9fcb-f55a37baa8e1",
+          "t": 36,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6014967403382734,
+          "generatedAt": 1794898743399
+        },
+        {
+          "id": "audio-360-1",
+          "t": 36,
+          "end": 47,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:36",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794931487730
+        },
+        {
           "id": "auto-9d3ee4d4-60b2-44ac-b767-5a5f7d15d5bb",
           "t": 56,
           "end": null,
@@ -743,6 +776,17 @@
           "detector": "energy-peak",
           "confidence": 0.6064869224540579,
           "generatedAt": 1794895108564
+        },
+        {
+          "id": "auto-d88ebb4e-44de-41e9-81c6-943eaac23822",
+          "t": 56,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6064868982345439,
+          "generatedAt": 1794898743399
         },
         {
           "id": "auto-62be3de8-07c5-44df-9567-1aa70a2879d2",
@@ -755,6 +799,17 @@
           "confidence": 0.6454908776519552,
           "generatedAt": 1794895108564,
           "endSource": "auto"
+        },
+        {
+          "id": "auto-5a4030a8-4d1b-4b11-81cb-057c5e535f50",
+          "t": 74,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6454946730571726,
+          "generatedAt": 1794898743399
         },
         {
           "id": "auto-6f61a58d-91fb-42b5-a9f6-4bdbb2b1d3d1",
@@ -793,6 +848,17 @@
           "generatedAt": 1794895108564
         },
         {
+          "id": "auto-0325a824-5688-4981-b1cf-193850484185",
+          "t": 143,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7989762049303146,
+          "generatedAt": 1794898743399
+        },
+        {
           "id": "auto-86ffe59e-792d-4438-949c-1a9967b4a519",
           "t": 154,
           "end": null,
@@ -802,6 +868,17 @@
           "detector": "repeated-section",
           "confidence": 0.6932627685693167,
           "generatedAt": 1794895108564
+        },
+        {
+          "id": "auto-8917bc40-56e1-4e50-b863-aebacef96095",
+          "t": 154,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6932623534294322,
+          "generatedAt": 1794898743399
         }
       ]
     },
@@ -2532,6 +2609,17 @@
       "artist": "Financer",
       "hooks": [
         {
+          "id": "audio-80-0",
+          "t": 8,
+          "end": 23,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:08",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794931487777
+        },
+        {
           "id": "auto-a9fabb43-4952-40bb-b7b6-1c81ba92c746",
           "t": 20,
           "end": 23,
@@ -2553,6 +2641,17 @@
           "detector": "repeated-section",
           "confidence": 0.6864331389906271,
           "generatedAt": 1794895181105
+        },
+        {
+          "id": "audio-380-1",
+          "t": 38,
+          "end": 46.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:38",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794931487777
         },
         {
           "id": "auto-d052a202-c339-4a37-82eb-08ecff1a4f2e",
@@ -4258,6 +4357,17 @@
       "artist": "Leke Pehla Pehla Pyaar",
       "hooks": [
         {
+          "id": "audio-40-0",
+          "t": 4,
+          "end": 12,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:04",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794931487467
+        },
+        {
           "id": "auto-0d4d9e75-8217-4d7e-b7e1-94eb4444b5d3",
           "t": 16,
           "end": null,
@@ -4267,6 +4377,29 @@
           "detector": "energy-peak",
           "confidence": 0.618774737573901,
           "generatedAt": 1794895165997
+        },
+        {
+          "id": "auto-f86c1f29-ae80-4ae1-adaf-51f5daa54632",
+          "t": 16,
+          "end": 35.5,
+          "endSource": "auto",
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6187746649936114,
+          "generatedAt": 1794899171859
+        },
+        {
+          "id": "audio-200-1",
+          "t": 20,
+          "end": 28,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:20",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794931487467
         },
         {
           "id": "auto-030f238e-921c-43a7-a602-da520df43a80",
@@ -4280,6 +4413,18 @@
           "generatedAt": 1794895165997
         },
         {
+          "id": "auto-4087d520-bb01-4259-971f-17944dbf3f89",
+          "t": 26,
+          "end": 35.5,
+          "endSource": "auto",
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.620096894921862,
+          "generatedAt": 1794899171859
+        },
+        {
           "id": "auto-a8e2a16d-48bd-46dc-bc74-5a3a905384d8",
           "t": 41,
           "end": null,
@@ -4289,6 +4434,18 @@
           "detector": "repeated-section",
           "confidence": 0.7408896989095706,
           "generatedAt": 1794895165997
+        },
+        {
+          "id": "auto-1f41db97-ead7-48fb-977e-0e2c0724e500",
+          "t": 41,
+          "end": 49,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7408996907692412,
+          "generatedAt": 1794899171859
         },
         {
           "id": "auto-f7bfe9b4-f216-4c69-9035-93f74c221eb1",
@@ -4302,6 +4459,18 @@
           "generatedAt": 1794895165997
         },
         {
+          "id": "auto-affffb71-bbb6-4d91-9e93-808155419a67",
+          "t": 55,
+          "end": 63,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6703689272107286,
+          "generatedAt": 1794899171859
+        },
+        {
           "id": "auto-8a0669f8-5020-4a3b-a5d3-3dbd75a96696",
           "t": 78,
           "end": null,
@@ -4313,6 +4482,18 @@
           "generatedAt": 1794895165997
         },
         {
+          "id": "auto-918f8248-057e-486a-a0f3-76519ccb0d77",
+          "t": 78,
+          "end": 86,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.782391147929235,
+          "generatedAt": 1794899171859
+        },
+        {
           "id": "auto-1855173b-d20a-42d7-9846-0f9b8ffd77f2",
           "t": 86,
           "end": null,
@@ -4322,6 +4503,18 @@
           "detector": "repeated-section",
           "confidence": 0.7102493619981155,
           "generatedAt": 1794895165997
+        },
+        {
+          "id": "auto-de0797cd-ef6f-4ff7-996d-8d0215d9594e",
+          "t": 86,
+          "end": 102,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7102673068401073,
+          "generatedAt": 1794899171859
         }
       ]
     },
@@ -6323,6 +6516,28 @@
       "artist": "Unknown",
       "hooks": [
         {
+          "id": "audio-120-0",
+          "t": 12,
+          "end": 23.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:12",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794931487762
+        },
+        {
+          "id": "audio-420-1",
+          "t": 42,
+          "end": 51,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:42",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794931487762
+        },
+        {
           "id": "auto-2a62cf9f-1b1f-46ef-a0f0-b324b35698d1",
           "t": 115,
           "end": null,
@@ -6332,6 +6547,18 @@
           "detector": "repeated-section",
           "confidence": 0.8268921000956007,
           "generatedAt": 1794895210634
+        },
+        {
+          "id": "auto-6d746613-0c4e-4445-bae9-1e947ad369e0",
+          "t": 115,
+          "end": 123,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8268504231100943,
+          "generatedAt": 1794899126919
         },
         {
           "id": "auto-576b9e05-2082-47f9-a5e9-22794d9e0d5f",
@@ -6345,6 +6572,18 @@
           "generatedAt": 1794895210634
         },
         {
+          "id": "auto-150d53ab-a83b-4127-b471-3acaac824387",
+          "t": 124,
+          "end": 132,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6881668231978055,
+          "generatedAt": 1794899126919
+        },
+        {
           "id": "auto-e69e6795-86b9-443e-b825-95d4cce1d370",
           "t": 132,
           "end": null,
@@ -6354,6 +6593,18 @@
           "detector": "repeated-section",
           "confidence": 0.7906638791723922,
           "generatedAt": 1794895210634
+        },
+        {
+          "id": "auto-0567204c-8457-4d3b-9698-fcad2f8bd26a",
+          "t": 132,
+          "end": 140,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7905915277196649,
+          "generatedAt": 1794899126919
         },
         {
           "id": "auto-f00614e2-27a7-4a6e-99b0-71ab376f459c",
@@ -6367,6 +6618,18 @@
           "generatedAt": 1794895210634
         },
         {
+          "id": "auto-18bcd91f-c39f-4075-9bf1-526661607552",
+          "t": 142,
+          "end": 150,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.687586603948393,
+          "generatedAt": 1794899126919
+        },
+        {
           "id": "auto-d7eab22c-14ec-43cf-849e-98f49d006b2d",
           "t": 153,
           "end": null,
@@ -6378,6 +6641,18 @@
           "generatedAt": 1794895210634
         },
         {
+          "id": "auto-08684804-f1f1-4113-8b92-3a6678051c02",
+          "t": 153,
+          "end": 161,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7154215798608207,
+          "generatedAt": 1794899126919
+        },
+        {
           "id": "auto-d2613189-ef06-4e1d-ab5c-332f7a215bb5",
           "t": 161,
           "end": null,
@@ -6387,6 +6662,18 @@
           "detector": "repeated-section",
           "confidence": 0.7582745127016743,
           "generatedAt": 1794895210634
+        },
+        {
+          "id": "auto-69190b1e-0a45-4299-a366-9a4b67dcf6f2",
+          "t": 161,
+          "end": 169,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7582463957317247,
+          "generatedAt": 1794899126919
         }
       ]
     },
