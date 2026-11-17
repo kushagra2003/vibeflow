@@ -891,7 +891,7 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null,i
       ? "Now riding “"+(hook.lyric||"the hook")+"” · "+track.title
       : "Now playing "+track.title+" · keep the party moving","LIVE","mix");
     S.hist=[track,...S.hist.filter(x=>x.id!==track.id)].slice(0,100);
-    S.songChanges=(S.songChanges||0)+1; if(S.songChanges%7===0) maybeSurprisePunch();
+    S.songChanges=(S.songChanges||0)+1; if(S.songChanges%7===0) setTimeout(()=>maybeSurprisePunch(),Math.max(500,(S.currentCrossfadeSeconds||0)*1000+300));
     save();
     if(S.autoMix&&!S.training.active) ensureAutoMixNextTrack();
     if(settings.aiEnabled) suggest();
