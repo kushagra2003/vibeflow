@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T13:44:25.182Z",
+  "updatedAt": "2026-11-17T13:44:28.918Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -729,6 +729,28 @@
       "title": "Baby Doll Full Video Song Ragini MMS 2 _ Sunny Leone _ Meet Bros Anjjan Feat. Kanika Kapoor(MP3_160K)",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "audio-40-0",
+          "t": 4,
+          "end": 17.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:04",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794923065011
+        },
+        {
+          "id": "audio-200-1",
+          "t": 20,
+          "end": 28,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:20",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794923065011
+        },
         {
           "id": "auto-e5c6c61c-0c4b-4116-a6cb-291a8f86472b",
           "t": 50,
