@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T16:18:12.039Z",
+  "updatedAt": "2026-11-17T16:18:45.146Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -6612,6 +6612,30 @@
       "title": "ROCK THA PARTY Full Video Song _ ROCKY HANDSOME _ John Abraham_ Nora Fatehi _ BOMBAY ROCKERS(MP3_160K)",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "auto-ad56910a-0b2f-4702-9d10-4148daf3a028",
+          "t": 18,
+          "end": 26,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:18",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794932322842
+        },
+        {
+          "id": "auto-244233fa-965a-4f51-a170-23b983767869",
+          "t": 36,
+          "end": 44,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:36",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794932322842
+        },
         {
           "id": "auto-01b3ec7c-015b-4606-b457-eb5fdeec22a4",
           "t": 70,
