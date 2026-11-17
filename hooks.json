@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T16:04:50.447Z",
+  "updatedAt": "2026-11-17T16:14:41.328Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -64,6 +64,17 @@
           "detector": "repeated-section",
           "confidence": 0.6732243285661246,
           "generatedAt": 1794894233527
+        },
+        {
+          "id": "auto-3360091a-ff4a-4267-b73b-442ba3a78d2b",
+          "t": 92.5,
+          "end": 104,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6732244758971672,
+          "generatedAt": 1794862543973
         },
         {
           "id": "auto-593684a9-22b2-46eb-ba46-27eff66cb9fd",
@@ -406,6 +417,22 @@
           "generatedAt": 1794915996895
         },
         {
+          "id": "b2a513de-a6a6-41bd-90f3-351f084013dc",
+          "t": 35,
+          "end": null,
+          "lyric": "3 PEG BEGINS",
+          "endLyric": "",
+          "source": "manual"
+        },
+        {
+          "id": "8292dee5-d779-4670-b17f-bb8de46a4ad2",
+          "t": 49.5,
+          "end": null,
+          "lyric": "ni laake 3 peg",
+          "endLyric": "",
+          "source": "manual"
+        },
+        {
           "id": "auto-5fdd063e-ee5a-46ef-b9c8-59fc8e1641a1",
           "t": 61,
           "end": 78,
@@ -438,6 +465,18 @@
           "detector": "repeated-section",
           "confidence": 0.7410237544923077,
           "generatedAt": 1794915996895
+        },
+        {
+          "id": "auto-d2bed13e-d9c3-4921-b0d2-4333a1792519",
+          "t": 72,
+          "end": 81,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7096134892954745,
+          "generatedAt": 1794860485531,
+          "verifiedAt": 1794861180918
         },
         {
           "id": "auto-25985a3b-d028-4304-ab59-299823e92008",
@@ -529,6 +568,14 @@
       "artist": "Unknown",
       "hooks": [
         {
+          "id": "e6a411ca-fad7-4225-809e-ca70c803c9d0",
+          "t": 11.5,
+          "end": null,
+          "lyric": "konsa thara kaam",
+          "endLyric": "",
+          "source": "manual"
+        },
+        {
           "id": "auto-5a0a5641-1dce-46e9-933b-3cc6feea6783",
           "t": 55,
           "end": 67,
@@ -538,6 +585,18 @@
           "detector": "repeated-section",
           "confidence": 0.6686819316142446,
           "generatedAt": 1794895124152
+        },
+        {
+          "id": "auto-6ef91c86-65f0-4740-b7ad-86044a84c7e6",
+          "t": 69,
+          "end": 79,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.851082464149824,
+          "generatedAt": 1794864622373,
+          "verifiedAt": 1794864684736
         },
         {
           "id": "auto-3ea08d2b-86b6-4415-8793-ff237bf5cb9d",
@@ -573,6 +632,18 @@
           "generatedAt": 1794895124152
         },
         {
+          "id": "auto-8b1f259f-8f70-4e86-84ea-6b7ca8baf296",
+          "t": 107.5,
+          "end": 132,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7628358321511516,
+          "generatedAt": 1794864622373,
+          "verifiedAt": 1794864729219
+        },
+        {
           "id": "auto-b561dfe0-b9a3-40b7-87b2-75f22ec34dfd",
           "t": 108,
           "end": 132,
@@ -593,6 +664,18 @@
           "detector": "repeated-section",
           "confidence": 0.8504112337748096,
           "generatedAt": 1794895124152
+        },
+        {
+          "id": "auto-7b351c67-ddb2-4e16-93a9-ff91e1e7137d",
+          "t": 117,
+          "end": 124,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.8504113049888052,
+          "generatedAt": 1794864622373,
+          "verifiedAt": 1794864736402
         }
       ]
     },
@@ -624,6 +707,18 @@
           "generatedAt": 1794923138599
         },
         {
+          "id": "auto-b4c7b73e-c16f-455d-9125-d44babf3cdf7",
+          "t": 24,
+          "end": 106,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7203699146700285,
+          "generatedAt": 1794864745975,
+          "verifiedAt": 1794864747519
+        },
+        {
           "id": "auto-45e0018b-9959-403f-8106-e9d64ddabd1c",
           "t": 98,
           "end": 106,
@@ -634,6 +729,18 @@
           "confidence": 0.7203614575735892,
           "generatedAt": 1794895685240,
           "endSource": "auto"
+        },
+        {
+          "id": "auto-5a5c9293-7241-4437-b4d6-0574bd9ee337",
+          "t": 103,
+          "end": 128,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7063306573364332,
+          "generatedAt": 1794864745975,
+          "verifiedAt": 1794864838019
         },
         {
           "id": "auto-966846dd-7409-4601-98f8-419c0f9b0311",
@@ -683,6 +790,18 @@
           "generatedAt": 1794895685240
         },
         {
+          "id": "auto-00221ffe-c889-4ab3-a240-046f4ec43826",
+          "t": 173.5,
+          "end": 179,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.6590549176225543,
+          "generatedAt": 1794864745975,
+          "verifiedAt": 1794864883119
+        },
+        {
           "id": "auto-8d188be8-5132-4c9b-a539-18c442f73483",
           "t": 186,
           "end": null,
@@ -692,6 +811,18 @@
           "detector": "repeated-section",
           "confidence": 0.6525761570388514,
           "generatedAt": 1794895685240
+        },
+        {
+          "id": "auto-ee9cacc4-36d7-4a07-9779-7897ba49e81b",
+          "t": 187.5,
+          "end": 198,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.6525321870133441,
+          "generatedAt": 1794864745975,
+          "verifiedAt": 1794864894518
         }
       ]
     },
@@ -767,6 +898,18 @@
           "generatedAt": 1794931487730
         },
         {
+          "id": "auto-db590413-c67f-4e8a-8e2b-3d8dfea5b92c",
+          "t": 38,
+          "end": 44,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "energy-peak",
+          "confidence": 0.6014967403382734,
+          "generatedAt": 1794864908387,
+          "verifiedAt": 1794864914369
+        },
+        {
           "id": "auto-9d3ee4d4-60b2-44ac-b767-5a5f7d15d5bb",
           "t": 56,
           "end": null,
@@ -787,6 +930,18 @@
           "detector": "energy-peak",
           "confidence": 0.6064868982345439,
           "generatedAt": 1794898743399
+        },
+        {
+          "id": "auto-166761a3-f634-424e-b294-6dc831dff323",
+          "t": 56.5,
+          "end": 64,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "energy-peak",
+          "confidence": 0.6064868982345439,
+          "generatedAt": 1794864908387,
+          "verifiedAt": 1794864938485
         },
         {
           "id": "auto-62be3de8-07c5-44df-9567-1aa70a2879d2",
@@ -812,6 +967,18 @@
           "generatedAt": 1794898743399
         },
         {
+          "id": "auto-71532bbf-c7d1-4fec-b37b-2610364109c4",
+          "t": 76,
+          "end": 82,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.6454946730571726,
+          "generatedAt": 1794864908387,
+          "verifiedAt": 1794864950452
+        },
+        {
           "id": "auto-6f61a58d-91fb-42b5-a9f6-4bdbb2b1d3d1",
           "t": 91,
           "end": null,
@@ -835,6 +1002,18 @@
           "verifiedAt": 1794901832625,
           "endSource": "manual",
           "endApproved": true
+        },
+        {
+          "id": "auto-459ee5c9-93a3-473d-bf66-589760f3a5e0",
+          "t": 142.5,
+          "end": 151,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7989762049303146,
+          "generatedAt": 1794864908387,
+          "verifiedAt": 1794864961301
         },
         {
           "id": "auto-03d9bee4-c507-497a-8b58-633b60bb969f",
@@ -899,6 +1078,18 @@
           "generatedAt": 1794921011478
         },
         {
+          "id": "auto-21df97cb-4907-4204-a490-116dfda4e219",
+          "t": 14.5,
+          "end": 24,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "energy-peak",
+          "confidence": 0.6065503101813231,
+          "generatedAt": 1794864974925,
+          "verifiedAt": 1794864989419
+        },
+        {
           "id": "auto-65461a6c-5bfc-4e87-941e-ded8d64c55e7",
           "t": 16,
           "end": 106,
@@ -948,6 +1139,18 @@
           "endApproved": true
         },
         {
+          "id": "auto-417ca4be-88d2-44ad-9f1a-e809cd2c7199",
+          "t": 78,
+          "end": 96,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "energy-peak",
+          "confidence": 0.6038896946269842,
+          "generatedAt": 1794864974925,
+          "verifiedAt": 1794865035719
+        },
+        {
           "id": "auto-7f099223-1a68-4a11-994b-b260e22cafa4",
           "t": 88,
           "end": null,
@@ -970,6 +1173,18 @@
           "generatedAt": 1794894470543
         },
         {
+          "id": "auto-f1fe4b76-ba3c-463e-91c9-456152067a21",
+          "t": 99,
+          "end": 106,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "energy-peak",
+          "confidence": 0.6096110304087808,
+          "generatedAt": 1794864974925,
+          "verifiedAt": 1794865041502
+        },
+        {
           "id": "auto-c5983f9c-01f7-4be4-8cc6-bcaa99ab5bd8",
           "t": 120,
           "end": 141,
@@ -980,6 +1195,18 @@
           "confidence": 0.6045854967538332,
           "generatedAt": 1794894470543,
           "endSource": "auto"
+        },
+        {
+          "id": "auto-582354cd-e168-409c-a948-ff114d8749b4",
+          "t": 130.5,
+          "end": 141,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.6343579223701754,
+          "generatedAt": 1794864974925,
+          "verifiedAt": 1794865055319
         },
         {
           "id": "auto-984b77bb-0b8b-431a-90c4-47977ddca44f",
@@ -1048,6 +1275,18 @@
           "generatedAt": 1794867922952
         },
         {
+          "id": "auto-e75124e1-4515-48a9-82b4-1b09f6a56bfd",
+          "t": 121.5,
+          "end": 139,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.8173778724999238,
+          "generatedAt": 1794865222802,
+          "verifiedAt": 1794865246651
+        },
+        {
           "id": "auto-3d756830-e998-4a72-bc91-8b691f716863",
           "t": 142,
           "end": 167,
@@ -1089,6 +1328,18 @@
           "generatedAt": 1794894450134
         },
         {
+          "id": "auto-a5e7bbba-b5f3-4151-b1ac-92aa75465c8c",
+          "t": 71.5,
+          "end": 83,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.8185909873883273,
+          "generatedAt": 1794865276444,
+          "verifiedAt": 1794865302301
+        },
+        {
           "id": "auto-afe3c4c3-8d49-4d42-8aa4-a4e4969e2f2d",
           "t": 75,
           "end": 83,
@@ -1109,6 +1360,18 @@
           "detector": "repeated-section",
           "confidence": 0.7556074438913656,
           "generatedAt": 1794894450134
+        },
+        {
+          "id": "auto-50de9093-ddd1-4f41-b470-1e3d6e45aae2",
+          "t": 114,
+          "end": 129,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7556001457585344,
+          "generatedAt": 1794865276444,
+          "verifiedAt": 1794865307550
         },
         {
           "id": "auto-8d8f54d2-fa19-4e8c-8373-32b0a4aca2fb",
@@ -1142,6 +1405,18 @@
           "detector": "repeated-section",
           "confidence": 0.7592203725302524,
           "generatedAt": 1794894450134
+        },
+        {
+          "id": "auto-a89a3076-722a-42bf-8dee-aa663b566a49",
+          "t": 151.5,
+          "end": 159,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7591788283026888,
+          "generatedAt": 1794865276444,
+          "verifiedAt": 1794865320467
         }
       ]
     },
@@ -1150,6 +1425,18 @@
       "title": "Besharmi Ki Height (Remix) _ Full Video Song _ Main Tera Hero _ Varun Dhawan_ Ileana D_Cruz(MP3_160K)",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "auto-a6327ea5-1065-4527-9cbe-466d8615b6d5",
+          "t": 58,
+          "end": 95,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.689391223199172,
+          "generatedAt": 1794861664625,
+          "verifiedAt": 1794862994770
+        },
         {
           "id": "auto-bdedbf56-840b-4c30-b77d-cc890614cbe9",
           "t": 79,
@@ -1174,6 +1461,18 @@
           "generatedAt": 1794895754977
         },
         {
+          "id": "auto-d5e8b523-7684-4353-9f8d-7121ccc15893",
+          "t": 149.5,
+          "end": 154,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7017939865641638,
+          "generatedAt": 1794861664625,
+          "verifiedAt": 1794863015970
+        },
+        {
           "id": "auto-68ecadfb-f84f-4977-a6f9-2e216f730927",
           "t": 172,
           "end": null,
@@ -1183,6 +1482,18 @@
           "detector": "repeated-section",
           "confidence": 0.7580324943031559,
           "generatedAt": 1794867689837
+        },
+        {
+          "id": "auto-7971f0d5-dd8e-4a19-82d9-91a9dc8efe11",
+          "t": 173,
+          "end": 180,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7580324943031559,
+          "generatedAt": 1794861664625,
+          "verifiedAt": 1794863023370
         },
         {
           "id": "auto-6ee81e5f-4942-4f9c-a6ad-b8220c31f121",
@@ -1208,6 +1519,18 @@
           "detector": "repeated-section",
           "confidence": 0.7149419356745974,
           "generatedAt": 1794895754977
+        },
+        {
+          "id": "auto-ba7d3fca-1fc6-42b8-8ecc-e076d5e7fb27",
+          "t": 191,
+          "end": 206,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.6972468259908804,
+          "generatedAt": 1794861664625,
+          "verifiedAt": 1794863041386
         },
         {
           "id": "auto-4798b6a8-ba45-4dbd-81db-2e49d1497996",
@@ -1250,6 +1573,14 @@
           "generatedAt": 1794924128483
         },
         {
+          "id": "55ad1aa2-84cd-4f9a-a4c4-80af382ae8a8",
+          "t": 35,
+          "end": null,
+          "lyric": "intro",
+          "endLyric": "",
+          "source": "manual"
+        },
+        {
           "id": "audio-440-1",
           "t": 44,
           "end": 52,
@@ -1259,6 +1590,18 @@
           "detector": "energy-peak",
           "confidence": 0.53,
           "generatedAt": 1794924128483
+        },
+        {
+          "id": "auto-9f0b82c0-ca05-4a03-ad35-cd8bd28cf373",
+          "t": 65.5,
+          "end": 116,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7139126684525872,
+          "generatedAt": 1794865389151,
+          "verifiedAt": 1794865466384
         },
         {
           "id": "auto-6968049a-c9e3-4390-8c28-0d34cfe3c016",
@@ -1321,6 +1664,18 @@
           "generatedAt": 1794893887223
         },
         {
+          "id": "auto-121d5e62-6fb5-4d9b-abbe-6f0740a93afc",
+          "t": 140.5,
+          "end": 147,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7338911106572719,
+          "generatedAt": 1794865389151,
+          "verifiedAt": 1794865488020
+        },
+        {
           "id": "auto-21b25093-95ec-4092-bb03-6a0b0506ab96",
           "t": 189,
           "end": null,
@@ -1372,6 +1727,26 @@
           "generatedAt": 1794924238738
         },
         {
+          "id": "1f04cd50-fba1-47e0-94bc-f8124b583e51",
+          "t": 35,
+          "end": null,
+          "lyric": "bom diggy intro",
+          "endLyric": "",
+          "source": "manual"
+        },
+        {
+          "id": "auto-4630cf2e-83db-433b-bc59-cdaca18b5abd",
+          "t": 60.5,
+          "end": 75,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7088088992908526,
+          "generatedAt": 1794859211480,
+          "verifiedAt": 1794863090885
+        },
+        {
           "id": "auto-4f165007-2486-4f6f-b51a-d912008c20ed",
           "t": 67,
           "end": 75,
@@ -1416,6 +1791,18 @@
           "generatedAt": 1794894887066
         },
         {
+          "id": "auto-1b10b5ea-086c-41ce-b042-dc4b4b443be8",
+          "t": 123.5,
+          "end": 160,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7087490852630665,
+          "generatedAt": 1794859211480,
+          "verifiedAt": 1794863118784
+        },
+        {
           "id": "auto-b57d5c8b-a53b-4be6-ae82-2c069e7550f6",
           "t": 136,
           "end": 160,
@@ -1436,6 +1823,18 @@
           "detector": "repeated-section",
           "confidence": 0.7415871159037632,
           "generatedAt": 1794894887066
+        },
+        {
+          "id": "auto-8e091a82-d617-443c-ac2a-aafebe5e75b0",
+          "t": 154,
+          "end": 159,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7415877984534873,
+          "generatedAt": 1794859211480,
+          "verifiedAt": 1794863129985
         }
       ]
     },
@@ -1444,6 +1843,22 @@
       "title": "Yo Yo Honey Singh Feat. Leo ( Official Video ) _ Punjabi Songs(MP3_160K)",
       "artist": "BREAK UP PARTY",
       "hooks": [
+        {
+          "id": "afbebd34-06ce-4da2-b5cb-f183bb946c9c",
+          "t": 9,
+          "end": null,
+          "lyric": "breakup party initial beat",
+          "endLyric": "",
+          "source": "manual"
+        },
+        {
+          "id": "4ff66d91-c000-46be-9ba8-9b948315b3d7",
+          "t": 16.5,
+          "end": null,
+          "lyric": "aaj maine breakup",
+          "endLyric": "",
+          "source": "manual"
+        },
         {
           "id": "auto-e38e30cf-fd62-40eb-9a79-6f8429d7e54e",
           "t": 68,
@@ -1465,6 +1880,18 @@
           "detector": "repeated-section",
           "confidence": 0.8041274273352876,
           "generatedAt": 1794894512633
+        },
+        {
+          "id": "auto-54c29c82-bbd6-4bf2-b5bd-dacbe6f01a3e",
+          "t": 83,
+          "end": 84,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.8041592282706798,
+          "generatedAt": 1794865084117,
+          "verifiedAt": 1794865153434
         },
         {
           "id": "auto-74c9768b-2fcd-44b2-9c93-5423305736a9",
@@ -1518,6 +1945,32 @@
       "artist": "Buzz",
       "hooks": [
         {
+          "id": "962af628-5394-41b4-b716-2a576cd428f5",
+          "t": 15.67,
+          "end": null,
+          "lyric": "tera buzz",
+          "endLyric": ""
+        },
+        {
+          "id": "3f7a69e8-f587-4d30-89bc-d4e079fe730e",
+          "t": 25.87,
+          "end": null,
+          "lyric": "tujhse man",
+          "endLyric": ""
+        },
+        {
+          "id": "auto-27484d1d-8725-4ce8-8a1c-df6a3109225b",
+          "t": 34,
+          "end": 44,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.750625940190472,
+          "generatedAt": 1794860595897,
+          "verifiedAt": 1794860957037
+        },
+        {
           "id": "auto-cefc7c10-e260-45e8-922b-82798782c732",
           "t": 36,
           "end": null,
@@ -1538,6 +1991,18 @@
           "detector": "repeated-section",
           "confidence": 0.7770107499924839,
           "generatedAt": 1794894538705
+        },
+        {
+          "id": "auto-4908bf48-e450-409b-ac2b-28b46b6728ef",
+          "t": 57,
+          "end": 74,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.8424637033876585,
+          "generatedAt": 1794860595897,
+          "verifiedAt": 1794860988687
         },
         {
           "id": "auto-ab309625-7e79-4677-b905-eb891575d0a4",
@@ -1562,6 +2027,18 @@
           "generatedAt": 1794894538705
         },
         {
+          "id": "auto-0ad40b9d-9786-44be-ab5b-f94ac81d9b0b",
+          "t": 74.5,
+          "end": 82,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.829760794026875,
+          "generatedAt": 1794860595897,
+          "verifiedAt": 1794860996319
+        },
+        {
           "id": "auto-2be6639f-00b1-4b05-86ba-9e4e2c617a85",
           "t": 89,
           "end": null,
@@ -1571,6 +2048,13 @@
           "detector": "repeated-section",
           "confidence": 0.8282904232250727,
           "generatedAt": 1794894538705
+        },
+        {
+          "id": "d49a7895-7231-434c-b689-fe51417552d4",
+          "t": 99.93,
+          "end": null,
+          "lyric": "ok ok",
+          "endLyric": ""
         },
         {
           "id": "auto-b88523a6-d070-43a9-921e-fff560590fd7",
@@ -1591,6 +2075,14 @@
       "artist": "Unknown",
       "hooks": [
         {
+          "id": "26b32331-cba4-4ff0-ac60-95a8bb8fa7c3",
+          "t": 17.5,
+          "end": null,
+          "lyric": "intro",
+          "endLyric": "",
+          "source": "manual"
+        },
+        {
           "id": "auto-fb42b31a-ee00-47ed-9e4e-67cc11232a16",
           "t": 50,
           "end": null,
@@ -1602,6 +2094,18 @@
           "generatedAt": 1794894671566
         },
         {
+          "id": "auto-28c95621-f6c2-434b-ac24-d23fc12e1d9e",
+          "t": 50.5,
+          "end": 58,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.672754282944374,
+          "generatedAt": 1794865539596,
+          "verifiedAt": 1794865593868
+        },
+        {
           "id": "auto-a3e7cc73-3c80-4c0e-9d61-c99d9c90b985",
           "t": 86,
           "end": null,
@@ -1611,6 +2115,18 @@
           "detector": "repeated-section",
           "confidence": 0.6400002691585939,
           "generatedAt": 1794894671566
+        },
+        {
+          "id": "auto-6a096e0f-23fe-49a2-b6f9-dfa3401baf43",
+          "t": 93.5,
+          "end": 102,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7461321824992995,
+          "generatedAt": 1794865539596,
+          "verifiedAt": 1794865609952
         },
         {
           "id": "auto-61541233-acf6-4b8b-9f07-6979c67d21df",
@@ -1770,6 +2286,28 @@
           "generatedAt": 1794928764934
         },
         {
+          "id": "eefcdcda-5f48-4333-8869-664316ea1aab",
+          "t": 11,
+          "end": null,
+          "lyric": "taram bum bum",
+          "endLyric": ""
+        },
+        {
+          "id": "a5ec3488-c7dd-4f2d-93ab-95d27521f87d",
+          "t": 14.5,
+          "end": null,
+          "lyric": "dope shope",
+          "endLyric": "",
+          "source": "manual"
+        },
+        {
+          "id": "0605d187-d591-4df4-974d-90db9fe5f333",
+          "t": 39,
+          "end": null,
+          "lyric": "yo yo honey",
+          "endLyric": ""
+        },
+        {
           "id": "audio-440-3",
           "t": 44,
           "end": 59,
@@ -1803,6 +2341,14 @@
           "generatedAt": 1794928764934
         },
         {
+          "id": "4c00aaf7-a7bf-4779-9718-6aaa36019d49",
+          "t": 74.5,
+          "end": null,
+          "lyric": "party karni party?",
+          "endLyric": "",
+          "source": "manual"
+        },
+        {
           "id": "audio-1190-2",
           "t": 119,
           "end": 127,
@@ -1812,6 +2358,18 @@
           "detector": "repeated-section",
           "confidence": 0.7588313019393744,
           "generatedAt": 1794916144793
+        },
+        {
+          "id": "auto-eb8ddc35-14f4-477d-95ee-5dc7f99cdbbe",
+          "t": 119.5,
+          "end": 127,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7588761498830973,
+          "generatedAt": 1794862802962,
+          "verifiedAt": 1794862912102
         },
         {
           "id": "auto-c2237730-d90f-4843-9f62-955ed019a649",
@@ -1828,6 +2386,13 @@
           "verifiedAt": 1794914506737
         },
         {
+          "id": "4fd3ea8d-56b1-48fd-a2dc-e427547ccc39",
+          "t": 138,
+          "end": null,
+          "lyric": "suno mere veero",
+          "endLyric": ""
+        },
+        {
           "id": "auto-a699fb54-1949-4153-a578-46adf6afd800",
           "t": 158,
           "end": null,
@@ -1837,6 +2402,13 @@
           "detector": "repeated-section",
           "confidence": 0.7620061894081742,
           "generatedAt": 1794894293341
+        },
+        {
+          "id": "d9189b51-acf4-490a-9966-c201ca393082",
+          "t": 168.5,
+          "end": null,
+          "lyric": "teri lay lava photo",
+          "endLyric": ""
         },
         {
           "id": "auto-f7edb02b-a848-4c08-b8b3-8dee80e8fbdd",
@@ -1881,6 +2453,18 @@
           "detector": "repeated-section",
           "confidence": 0.7504048038923303,
           "generatedAt": 1794894293341
+        },
+        {
+          "id": "auto-40919be8-8103-4c08-9adb-72cd888d1902",
+          "t": 192,
+          "end": 193,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7503889401265001,
+          "generatedAt": 1794862802962,
+          "verifiedAt": 1794862945236
         },
         {
           "id": "auto-3d110a5f-4f74-4342-b6a1-76229503592f",
@@ -2327,6 +2911,14 @@
           "detector": "energy-peak",
           "confidence": 0.55,
           "generatedAt": 1794929996098
+        },
+        {
+          "id": "9d63bd10-91ba-4f10-8b94-63be44621243",
+          "t": 35.5,
+          "end": null,
+          "lyric": "intro",
+          "endLyric": "",
+          "source": "manual"
         },
         {
           "id": "auto-fbc58ff7-bb5f-4b64-98d8-75b5d3fe42f5",
@@ -2907,6 +3499,13 @@
           "generatedAt": 1794924281022
         },
         {
+          "id": "81e4e3ee-3455-42e3-b252-1b8ae74baa4d",
+          "t": 15.5,
+          "end": null,
+          "lyric": "gungum style",
+          "endLyric": ""
+        },
+        {
           "id": "audio-240-1",
           "t": 24,
           "end": 35,
@@ -2916,6 +3515,20 @@
           "detector": "energy-peak",
           "confidence": 0.54,
           "generatedAt": 1794924281022
+        },
+        {
+          "id": "400b48c8-4399-4354-be00-1575b9495c45",
+          "t": 43.5,
+          "end": null,
+          "lyric": "jeene ke hai intro",
+          "endLyric": ""
+        },
+        {
+          "id": "62387b3b-ee77-4c31-a893-452e01d4fcdc",
+          "t": 68,
+          "end": null,
+          "lyric": "kachchi kali safa masoom",
+          "endLyric": ""
         },
         {
           "id": "auto-c5d30305-7d18-4eb3-9d8c-7fcce79d7c60",
@@ -2938,6 +3551,13 @@
           "detector": "repeated-section",
           "confidence": 0.6582045589847041,
           "generatedAt": 1794894710786
+        },
+        {
+          "id": "51b4e8e6-7c8b-4e6e-a837-03a16ba4c564",
+          "t": 127,
+          "end": null,
+          "lyric": "tenu shararat",
+          "endLyric": ""
         },
         {
           "id": "auto-40d74b72-3b09-42ce-8d98-aaf09c1f6882",
@@ -2976,6 +3596,13 @@
           "endApproved": true
         },
         {
+          "id": "53f8263d-a35c-4149-9348-954eb95d3cb8",
+          "t": 170.5,
+          "end": null,
+          "lyric": "jeene ke hai chaar din",
+          "endLyric": ""
+        },
+        {
           "id": "auto-7722d822-3cc4-422d-88aa-ebb04f9423c0",
           "t": 174,
           "end": null,
@@ -2985,6 +3612,24 @@
           "detector": "repeated-section",
           "confidence": 0.6751558320816897,
           "generatedAt": 1794894710786
+        },
+        {
+          "id": "auto-228f7e5a-e8c2-4c43-b3ca-bce3c3ff40a9",
+          "t": 182,
+          "end": 190,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7017183246231197,
+          "generatedAt": 1794862532296
+        },
+        {
+          "id": "e98ba4ad-5cb9-4580-ad33-8ee6fadd7f6c",
+          "t": 185,
+          "end": null,
+          "lyric": "jaye jaye ek baar jo jaye",
+          "endLyric": ""
         }
       ]
     },
@@ -3208,6 +3853,13 @@
           "generatedAt": 1794921005074
         },
         {
+          "id": "987659fe-3b23-48a6-9f05-8427529099f7",
+          "t": 17.19,
+          "end": null,
+          "lyric": "teri ankhiyo ka vaar",
+          "endLyric": ""
+        },
+        {
           "id": "audio-200-1",
           "t": 20,
           "end": 29,
@@ -3217,6 +3869,13 @@
           "detector": "energy-peak",
           "confidence": 0.53,
           "generatedAt": 1794921005074
+        },
+        {
+          "id": "7ab826f9-f405-4033-8fe8-7f9a73a82c86",
+          "t": 36,
+          "end": null,
+          "lyric": "tera pyaar pyaar",
+          "endLyric": ""
         },
         {
           "id": "auto-bf4282d8-3b18-4e28-8dd6-dfc94c414c1f",
@@ -3256,6 +3915,13 @@
           "endApproved": true
         },
         {
+          "id": "369f2b02-e38a-4841-935a-1e32163192e0",
+          "t": 73.38,
+          "end": null,
+          "lyric": "tu jo na ho",
+          "endLyric": ""
+        },
+        {
           "id": "auto-224b9ebc-bb3a-44a8-87da-61b3409426c6",
           "t": 84,
           "end": null,
@@ -3265,6 +3931,13 @@
           "detector": "energy-peak",
           "confidence": 0.6045024900299669,
           "generatedAt": 1794895800281
+        },
+        {
+          "id": "e078da6c-55cf-4b09-9fdc-bbd34602a9ae",
+          "t": 87.38,
+          "end": null,
+          "lyric": "tera hua jo deedar",
+          "endLyric": ""
         },
         {
           "id": "auto-48c2b313-3e43-4582-a686-a309f0d128c0",
@@ -3592,6 +4265,13 @@
       "artist": "Unknown",
       "hooks": [
         {
+          "id": "4a0f173d-d59e-4c72-9a21-50c8b40546a9",
+          "t": 6.98,
+          "end": null,
+          "lyric": "bajne de dhadak dhadak",
+          "endLyric": ""
+        },
+        {
           "id": "audio-120-0",
           "t": 12,
           "end": 20,
@@ -3672,6 +4352,17 @@
           "verifiedAt": 1794894032701,
           "endSource": "manual",
           "endApproved": true
+        },
+        {
+          "id": "auto-6b7109c1-d3c9-4677-91ee-67ea75528702",
+          "t": 126,
+          "end": 134,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6915661167292857,
+          "generatedAt": 1794861891656
         },
         {
           "id": "auto-0fce2357-d511-4ff8-a82c-5899e44ec40d",
@@ -4091,6 +4782,24 @@
           "generatedAt": 1794894563389
         },
         {
+          "id": "auto-6e896f09-3bf8-4ec7-9664-5a7056169b81",
+          "t": 58.5,
+          "end": 64,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6258435245287594,
+          "generatedAt": 1794859294464
+        },
+        {
+          "id": "c15fc4b0-cbd3-456f-9623-f7eaee0c38de",
+          "t": 59.13,
+          "end": null,
+          "lyric": "ye fitoor kalyani",
+          "endLyric": ""
+        },
+        {
           "id": "auto-b7acce67-4616-4bc5-81e9-56416dd8d872",
           "t": 68,
           "end": null,
@@ -4100,6 +4809,13 @@
           "detector": "energy-peak",
           "confidence": 0.606347681531508,
           "generatedAt": 1794894563389
+        },
+        {
+          "id": "f2ced367-7834-4840-b1c0-e13007b4136f",
+          "t": 79.77,
+          "end": null,
+          "lyric": "aapka hi kehna banta",
+          "endLyric": ""
         },
         {
           "id": "auto-d1decff8-dbb8-471c-a878-d4d3cea0dd46",
@@ -4122,6 +4838,13 @@
           "detector": "energy-peak",
           "confidence": 0.6066886706827187,
           "generatedAt": 1794894563389
+        },
+        {
+          "id": "80ea838d-a3c7-4a75-a61b-cae073a0d12d",
+          "t": 129.08,
+          "end": null,
+          "lyric": "telugu beat",
+          "endLyric": ""
         },
         {
           "id": "auto-df5c9e27-863f-42de-abf3-b6c09872cd2c",
@@ -5561,6 +6284,21 @@
       "artist": "Unknown",
       "hooks": [
         {
+          "id": "c02d3e8e-af70-4f75-8257-d7365d8037b2",
+          "t": 14.01,
+          "end": null,
+          "lyric": "pyaar hua",
+          "endLyric": ""
+        },
+        {
+          "id": "52b0f02f-a396-4b23-883e-7980dbc5a259",
+          "t": 34.4,
+          "end": null,
+          "lyric": "kehta hai dil rasta mushkil",
+          "endLyric": "",
+          "duration": 30
+        },
+        {
           "id": "auto-b9836fd0-f12a-4c34-a060-e519380ce24a",
           "t": 48,
           "end": 56,
@@ -5625,6 +6363,13 @@
           "detector": "energy-peak",
           "confidence": 0.6060073208072173,
           "generatedAt": 1794894913161
+        },
+        {
+          "id": "830b2b01-1272-4196-9500-492b2c4e141c",
+          "t": 123.88,
+          "end": null,
+          "lyric": "goli maar bechain",
+          "endLyric": ""
         }
       ]
     },
@@ -5633,6 +6378,13 @@
       "title": "Ram Chahe Leela x Aria",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "1ff1608f-4f52-4a50-a79b-a664c836343b",
+          "t": 81,
+          "end": null,
+          "lyric": "Beat drop",
+          "endLyric": ""
+        },
         {
           "id": "auto-34a4c663-4661-48aa-a97f-b29c8dd82055",
           "t": 94,
@@ -5643,6 +6395,30 @@
           "detector": "energy-peak",
           "confidence": 0.6052691116275849,
           "generatedAt": 1794894720760
+        },
+        {
+          "id": "auto-eb630c5b-593c-4b96-b0ab-73e6a15eea18",
+          "t": 96,
+          "end": 102,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "energy-peak",
+          "confidence": 0.6052687509080699,
+          "generatedAt": 1794862596782,
+          "verifiedAt": 1794862638003
+        },
+        {
+          "id": "auto-502215a5-347c-4649-b751-0e3dcf55819b",
+          "t": 103.5,
+          "end": 112,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "energy-peak",
+          "confidence": 0.6044249004113161,
+          "generatedAt": 1794862596782,
+          "verifiedAt": 1794862646320
         },
         {
           "id": "auto-89ef9e6b-78bb-4596-87d0-5cc5fd7c3d40",
@@ -5698,6 +6474,25 @@
           "detector": "repeated-section",
           "confidence": 0.7282612691646739,
           "generatedAt": 1794894720760
+        },
+        {
+          "id": "7e6e1a46-db47-4f78-a87d-63d886c225f3",
+          "t": 165,
+          "end": null,
+          "lyric": "Beat Drop",
+          "endLyric": ""
+        },
+        {
+          "id": "auto-c1e4647b-d5f7-4a77-822b-3abaad137922",
+          "t": 165,
+          "end": 171,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7282603192012653,
+          "generatedAt": 1794862596782,
+          "verifiedAt": 1794862776102
         }
       ]
     },
@@ -6072,6 +6867,13 @@
           "generatedAt": 1794894623892
         },
         {
+          "id": "35d2a2b3-5e4a-4cc2-ab79-fc4d280a9c0c",
+          "t": 37,
+          "end": null,
+          "lyric": "Vikram",
+          "endLyric": ""
+        },
+        {
           "id": "auto-ee7b4233-ed31-4818-9f46-9fa613ed546d",
           "t": 54,
           "end": null,
@@ -6114,6 +6916,13 @@
           "detector": "repeated-section",
           "confidence": 0.6966136264706145,
           "generatedAt": 1794894623892
+        },
+        {
+          "id": "80960cd5-0940-44a7-8273-b39f5d48bfa7",
+          "t": 235,
+          "end": null,
+          "lyric": "Aaa lu kava laiya",
+          "endLyric": ""
         },
         {
           "id": "auto-a1c7f0f2-34fb-437e-a8dc-3b3f00a01d43",
