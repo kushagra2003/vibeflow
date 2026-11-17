@@ -230,8 +230,11 @@ function markHookEnd(id) {
   if(end<=h.t) return toast("Hook end must be after its start.");
   h.end=end;
   h.endLyric=$("#endLine-"+CSS.escape(String(id)))?.value?.trim() || h.endLyric || "";
-  t.hooks=entry.hooks; saveLib(); renderHooks();
-  toast(`Hook ends at ${fmt(end)}.`);
+  t.hooks=entry.hooks;
+  if(S.activeHook?.trackId===t.id && String(S.activeHook.hookId)===String(id)) S.activeHook.end=end;
+  syncTrackHooks(t.id,entry.hooks);
+  saveLib(); save(); renderHooks(); render();
+  toast(`Hook end saved at ${fmt(end)}. AI DJ will switch at this point.`);
 }
 function verifyAutoHook(id) {
   const t=cur(), entry=t && getLibTrack(t.id);
@@ -254,8 +257,9 @@ function playHookDirect(h) {
   const t=cur(); if(!t || !audio().src) return;
   audio().currentTime=h.t;
   S.activeNoHookDeadline=null;
-  S.activeHook={trackId:t.id,hookId:h.id,t:h.t,end:h.end ?? null};
+  S.activeHook={trackId:t.id,hookId:h.id,t:h.t,end:h.end ?? null,lyric:h.lyric||"Hook"};
   markHookPlayed(t,h);
+  renderHooks();
   $("#hookStatus").textContent=`${h.lyric || "Hook"} · ${fmt(h.t)}`;
   toast(`Jumped directly to ${fmt(h.t)}.`);
 }
@@ -297,7 +301,7 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
     const generated=accepted.map(candidate=>({
       id:"auto-"+(crypto.randomUUID?.()||String(Date.now()+Math.random())),
       t:Math.round(candidate.t*2)/2,
-      end:Math.max(candidate.t+1,Math.round(candidate.end*2)/2),
+      end:null,
       lyric:candidate.label,
       endLyric:"",
       source:"auto",
@@ -385,8 +389,10 @@ function renderHooks() {
     $("#hooksList").innerHTML='<div class="empty-state">No hooks yet. Play the song and press “Mark hook here”.</div>';
     return;
   }
-  $("#hooksList").innerHTML=hooks.map((h,i)=>`
-    <div class="hook-item ${h.source==="auto"?"auto-hook-item":"manual-hook-item"}">
+  $("#hooksList").innerHTML=hooks.map((h,i)=>{
+    const isActive=S.activeHook?.trackId===t.id && String(S.activeHook.hookId)===String(h.id);
+    return `
+    <div class="hook-item ${h.source==="auto"?"auto-hook-item":"manual-hook-item"} ${isActive?"active-hook-item":""}">
       <div class="hook-main">
         <div class="hook-time-control" aria-label="Adjust hook start time">
           <button type="button" data-hook-start-adjust="${esc(h.id)}" data-delta="-0.5" aria-label="Move hook start back half a second" title="−0.5 seconds">−</button>
@@ -394,7 +400,7 @@ function renderHooks() {
           <button type="button" data-hook-start-adjust="${esc(h.id)}" data-delta="0.5" aria-label="Move hook start forward half a second" title="+0.5 seconds">+</button>
         </div>
         <div class="hook-detail">
-          <b title="${esc(h.lyric || "Hook "+(i+1))}">${esc(h.lyric || "Hook "+(i+1))}</b>
+          <b title="${esc(h.lyric || "Hook "+(i+1))}">${esc(h.lyric || "Hook "+(i+1))}${isActive?'<span class="active-hook-badge">NOW PLAYING · AI DJ CUE</span>':""}</b>
           <small><span class="hook-origin ${h.source==="auto"?"auto":"manual"}">${h.source==="auto"?"AUTO":"MANUAL"}</span> · ${h.source==="auto"?(h.detector==="repeated-section"?"Pattern match":"Energy peak"):"User cue"} · ${h.end!=null?`Ends ${fmt(h.end)}${h.endLyric?" · "+esc(h.endLyric):""}`:"End not marked"}</small>
         </div>
       </div>
@@ -405,7 +411,8 @@ function renderHooks() {
         ${h.source==="auto"?`<button data-hook-verify="${esc(h.id)}" title="Save and verify this generated hook">Save hook</button>`:""}
         <button data-hook-delete="${esc(h.id)}" title="Delete hook">×</button>
       </div>
-    </div>`).join("");
+    </div>`;
+  }).join("");
   $("#hooksList").querySelectorAll("[data-hook-go]").forEach(b=>b.onclick=()=>playHookDirect(hooks.find(h=>String(h.id)===b.dataset.hookGo)));
   $("#hooksList").querySelectorAll("[data-hook-start-adjust]").forEach(b=>b.onclick=()=>adjustHookStart(b.dataset.hookStartAdjust,Number(b.dataset.delta)));
   $("#hooksList").querySelectorAll("[data-hook-end]").forEach(b=>b.onclick=()=>markHookEnd(b.dataset.hookEnd));
@@ -706,6 +713,7 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
       }
     }
     S.activeHook=hook?{trackId:track.id,hookId:hook.id,t:hook.t,end:hook.end??null,lyric:hook.lyric||"Hook"}:null;
+    renderHooks();
     S.activeNoHookDeadline=hook?null:{trackId:track.id,at:startAt+settings.noHookSeconds};
     if(hook) markHookPlayed(track,hook);
     if(previous) rememberPattern(previous,track,hook);
@@ -941,8 +949,10 @@ function checkHookTimer() {
   }
   const h=S.activeHook && S.activeHook.trackId===t.id ? S.activeHook : null;
   if(h) {
-    // A marked hook end is a cue annotation, not an instruction to skip early.
-    const deadline=h.t+settings.hookPlaySeconds;
+    // A captured end point is authoritative; otherwise use the configured hook-duration fallback.
+    const deadline=h.end!==null && h.end!==undefined && Number.isFinite(Number(h.end))
+      ? Number(h.end)
+      : h.t+settings.hookPlaySeconds;
     if(a.currentTime>=deadline) handleAutoAdvance();
   } else {
     const fallback=S.activeNoHookDeadline?.trackId===t.id
