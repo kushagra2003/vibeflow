@@ -148,20 +148,34 @@ function syncPunches(trackId, punches) {
 function savePunchStart() {
   const t=cur(), entry=t&&getLibTrack(t.id);
   if(!entry) return toast("Punches can currently be saved for songs in My music.");
-  S.punchDraft={trackId:t.id,start:audio().currentTime};
-  $("#punchStartTime").textContent=fmt(S.punchDraft.start);
-  toast("Punch start marked. Play to the desired end and mark it.");
+  S.punchDraft={trackId:t.id,trackTitle:t.title,trackArtist:t.artist,start:Number(audio().currentTime.toFixed(2)),end:null};
+  $("#punchStartTime").textContent=fmt(S.punchDraft.start)+" · "+t.title;
+  $("#punchName").dataset.draftTrackId=t.id;
+  toast("Punch IN saved for "+t.title+". Name it, then mark punch OUT.");
 }
 function savePunchEnd() {
-  const t=cur(), entry=t&&getLibTrack(t.id), draft=S.punchDraft;
-  if(!entry || !draft || draft.trackId!==t.id) return toast("Mark a punch start first.");
-  const end=audio().currentTime;
+  const draft=S.punchDraft;
+  if(!draft) return toast("Mark punch IN first.");
+  if(cur()?.id!==draft.trackId) return toast("Return to "+draft.trackTitle+" to mark punch OUT. Your punch draft is محفوظ.");
+  const end=Number(audio().currentTime.toFixed(2));
   if(end-draft.start<2) return toast("A punch must be at least 2 seconds long.");
-  const name=$("#punchName").value.trim()||("Punch "+(punchesFor(entry).length+1));
-  const punch={id:crypto.randomUUID?.()||String(Date.now()),name,start:Number(draft.start.toFixed(2)),end:Number(end.toFixed(2)),triggerHookId:$("#punchTriggerHook")?.value||"",createdAt:Date.now()};
-  entry.punches=[...punchesFor(entry),punch]; syncPunches(t.id,entry.punches);
-  saveLib();save();S.punchDraft=null;$("#punchName").value="";renderPunchDeck();
-  toast("Punch saved: "+name+" · "+fmt(punch.start)+"–"+fmt(punch.end));
+  draft.end=end;
+  $("#punchStartTime").textContent=fmt(draft.start)+" → "+fmt(end);
+  $("#savePunch").disabled=false;
+  toast("Punch OUT marked. Add a name and click Save punch.");
+}
+function savePunch() {
+  const draft=S.punchDraft;
+  if(!draft || !Number.isFinite(draft.end)) return toast("Mark punch IN and OUT first.");
+  const entry=getLibTrack(draft.trackId);
+  if(!entry) return toast("The source song is no longer in My music.");
+  const name=$("#punchName").value.trim();
+  if(!name) return toast("Give this punch a name before saving.");
+  const punch={id:crypto.randomUUID?.()||String(Date.now()),name,start:draft.start,end:draft.end,triggerHookId:"",createdAt:Date.now()};
+  entry.punches=[...punchesFor(entry),punch]; syncPunches(draft.trackId,entry.punches);
+  saveLib();save();S.punchDraft=null;$("#punchName").value="";$("#punchName").dataset.draftTrackId="";
+  $("#punchStartTime").textContent="Not set";$("#savePunch").disabled=true;
+  renderPunchDeck();toast("Punch saved: "+name+" · "+fmt(punch.start)+"–"+fmt(punch.end));
 }
 function allPunches() {
   return S.lib.flatMap(entry=>punchesFor(entry).map(p=>({...p,trackId:"my:"+entry.file,title:entry.title,artist:entry.artist,hooks:hooksOf(entry)})));
@@ -171,7 +185,7 @@ function renderPunchDeck() {
   const pins=store.get("pinnedPunches",[]);
   const selected=pins.map(id=>allPunches().find(p=>p.id===id)).filter(Boolean).slice(0,4);
   root.innerHTML='<div class="punch-deck-head"><div><span class="eyebrow">YOUR QUICK CUES</span><b>Saved punches</b></div><button type="button" id="managePunches">Manage</button></div>'+
-    (selected.length?'<div class="punch-deck-grid">'+selected.map(p=>'<div class="punch-card"><div><b>'+esc(p.name)+'</b><small>'+esc(p.title)+' · '+fmt(p.start)+'–'+fmt(p.end)+'</small></div><div class="punch-card-actions"><button type="button" data-punch-preview="'+esc(p.id)+'">▶ Preview</button><button type="button" data-punch-queue="'+esc(p.id)+'">↗ Play next</button><button type="button" data-punch-unpin="'+esc(p.id)+'" aria-label="Remove from home">×</button></div></div>').join(''):'<div class="empty-state">Pin up to four punches here from Manage.</div>')+'</div>';
+    (selected.length?'<div class="punch-deck-grid">'+selected.map(p=>'<div class="punch-card"><b>'+esc(p.title)+'</b><div class="punch-card-actions"><button type="button" data-punch-preview="'+esc(p.id)+'">Preview</button><button type="button" data-punch-queue="'+esc(p.id)+'">Play next</button><button type="button" data-punch-unpin="'+esc(p.id)+'">Remove from deck</button></div></div>').join(''):'<div class="empty-state">Add punches to your deck from Punch settings.</div>')+'</div>';
   $("#managePunches").onclick=openPunchManager;
   root.querySelectorAll("[data-punch-preview]").forEach(b=>b.onclick=()=>previewPunch(b.dataset.punchPreview));
   root.querySelectorAll("[data-punch-queue]").forEach(b=>b.onclick=()=>queuePunch(b.dataset.punchQueue));
@@ -181,10 +195,10 @@ function renderPunchDeck() {
 function openPunchManager() {
   const punches=allPunches(), pins=store.get("pinnedPunches",[]);
   const root=$("#modalRoot");
-  root.innerHTML='<div class="modal-backdrop" data-punch-dismiss="1"><div class="modal-card" role="dialog" aria-modal="true"><div class="modal-head"><div><div class="eyebrow">MANUAL DJ CUES</div><h2>Punch library</h2><p class="modal-sub">Pin up to four punches to your home screen.</p></div><button class="modal-close" data-punch-dismiss="1">×</button></div><div class="punch-manager-list">'+(punches.length?punches.map(p=>'<div class="punch-manager-row"><label><input type="checkbox" data-pin-punch="'+esc(p.id)+'" '+(pins.includes(p.id)?'checked':'')+' '+(!pins.includes(p.id)&&pins.length>=4?'disabled':'')+'><span><b>'+esc(p.name)+'</b><small>'+esc(p.title)+' · '+fmt(p.start)+'–'+fmt(p.end)+'</small></span></label><select data-punch-hook="'+esc(p.id)+'" aria-label="Hook to start when this punch is queued"><option value="">Use punch start</option>'+(p.hooks||[]).map(h=>'<option value="'+esc(h.id)+'" '+(String(p.triggerHookId||"")===String(h.id)?"selected":"")+' >'+esc(h.name||h.lyric||("Hook "+fmt(h.t)))+' · '+fmt(h.t)+'</option>').join('')+'</select><button type="button" data-punch-preview="'+esc(p.id)+'">Preview</button><button type="button" data-punch-queue="'+esc(p.id)+'">Play next</button><button type="button" data-punch-delete="'+esc(p.id)+'">Delete</button></div>').join(''):'<div class="empty-state">No punches saved yet. Play a song and mark a start and end.</div>')+'</div><div class="punch-manager-foot"><button type="button" data-punch-dismiss="1">Done</button></div></div></div>';
+  root.innerHTML='<div class="modal-backdrop" data-punch-dismiss="1"><div class="modal-card" role="dialog" aria-modal="true"><div class="modal-head"><div><div class="eyebrow">MANUAL DJ CUES</div><h2>Punch library</h2><p class="modal-sub">Pin up to four punches to your home screen.</p></div><button class="modal-close" data-punch-dismiss="1">×</button></div><div class="punch-manager-list">'+(punches.length?punches.map(p=>'<div class="punch-manager-row"><b>'+esc(p.title)+'</b><span>'+esc(p.name)+'</span><button type="button" data-punch-preview="'+esc(p.id)+'">Preview</button><button type="button" data-punch-queue="'+esc(p.id)+'">Play next</button><button type="button" data-pin-punch="'+esc(p.id)+'" '+(!pins.includes(p.id)&&pins.length>=4?'disabled':'')+'>'+(pins.includes(p.id)?'Remove from deck':'Add to deck')+'</button></div>').join(''):'<div class="empty-state">No punches saved yet. Play a song and mark a start and end.</div>')+'</div><div class="punch-manager-foot"><button type="button" data-punch-dismiss="1">Done</button></div></div></div>';
   root.querySelectorAll("[data-punch-dismiss]").forEach(b=>b.onclick=e=>{if(e.target===b||!b.classList.contains("modal-backdrop"))root.innerHTML="";});
-  root.querySelectorAll("[data-pin-punch]").forEach(b=>b.onchange=()=>{let ids=store.get("pinnedPunches",[]);ids=b.checked?[...ids,b.dataset.pinPunch].slice(0,4):ids.filter(id=>id!==b.dataset.pinPunch);store.set("pinnedPunches",ids);openPunchManager();renderPunchDeck();});
-  root.querySelectorAll("[data-punch-delete]").forEach(b=>b.onclick=()=>{const p=punches.find(x=>x.id===b.dataset.punchDelete),entry=p&&getLibTrack(p.trackId);if(entry){entry.punches=punchesFor(entry).filter(x=>x.id!==p.id);saveLib();store.set("pinnedPunches",store.get("pinnedPunches",[]).filter(id=>id!==p.id));}openPunchManager();renderPunchDeck();});
+  root.querySelectorAll("[data-pin-punch]").forEach(b=>b.onclick=()=>{let ids=store.get("pinnedPunches",[]);ids=ids.includes(b.dataset.pinPunch)?ids.filter(id=>id!==b.dataset.pinPunch):[...ids,b.dataset.pinPunch].slice(0,4);store.set("pinnedPunches",ids);openPunchManager();renderPunchDeck();});
+  
   root.querySelectorAll("[data-punch-preview]").forEach(b=>b.onclick=()=>previewPunch(b.dataset.punchPreview));
   root.querySelectorAll("[data-punch-queue]").forEach(b=>b.onclick=()=>queuePunch(b.dataset.punchQueue));
 }
@@ -192,60 +206,52 @@ async function previewPunch(id) {
   const p=allPunches().find(x=>x.id===id); if(!p)return;
   if(!cur()||audio().paused)return toast("Start a song first to preview a punch over it.");
   if(p.trackId===cur().id)return toast("Choose a punch from a different song.");
-  const musicDeck=audio(), deck=A[1-ci], token=++S.punchPreviewToken;
+  const musicDeck=audio(), deck=A[1-ci], token=(S.punchPreviewToken||0)+1;
+  S.punchPreviewToken=token;
   const masterVolume=vol();
-  try {
-    clearTimeout(S.punchPreviewTimer);
-    // Cancel any previous punch envelope and restore the underlying song.
+  const clearPunch=restore=>{
+    clearTimeout(S.punchPreviewTimer);clearTimeout(S.punchHardStopTimer);
     for(const d of A){clearInterval(d._punchFade);d._punchFade=null;}
-    if(S.punchDuckDeck&&S.punchDuckDeck!==musicDeck)S.punchDuckDeck.volume=vol();
-    musicDeck.volume=masterVolume;
-    S.punchDuckDeck=musicDeck;
-    deck.pause();
-    deck.src=await getUrl(getLibTrack(p.trackId)&&toTrack(getLibTrack(p.trackId)));
+    deck.pause();deck.currentTime=Number(p.end)||deck.currentTime;deck.removeAttribute("src");deck.load();
+    if(restore){musicDeck.volume=masterVolume;if(S.punchDuckDeck===musicDeck)S.punchDuckDeck=null;}
+  };
+  try {
+    clearTimeout(S.punchPreviewTimer);clearTimeout(S.punchHardStopTimer);
+    for(const d of A){clearInterval(d._punchFade);d._punchFade=null;}
+    if(S.punchDuckDeck)S.punchDuckDeck.volume=masterVolume;
+    musicDeck.volume=masterVolume;S.punchDuckDeck=musicDeck;
+    deck.pause();deck.src=await getUrl(toTrack(getLibTrack(p.trackId)));
     await waitMetadata(deck);
-    const punchLength=Math.max(0.1,Number(p.end)-Number(p.start));
-    // Both ramps scale with punch length and are capped at 1.5 seconds.
-    const rampMs=Math.max(100,Math.min(1500,punchLength*200));
-    deck.currentTime=p.start;
-    deck.volume=0;
-    await deck.play();
-    const fade=(targetDeck,from,to,duration,onDone)=>{
-      const started=performance.now();
-      clearInterval(targetDeck._punchFade);
-      targetDeck._punchFade=setInterval(()=>{
-        const progress=Math.min(1,(performance.now()-started)/duration);
-        const eased=progress*progress*(3-2*progress);
-        targetDeck.volume=from+(to-from)*eased;
-        if(progress>=1){
-          clearInterval(targetDeck._punchFade);
-          targetDeck._punchFade=null;
-          if(onDone)onDone();
-        }
-      },25);
+    if(token!==S.punchPreviewToken)return;
+    const length=Math.max(.1,Number(p.end)-Number(p.start));
+    const rampMs=Math.max(100,Math.min(1500,length*200));
+    deck.currentTime=Number(p.start);deck.volume=0;await deck.play();
+    const fade=(target,from,to,duration,done)=>{
+      clearInterval(target._punchFade);const started=performance.now();
+      target._punchFade=setInterval(()=>{
+        const progress=Math.min(1,(performance.now()-started)/duration),e=progress*progress*(3-2*progress);
+        target.volume=from+(to-from)*e;
+        if(progress>=1){clearInterval(target._punchFade);target._punchFade=null;if(done)done();}
+      },20);
     };
-    // Punch rises to 100% while the playing song ducks to 65%.
-    fade(deck,0,masterVolume,rampMs);
-    fade(musicDeck,musicDeck.volume,masterVolume*0.65,rampMs);
-    clearTimeout(S.punchPreviewTimer);
-    // Fade the punch to silence and restore the original song to 100% together.
+    fade(deck,0,masterVolume,rampMs);fade(musicDeck,masterVolume,masterVolume*.65,rampMs);
     S.punchPreviewTimer=setTimeout(()=>{
       if(token!==S.punchPreviewToken)return;
-      fade(deck,deck.volume,0,rampMs,()=>{
-        deck.pause();
-        deck.removeAttribute("src");
-        deck.load();
-      });
-      fade(musicDeck,musicDeck.volume,masterVolume,rampMs,()=>{
-        if(S.punchDuckDeck===musicDeck)S.punchDuckDeck=null;
-      });
-    },Math.max(0,punchLength*1000-rampMs));
-    toast("Punch playing at full volume; the current song is ducked to 65%.");
+      fade(deck,deck.volume,0,rampMs,()=>{deck.pause();deck.removeAttribute("src");deck.load();});
+      fade(musicDeck,musicDeck.volume,masterVolume,rampMs,()=>{if(S.punchDuckDeck===musicDeck)S.punchDuckDeck=null;});
+    },Math.max(0,length*1000-rampMs));
+    // Independent hard stop: the preview deck can never run past the saved punch OUT.
+    S.punchHardStopTimer=setTimeout(()=>{
+      if(token!==S.punchPreviewToken)return;
+      clearInterval(deck._punchFade);deck._punchFade=null;deck.pause();deck.removeAttribute("src");deck.load();
+      clearInterval(musicDeck._punchFade);musicDeck._punchFade=null;musicDeck.volume=masterVolume;
+      if(S.punchDuckDeck===musicDeck)S.punchDuckDeck=null;
+    },length*1000+80);
+    toast("Punch preview started. It will stop at "+fmt(p.end)+".");
   } catch(e){
+    clearTimeout(S.punchPreviewTimer);clearTimeout(S.punchHardStopTimer);
     for(const d of A){clearInterval(d._punchFade);d._punchFade=null;}
-    deck.pause();
-    musicDeck.volume=masterVolume;
-    if(S.punchDuckDeck===musicDeck)S.punchDuckDeck=null;
+    deck.pause();musicDeck.volume=masterVolume;if(S.punchDuckDeck===musicDeck)S.punchDuckDeck=null;
     toast("Could not preview this punch: "+e.message);
   }
 }
@@ -1555,7 +1561,7 @@ function bindTrackActions() {
 
 // ---------- Player events ----------
 $("#addHook").onclick=addHook;
-$("#markPunchStart").onclick=savePunchStart; $("#markPunchEnd").onclick=savePunchEnd;
+$("#markPunchStart").onclick=savePunchStart; $("#markPunchEnd").onclick=savePunchEnd; $("#savePunch").onclick=savePunch;
 $("#punchMenuButton").onclick=openPunchManager;
 $("#scanHooks").onclick=()=>scanCurrentSongHooks();
 $("#mix").onclick=mixNext;
