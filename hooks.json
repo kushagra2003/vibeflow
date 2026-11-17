@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T15:19:58.243Z",
+  "updatedAt": "2026-11-17T15:20:02.468Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -3122,6 +3122,28 @@
       "artist": "Unknown",
       "hooks": [
         {
+          "id": "audio-80-0",
+          "t": 8,
+          "end": 45.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:08",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794928798225
+        },
+        {
+          "id": "audio-240-1",
+          "t": 24,
+          "end": 45.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:24",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794928798225
+        },
+        {
           "id": "auto-e51f3841-7003-443d-bf89-54a6456fb5bf",
           "t": 50,
           "end": null,
@@ -3131,6 +3153,17 @@
           "detector": "repeated-section",
           "confidence": 0.680937123784189,
           "generatedAt": 1794894554370
+        },
+        {
+          "id": "auto-2e06ff07-8902-4503-86ea-096cdb19ad5b",
+          "t": 50,
+          "end": 58,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6867292694113574,
+          "generatedAt": 1794892703650
         },
         {
           "id": "auto-20f3b519-fe96-40ba-b936-dd99b2580748",
@@ -3144,6 +3177,17 @@
           "generatedAt": 1794894554370
         },
         {
+          "id": "auto-423058af-7bfa-4902-b789-c8246d79eec4",
+          "t": 72,
+          "end": 80,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.665045582304775,
+          "generatedAt": 1794892703650
+        },
+        {
           "id": "auto-663a3725-aeba-42a8-8ce6-10a542004e47",
           "t": 84,
           "end": null,
@@ -3153,6 +3197,17 @@
           "detector": "repeated-section",
           "confidence": 0.7067291798898435,
           "generatedAt": 1794894554370
+        },
+        {
+          "id": "auto-c84e9b00-25bb-41b2-9473-e2062d235ebd",
+          "t": 84,
+          "end": 92,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7020815352578371,
+          "generatedAt": 1794892703650
         },
         {
           "id": "auto-3d8bb66d-efbd-4211-9360-8d3ecc046095",
@@ -3166,6 +3221,17 @@
           "generatedAt": 1794894554370
         },
         {
+          "id": "auto-12fce15e-8df6-47ec-877f-89dc0e87468b",
+          "t": 95,
+          "end": 103,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6605035086849063,
+          "generatedAt": 1794892703650
+        },
+        {
           "id": "auto-b3b19ef5-7f17-4a0a-80ef-463b76eba24c",
           "t": 137,
           "end": null,
@@ -3177,6 +3243,17 @@
           "generatedAt": 1794894554370
         },
         {
+          "id": "auto-cee96fbf-f838-4cfb-89f2-ce93233825c9",
+          "t": 137,
+          "end": 145,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6869375245619151,
+          "generatedAt": 1794892703650
+        },
+        {
           "id": "auto-2deeebb2-280d-4055-9d03-40d37c799574",
           "t": 152,
           "end": null,
@@ -3186,6 +3263,17 @@
           "detector": "repeated-section",
           "confidence": 0.6706957909444627,
           "generatedAt": 1794894554370
+        },
+        {
+          "id": "auto-e94a0d98-5ac1-40bb-9fc4-3daf96bdf64d",
+          "t": 152,
+          "end": 160,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6614523454771243,
+          "generatedAt": 1794892703650
         }
       ]
     },
