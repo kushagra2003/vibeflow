@@ -171,184 +171,68 @@
   }
 
   async function analyse(url) {
-    if (!url) throw new Error("The song audio URL is missing.");
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) throw new Error("This browser does not support local audio analysis. Try the latest Chrome or Edge.");
-    const audioUrl = new URL(url, document.baseURI).href;
-    const response = await fetch(audioUrl, { cache: "no-store", credentials: "same-origin" });
-    if (!response.ok) throw new Error("Could not load the song audio (" + response.status + "). Check that the file exists in the deployed songs folder.");
-    const contentType = response.headers.get("content-type") || "";
-    if (/text\/html/i.test(contentType)) throw new Error("The song URL returned the website page instead of an audio file. Check the filename and songs folder deployment.");
-    const bytes = await response.arrayBuffer();
-    if (!bytes.byteLength) throw new Error("The song audio file is empty.");
-    if (bytes.byteLength > 60 * 1024 * 1024) throw new Error("This song is over 60 MB; use a smaller audio file.");
-    const context = new AudioContextClass();
-    try {
-      let decoded;
-      try {
-        decoded = await context.decodeAudioData(bytes.slice(0));
-      } catch {
-        throw new Error("The browser fetched the file but could not decode its audio format. Try an MP3 or WAV file.");
-      }
-      if (decoded.duration > 1200) throw new Error("For performance, local scanning is limited to songs under 20 minutes.");
-      const features = extractFeatures(decoded);
-      if (features.length < 24) throw new Error("The song is too short to identify musical sections (minimum 12 seconds).");
-      const candidates = findRepeatedSections(features);
-      findEnergySections(features, candidates);
-      // Keep only the strongest candidates, with at least 30 seconds between
-      // every accepted hook start across both detection methods.
-      const spaced = [];
-      for (const candidate of [...candidates].sort((a, b) => b.confidence - a.confidence)) {
-        if (spaced.every(item => Math.abs(item.t - candidate.t) >= 30)) spaced.push(candidate);
-        if (spaced.length >= 3) break;
-      }
-      return spaced.sort((a, b) => a.t - b.t);
-    } finally {
-      try { await context.close(); } catch {}
-    }
+    const analysis = await analyseDetailed(url);
+    return (analysis.energyHooks || []).map(hook => ({
+      ...hook,
+      score: Number(hook.confidence || 0),
+      label: hook.label || "Audio energy section"
+    }));
   }
-
-
 
   // Detailed structure analysis: BPM, beat phase, bars, 8-bar phrases,
   // intro/outro energy and phrase-aligned mix windows.
+  const analysisJobs = new Map();
   async function analyseDetailed(url) {
     if (!url) throw new Error("The song audio URL is missing.");
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) throw new Error("Web Audio is not supported in this browser.");
-    const audioUrl = new URL(url, document.baseURI).href;
-    const response = await fetch(audioUrl, { cache: "no-store", credentials: "same-origin" });
-    if (!response.ok) throw new Error("Audio download failed (" + response.status + "). This host may block browser-side analysis.");
-    const type = response.headers.get("content-type") || "";
-    if (/text\/html/i.test(type)) throw new Error("The audio URL returned HTML instead of an audio file.");
-    const bytes = await response.arrayBuffer();
-    if (!bytes.byteLength || bytes.byteLength > 60 * 1024 * 1024) throw new Error("Audio must be non-empty and under 60 MB for browser analysis.");
-    const context = new AudioContextClass();
-    try {
-      const buffer = await context.decodeAudioData(bytes.slice(0));
-      if (buffer.duration > 1200) throw new Error("Audio analysis is limited to tracks under 20 minutes.");
-      const features = extractFeatures(buffer);
-      if (features.length < 24) throw new Error("Track is too short for structural analysis.");
-      const seconds = FRAME_SECONDS;
-      const duration = buffer.duration;
-      const rms = features.map(f => f[0]);
-      const transient = features.map(f => f[2]);
-      // Use a 20 ms onset envelope for tempo estimation. The 0.5 s
-      // structural features are intentionally too coarse for beat tracking.
-      const fineFrame = 0.02;
-      const fineSize = Math.max(1, Math.floor(buffer.sampleRate * fineFrame));
-      const fineCount = Math.floor(buffer.length / fineSize);
-      const fineEnergy = new Float32Array(fineCount);
-      for (let frame = 0; frame < fineCount; frame++) {
-        const from = frame * fineSize, to = from + fineSize;
-        let sum = 0, count = 0;
-        for (let i = from; i < to; i += 2) {
-          let sample = 0;
-          for (let channel = 0; channel < buffer.numberOfChannels; channel++) sample += buffer.getChannelData(channel)[i] || 0;
-          sample /= Math.max(1, buffer.numberOfChannels);
-          sum += sample * sample;
-          count++;
-        }
-        fineEnergy[frame] = Math.sqrt(sum / Math.max(1, count));
-      }
-      const onset = new Float32Array(fineCount);
-      let onsetMean = 0;
-      for (let i = 1; i < fineCount; i++) {
-        onset[i] = Math.max(0, fineEnergy[i] - fineEnergy[i - 1]);
-        onsetMean += onset[i];
-      }
-      onsetMean /= Math.max(1, fineCount - 1);
-      for (let i = 0; i < fineCount; i++) onset[i] = Math.max(0, onset[i] - onsetMean * 0.45);
-      const bpmScores = [];
-      for (let candidateBpm = 60; candidateBpm <= 180; candidateBpm += 1) {
-        const lag = Math.max(1, Math.round(60 / candidateBpm / fineFrame));
-        let score = 0, count = 0;
-        for (let i = lag; i < fineCount; i++) {
-          score += onset[i] * onset[i - lag];
-          count++;
-        }
-        bpmScores.push({ bpm: candidateBpm, score: score / Math.max(1, count) });
-      }
-      bpmScores.sort((a, b) => b.score - a.score);
-      let best = bpmScores[0] || { bpm: 120, score: 0 };
-      // Resolve common half/double-time ambiguity toward a conventional DJ tempo.
-      const alternatives = [best.bpm / 2, best.bpm * 2].filter(x => x >= 60 && x <= 180);
-      for (const candidateBpm of alternatives) {
-        const candidate = bpmScores.find(x => x.bpm === Math.round(candidateBpm));
-        if (candidate && candidate.score >= best.score * 0.82 && candidate.bpm >= 70 && candidate.bpm <= 150) best = candidate;
-      }
-      const bpm = Math.round(best.bpm * 10) / 10;
-      const sortedScores = bpmScores.map(x => x.score).sort((a, b) => a - b);
-      const medianScore = sortedScores[Math.floor(sortedScores.length * 0.5)] || 0;
-      const bpmConfidence = Math.max(0, Math.min(0.95, (best.score / Math.max(1e-10, medianScore) - 1) / 8));
-      const beatSeconds = 60 / bpm;
-      const beatFrames = beatSeconds / fineFrame;
-      let bestPhase = 0, phaseScore = -1;
-      const phaseSteps = Math.max(1, Math.round(beatFrames * 2));
-      for (let phase = 0; phase < phaseSteps; phase++) {
-        let score = 0;
-        for (let frame = phase; frame < onset.length; frame += Math.max(1, Math.round(beatFrames))) score += onset[frame];
-        if (score > phaseScore) { phaseScore = score; bestPhase = phase * fineFrame; }
-      }
-      const beatTimes = [];
-      for (let t = bestPhase; t < duration; t += beatSeconds) if (t >= 0) beatTimes.push(Number(t.toFixed(3)));
-      const barDuration = beatSeconds * 4;
-      const phraseDuration = barDuration * 8;
-      const barStarts = [];
-      for (let t = bestPhase; t < duration; t += barDuration) if (t >= 0) barStarts.push(Number(t.toFixed(3)));
-      const phraseStarts = [];
-      for (let t = bestPhase; t < duration; t += phraseDuration) if (t >= 0) phraseStarts.push(Number(t.toFixed(3)));
-
-      const medianRms = percentile(rms, 0.5);
-      const activeThreshold = Math.max(0.0015, medianRms * 0.32);
-      let introEnd = 0;
-      for (let i = 0; i < rms.length; i++) {
-        if (rms.slice(i, Math.min(rms.length, i + 4)).filter(v => v > activeThreshold).length >= 3) {
-          introEnd = i * seconds; break;
-        }
-      }
-      let outroStart = duration;
-      for (let i = rms.length - 1; i >= 3; i--) {
-        if (rms.slice(Math.max(0, i - 3), i + 1).filter(v => v > activeThreshold).length >= 3) {
-          outroStart = i * seconds; break;
-        }
-      }
-      const snap = (time, grid) => {
-        if (!grid.length) return time;
-        return grid.reduce((bestTime, t) => Math.abs(t - time) < Math.abs(bestTime - time) ? t : bestTime, grid[0]);
-      };
-      const mixIn = snap(Math.max(introEnd, Math.min(duration * 0.12, 18)), barStarts);
-      const mixOut = snap(Math.max(duration * 0.55, Math.min(outroStart, duration - 18)), barStarts);
-      const energyHooks = findRepeatedSections(features);
-      findEnergySections(features, energyHooks);
-      const spacedHooks = [];
-      for (const candidate of [...energyHooks].sort((a, b) => b.confidence - a.confidence)) {
-        if (spacedHooks.every(item => Math.abs(item.t - candidate.t) >= 24)) spacedHooks.push(candidate);
-        if (spacedHooks.length >= 4) break;
-      }
-      const onsetAverage = average(Array.from(onset));
-      const onsetVariance = average(Array.from(onset, x => (x - onsetAverage) ** 2));
-      return {
-        version: 1, duration: Number(duration.toFixed(2)), bpm,
-        bpmConfidence: Number(bpmConfidence.toFixed(2)),
-        beatSeconds: Number(beatSeconds.toFixed(4)),
-        beatTimes, barStarts, phraseStarts,
-        introEnd: Number(introEnd.toFixed(2)), outroStart: Number(outroStart.toFixed(2)),
-        mixIn: Number(mixIn.toFixed(2)), mixOut: Number(mixOut.toFixed(2)),
-        energyHooks: spacedHooks,
-        energyProfile: {
-          low: Number(percentile(rms, 0.2).toFixed(4)),
-          median: Number(medianRms.toFixed(4)),
-          peak: Number(percentile(rms, 0.95).toFixed(4)),
-          onsetVariance: Number(onsetVariance.toFixed(6))
-        },
-        method: "browser waveform/transient heuristics",
-        limitations: ["BPM is an estimate; half-time/double-time ambiguity is possible.", "Energy is not vocal detection.", "Intro/outro are energy-based, not stem-aware."]
-      };
-    } finally {
-      try { await context.close(); } catch {}
-    }
+    const key = new URL(url, document.baseURI).href;
+    if (analysisJobs.has(key)) return analysisJobs.get(key);
+    const job = (async () => {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) throw new Error("Web Audio is not supported in this browser.");
+      const response = await fetch(key, { cache: "no-store", credentials: "same-origin" });
+      if (!response.ok) throw new Error("Audio download failed (" + response.status + "). This host may block browser-side analysis.");
+      const type = response.headers.get("content-type") || "";
+      if (/text\/html/i.test(type)) throw new Error("The audio URL returned HTML instead of an audio file.");
+      const bytes = await response.arrayBuffer();
+      if (!bytes.byteLength || bytes.byteLength > 45 * 1024 * 1024) throw new Error("Audio must be non-empty and under 45 MB for browser analysis.");
+      const context = new AudioContextClass();
+      try {
+        let buffer;
+        try { buffer = await context.decodeAudioData(bytes.slice(0)); }
+        catch { throw new Error("The audio file could not be decoded by this browser."); }
+        if (buffer.duration > 480) throw new Error("Worker analysis is limited to tracks under 8 minutes to protect browser memory.");
+        // Resample/mix to mono through the browser audio renderer before transfer.
+        // The worker receives ~11 kHz PCM instead of multi-channel 44/48 kHz PCM.
+        const targetRate = 11025;
+        const OfflineContext = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+        if (!OfflineContext) throw new Error("This browser does not support safe background audio resampling.");
+        const offline = new OfflineContext(1, Math.ceil(buffer.duration * targetRate), targetRate);
+        const source = offline.createBufferSource();
+        source.buffer = buffer;
+        source.connect(offline.destination);
+        source.start(0);
+        const monoBuffer = await offline.startRendering();
+        const pcm = monoBuffer.getChannelData(0);
+        const channels = [pcm];
+        const transfers = [pcm.buffer];
+        const worker = new Worker(new URL("js/audio-analysis.worker.js", document.baseURI), { type: "classic" });
+        try {
+          const result = await new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => reject(new Error("Audio analysis worker timed out. Playback can continue; try analysing again later.")), 60000);
+            worker.onmessage = event => {
+              if (event.data?.ok) { clearTimeout(timeout); resolve(event.data.analysis); }
+              else { clearTimeout(timeout); reject(new Error(event.data?.error || "Audio worker failed.")); }
+            };
+            worker.onerror = event => { clearTimeout(timeout); reject(new Error(event.message || "Audio worker crashed.")); };
+            worker.postMessage({ channels, sampleRate: buffer.sampleRate, duration: buffer.duration }, transfers);
+          });
+          return result;
+        } finally { worker.terminate(); }
+      } finally { try { await context.close(); } catch {} }
+    })();
+    analysisJobs.set(key, job);
+    try { return await job; }
+    finally { analysisJobs.delete(key); }
   }
-
   window.VibeHookScanner = Object.freeze({ analyse, analyseDetailed });
 })();

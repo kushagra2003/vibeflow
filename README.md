@@ -40,3 +40,13 @@ The queue-aware VIBE LYRICS workflow can also run a local Web Audio structure sc
 This processing runs in the browser and downloads/decodes the selected audio for analysis. It does not upload audio to a Python service. Browser analysis requires the audio URL to be fetchable with CORS enabled and the browser to decode its format; remote catalogue streams may not permit this. Local files in the deployed `songs/` folder are the most reliable input.
 
 **Interpretation limits:** BPM and phrase boundaries are estimates and may be wrong on live recordings, tempo changes, half-time/double-time grooves, edits and syncopated music. Energy analysis is not vocal detection or source separation. It cannot reliably identify lyrics, vocal emotion, drops or the exact musical end of a vocal phrase. The engine therefore labels these as candidate/heuristic cues, retains existing manual hooks, and falls back to existing timing when confidence or analysis is unavailable. It does not claim a guaranteed perfect mix.
+
+
+## Vocal-aware analysis architecture
+
+- `js/audio-analysis.worker.js` moves the expensive PCM frame, onset, BPM, beat/bar/phrase and energy calculations into a dedicated Web Worker. The main thread only fetches/decodes audio and transfers decoded channel buffers to the worker; it does not run the sample-analysis loops.
+- Worker jobs have a 60-second timeout, deduplicate by audio URL, and reject audio larger than 45 MB or longer than 12 minutes to limit memory use.
+- `js/vocal-intelligence.js` builds a vocal timeline from synced lyric-line timestamps or word-level timestamps. It marks positive vocal windows and candidate gaps.
+- The DJ bridge stores these maps with queue tracks so a future transition planner can inspect both songs.
+
+**Important safety boundary:** synced lyrics tell us where known lyric lines occur; they do not prove that the gaps contain no backing vocals, ad-libs or wordless singing. The current browser waveform worker does not detect vocals. Its output explicitly says `vocalStatus: "not-detected"`. The planner therefore returns candidate-only, never `safe: true`. Do not enable automatic instrumental-only transitions until a real vocal-activity model or source-separated vocal stem has been evaluated on a representative music set.

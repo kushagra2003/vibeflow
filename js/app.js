@@ -1168,9 +1168,9 @@ window.VibeFlowDJ = {
     const current=cur();
     const nextTrack=S.queue[S.idx+1] || null;
     return {
-      current: current ? {...current,hooks:hooksOf(current),mixAnalysis:current.mixAnalysis||null} : null,
-      next: nextTrack ? {...nextTrack,hooks:hooksOf(nextTrack),mixAnalysis:nextTrack.mixAnalysis||null} : null,
-      queue: S.queue.map((track,index)=>({...track,hooks:hooksOf(track),mixAnalysis:track.mixAnalysis||null,queueIndex:index,isCurrent:index===S.idx}))
+      current: current ? {...current,hooks:hooksOf(current),mixAnalysis:current.mixAnalysis||null,vocalMap:current.vocalMap||null} : null,
+      next: nextTrack ? {...nextTrack,hooks:hooksOf(nextTrack),mixAnalysis:nextTrack.mixAnalysis||null,vocalMap:nextTrack.vocalMap||null} : null,
+      queue: S.queue.map((track,index)=>({...track,hooks:hooksOf(track),mixAnalysis:track.mixAnalysis||null,vocalMap:track.vocalMap||null,queueIndex:index,isCurrent:index===S.idx}))
     };
   },
   async analyseAudio(trackId) {
@@ -1200,6 +1200,26 @@ window.VibeFlowDJ = {
     // That event can recursively schedule more analysis while a transition is pending.
     renderHooks();
     return {analysis,generatedHooks:cues.length};
+  },
+  applyVocalMap(trackId, lines, duration) {
+    const track=S.queue.find(item=>item.id===trackId);
+    if(!track || !window.VibeVocalIntelligence) return null;
+    const map=window.VibeVocalIntelligence.buildMap(lines,duration||track.duration||0);
+    track.vocalMap=map;
+    if(track.provider==="mine") {
+      const entry=getLibTrack(track.id);
+      if(entry){entry.vocalMap=map;saveLib();}
+    }
+    save();
+    return map;
+  },
+  planVocalSafeMix(outgoingId,incomingId,outgoingAt,crossfadeSeconds) {
+    const outgoing=S.queue.find(item=>item.id===outgoingId);
+    const incoming=S.queue.find(item=>item.id===incomingId);
+    if(!window.VibeVocalIntelligence) return {safe:false,reason:"Vocal intelligence module is unavailable."};
+    return window.VibeVocalIntelligence.planCandidate(
+      outgoing?.vocalMap,incoming?.vocalMap,Number(outgoingAt)||0,Number(crossfadeSeconds)||6
+    );
   },
   applyLyricsHooks(trackId, generatedHooks) {
     const track=S.queue.find(item=>item.id===trackId);
