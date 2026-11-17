@@ -296,3 +296,15 @@ body.party-mode-open{overflow:hidden}
 .auto-mix-toggle.enabled .auto-mix-switch-thumb{background:linear-gradient(145deg,#b9ffe9,#42d9b0)}
 .auto-mix-toggle:focus-visible{outline:2px solid #c89cff;outline-offset:3px}
 @media(max-width:600px){.auto-mix-toggle{padding:11px 12px}.auto-mix-switch-track{min-width:112px;gap:6px}.auto-mix-switch-copy b{font-size:11px}}
+
+
+/* Compact START / END selector and shared half-second hook time editor. */
+.hook-time-editor{display:flex;flex-direction:column;align-items:center;gap:5px;flex:0 0 auto;min-width:94px}
+.hook-edit-toggle{display:flex;align-items:center;padding:2px;border:1px solid #514060;border-radius:99px;background:#120e19;gap:2px}
+.hook-edit-toggle button{border:0!important;border-radius:99px!important;padding:4px 8px!important;background:transparent;color:#9f91ae;font-size:8px!important;font-weight:900;letter-spacing:.6px}
+.hook-edit-toggle button.selected{background:#7950ad;color:#fff;box-shadow:0 0 9px #a16be955}
+.hook-time-control{display:flex;align-items:center;justify-content:center;gap:5px}
+.hook-time-control button{min-width:25px;min-height:25px;border:1px solid #58466b;background:#2b2039;color:#eadcff;border-radius:7px;font-weight:900}
+.hook-time-control .hook-time{min-width:42px;text-align:center;font-size:11px;color:#d5b7ff;font-weight:850;white-space:nowrap}
+.hook-end-help{max-width:120px;text-align:center;font-size:8px;color:var(--muted);line-height:1.25}
+@media(max-width:560px){.hook-item{align-items:flex-start;flex-wrap:wrap}.hook-main{width:100%;gap:10px}.hook-controls{width:100%;justify-content:flex-end;flex-wrap:wrap}.hook-time-editor{min-width:86px}}
