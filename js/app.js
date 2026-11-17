@@ -8,7 +8,7 @@ const store = {
   set(k, v) { try { localStorage.setItem("vf_" + k, JSON.stringify(v)); } catch {} }
 };
 const defaults = {
-  mixLength: 6, leadSubtract: 2, hookPlaySeconds: 24, noHookSeconds: 45, noHookStartSeconds: 20,
+  mixLength: 6, leadSubtract: 2, hookPlaySeconds: 24, noHookSeconds: 45, noHookStartSeconds: 20, bpmTolerance: 8,
   displayUpdateDelay: 0, aiEnabled: true, autoMode: "random", autoAdvance: true
 };
 const settings = { ...defaults, ...store.get("settings", {}) };
@@ -23,12 +23,12 @@ const S = {
   seeking: false, seekResetMediaTime: null, seekResetDelay: 0, seekResumeAt: 0,
   activeNoHookDeadline: null, displayUpdateTimer: null,
   hookScans: store.get("hookScans", {}), autoHookInFlight: new Set(), autoHookStartedAt: {},
-  aiHookTrackId: null, aiHookScanning: false
+  aiHookTrackId: null, aiHookScanning: false, bpmCache: store.get("bpmCache", {}), aiNextPromise: null
 };
 const save = () => {
   for (const [k, v] of Object.entries({
     queue:S.queue, idx:S.idx, favs:S.favs, hist:S.hist,
-    patterns:S.patterns, hookPlays:S.hookPlays, trackPlays:S.trackPlays, hookScans:S.hookScans
+    patterns:S.patterns, hookPlays:S.hookPlays, trackPlays:S.trackPlays, hookScans:S.hookScans, bpmCache:S.bpmCache
   })) store.set(k, v);
 };
 const saveSettings = () => store.set("settings", settings);
@@ -636,6 +636,22 @@ function fade(el,to,ms,done) {
     if(p>=1){clearInterval(el._fade);done?.();}
   },35);
 }
+// Equal-power crossfade avoids the perceived volume dip of two linear fades.
+function equalPowerCrossfade(outgoing,incoming,ms,onDone) {
+  clearInterval(outgoing._fade); clearInterval(incoming._fade);
+  const started=performance.now(), outStart=outgoing.volume, inEnd=vol();
+  const tick=()=>{
+    const p=Math.min(1,(performance.now()-started)/Math.max(1,ms));
+    outgoing.volume=Math.max(0,Math.min(1,outStart*Math.cos(p*Math.PI/2)));
+    incoming.volume=Math.max(0,Math.min(1,inEnd*Math.sin(p*Math.PI/2)));
+    if(p>=1){
+      clearInterval(outgoing._fade); clearInterval(incoming._fade);
+      outgoing.volume=0; incoming.volume=inEnd; onDone?.();
+    }
+  };
+  outgoing._fade=setInterval(tick,25);
+  incoming._fade=outgoing._fade;
+}
 async function waitMetadata(el) {
   if(el.readyState>=1) return;
   await new Promise((resolve,reject)=>{
@@ -679,9 +695,15 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
       $(".dj-upcoming")?.classList.remove("upcoming-mixing");
     } else {
       S.mixing=true;
-      if(wasPlaying) fade(old,0,mixSec()*1000,()=>{old.pause();old.removeAttribute("src");old.load();});
-      else old.pause();
-      fade(nextAudio,vol(),mixSec()*1000,()=>{S.mixing=false;S.transitioning=false;$(".dj-upcoming")?.classList.remove("upcoming-mixing");});
+      if(wasPlaying) equalPowerCrossfade(old,nextAudio,mixSec()*1000,()=>{
+        old.pause();old.removeAttribute("src");old.load();
+        S.mixing=false;S.transitioning=false;$(".dj-upcoming")?.classList.remove("upcoming-mixing");
+      });
+      else {
+        old.pause(); nextAudio.volume=vol();
+        S.mixing=false; S.transitioning=false;
+        $(".dj-upcoming")?.classList.remove("upcoming-mixing");
+      }
     }
     S.activeHook=hook?{trackId:track.id,hookId:hook.id,t:hook.t,end:hook.end??null,lyric:hook.lyric||"Hook"}:null;
     S.activeNoHookDeadline=hook?null:{trackId:track.id,at:startAt+settings.noHookSeconds};
@@ -734,21 +756,101 @@ function pickStart(env) {
 }
 
 // ---------- Auto DJ: fair hook rotation, no endless track ----------
-function pickRandomDJTrack() {
-  const current=cur();
-  let pool=S.lib.filter(f=>"my:"+f.file!==current?.id);
+function djCandidatePool() {
+  let pool=S.lib.filter(f=>"my:"+f.file!==cur()?.id);
   const recent=new Set(S.hist.slice(0,4).map(t=>t.id));
   const fresh=pool.filter(f=>!recent.has("my:"+f.file));
   if(fresh.length) pool=fresh;
-  if(!pool.length) return null;
+  if(!pool.length) return [];
   const least=Math.min(...pool.map(f=>S.trackPlays["my:"+f.file]||0));
-  const fair=pool.filter(f=>(S.trackPlays["my:"+f.file]||0)===least);
-  return toTrack(fair[Math.floor(Math.random()*fair.length)]);
+  return pool.filter(f=>(S.trackPlays["my:"+f.file]||0)===least);
+}
+function pickRandomDJTrack() {
+  const pool=djCandidatePool();
+  return pool.length ? toTrack(pool[Math.floor(Math.random()*pool.length)]) : null;
+}
+// Estimate tempo locally from onset-strength autocorrelation; no external API.
+async function estimateTrackBpm(track) {
+  if(!track || track.provider!=="mine") return null;
+  const cached=S.bpmCache[track.id];
+  if(cached && Number.isFinite(cached.bpm)) return cached.bpm;
+  const url=await getUrl(track);
+  const ctx=new (window.AudioContext||window.webkitAudioContext)();
+  try {
+    const bytes=await (await fetch(url)).arrayBuffer();
+    const decoded=await ctx.decodeAudioData(bytes);
+    const channel=decoded.getChannelData(0), sr=decoded.sampleRate;
+    const sampleRate=100, hop=Math.max(1,Math.floor(sr/sampleRate));
+    const frames=Math.min(Math.floor(channel.length/hop),4500), energy=new Float32Array(frames);
+    for(let i=0;i<frames;i++){
+      const start=i*hop, end=Math.min(channel.length,start+hop);
+      let sum=0;
+      for(let j=start;j<end;j+=4) sum+=channel[j]*channel[j];
+      energy[i]=Math.sqrt(sum/Math.max(1,Math.ceil((end-start)/4)));
+    }
+    const onset=new Float32Array(frames);
+    for(let i=1;i<frames;i++) onset[i]=Math.max(0,energy[i]-energy[i-1]);
+    const mean=onset.reduce((a,b)=>a+b,0)/Math.max(1,frames);
+    for(let i=0;i<frames;i++) onset[i]=Math.max(0,onset[i]-mean);
+    let bestLag=0,bestScore=-Infinity;
+    for(let bpm=70;bpm<=180;bpm++){
+      const lag=Math.round(sampleRate*60/bpm);
+      let score=0, norm=0;
+      for(let i=lag;i<frames;i++){score+=onset[i]*onset[i-lag];norm+=onset[i]*onset[i];}
+      score/=Math.max(1e-9,norm);
+      if(score>bestScore){bestScore=score;bestLag=lag;}
+    }
+    if(!bestLag || bestScore<0.015) return null;
+    const bpm=Math.round(sampleRate*60/bestLag);
+    S.bpmCache[track.id]={bpm,at:Date.now()};
+    store.set("bpmCache",S.bpmCache);
+    return bpm;
+  } catch(error) {
+    console.warn("BPM analysis failed for",track.title,error);
+    return null;
+  } finally { try{await ctx.close();}catch{} }
+}
+async function pickBpmMatchedDJTrack() {
+  const pool=djCandidatePool();
+  if(!pool.length) return null;
+  const current=cur();
+  const currentBpm=await estimateTrackBpm(current);
+  if(!currentBpm) {
+    setDJActivity("BPM SCAN UNAVAILABLE","Keeping the random DJ rotation; tempo analysis could not read this track","READY","ready");
+    return toTrack(pool[Math.floor(Math.random()*pool.length)]);
+  }
+  // Analyse a small random candidate sample to keep transition preparation responsive.
+  const sample=[...pool].sort(()=>Math.random()-.5).slice(0,Math.min(10,pool.length));
+  const measured=[];
+  for(const file of sample){
+    const track=toTrack(file), bpm=await estimateTrackBpm(track);
+    if(bpm) measured.push({track,bpm,diff:Math.abs(bpm-currentBpm)});
+  }
+  if(!measured.length) return toTrack(pool[Math.floor(Math.random()*pool.length)]);
+  const within=measured.filter(x=>x.diff<=settings.bpmTolerance);
+  let selected;
+  if(within.length){
+    const closest=Math.min(...within.map(x=>x.diff));
+    const ties=within.filter(x=>x.diff<=closest+1);
+    selected=ties[Math.floor(Math.random()*ties.length)];
+  } else {
+    selected=measured.reduce((a,b)=>b.bpm<a.bpm?b:a);
+    setDJActivity("BPM FALLBACK · LOWEST TEMPO","No track within ±"+settings.bpmTolerance+" BPM of "+currentBpm+" BPM · choosing the lowest analysed tempo ("+selected.bpm+" BPM)","SYNC","sync");
+  }
+  if(within.length) setDJActivity("BPM MATCH LOCKED",currentBpm+" BPM → "+selected.bpm+" BPM · closest available tempo","READY","ready");
+  return selected.track;
 }
 function ensureAINextTrack() {
-  if(!S.radio || !cur() || S.queue[S.idx+1]) return;
-  const nextTrack=pickRandomDJTrack();
-  if(nextTrack) addQueue(nextTrack,"next");
+  if(!S.radio || !cur() || S.queue[S.idx+1]) return Promise.resolve(null);
+  if(S.aiNextPromise) return S.aiNextPromise;
+  S.aiNextPromise=(async()=>{
+    try {
+      const nextTrack=await pickBpmMatchedDJTrack();
+      if(nextTrack && S.radio && !S.queue[S.idx+1]) addQueue(nextTrack,"next");
+      return nextTrack;
+    } finally { S.aiNextPromise=null; }
+  })();
+  return S.aiNextPromise;
 }
 
 async function nextAutomatic() {
@@ -758,7 +860,11 @@ async function nextAutomatic() {
   try {
   // A queued track always has priority over AI/random selection.
   // This keeps the "Coming up next" display and actual playback in sync.
-  const queuedNext = S.queue[S.idx + 1] || null;
+  let queuedNext = S.queue[S.idx + 1] || null;
+  if(S.radio && !queuedNext) {
+    await ensureAINextTrack();
+    queuedNext=S.queue[S.idx+1]||null;
+  }
   if (S.radio && queuedNext && S.autoHookInFlight.has(queuedNext.id) &&
       Date.now() - (S.autoHookStartedAt[queuedNext.id] || Date.now()) < 15000) {
     setDJActivity("WAITING FOR HOOK SCAN","Letting the local scanner finish on "+queuedNext.title+" before the drop","SCAN","sync");
@@ -766,12 +872,12 @@ async function nextAutomatic() {
   }
   if (!queuedNext && (!settings.autoAdvance || settings.autoMode === "off")) return;
 
-  let t = queuedNext || (S.radio ? pickRandomDJTrack() : pickNextTrack());
+  let t = queuedNext || (S.radio ? await pickBpmMatchedDJTrack() : pickNextTrack());
   let globallyChosenHook = null;
   if(!queuedNext && S.radio) {
     const allHookChoices=S.lib.flatMap(file=>{
       const track=toTrack(file);
-      return track.id===cur()?.id ? [] : hooksOf(track).map(h=>({track,hook:h}));
+      return track.id!==t?.id ? [] : hooksOf(track).map(h=>({track,hook:h}));
     });
     if(allHookChoices.length) {
       const pick=allHookChoices[Math.floor(Math.random()*allHookChoices.length)];
