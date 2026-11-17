@@ -148,9 +148,21 @@
       }
     }
     for (const item of peaks) {
+      // Detect where the high-energy/drop section actually settles back down.
+      // Require three consecutive half-second frames below 62% of the section
+      // energy to avoid treating a single kick/snare gap as the hook ending.
+      let endFrame = Math.min(features.length, item.start + length);
+      const maxLookAhead = Math.min(features.length - 3, item.start + 120); // up to 60 seconds
+      for (let frame = item.start + length; frame <= maxLookAhead; frame++) {
+        const afterEnergy = average(features.slice(frame, frame + 3).map(f => f[0]));
+        if (afterEnergy < item.energy * 0.62) {
+          endFrame = frame;
+          break;
+        }
+      }
       addCandidate(existing, {
         t: item.start * FRAME_SECONDS,
-        end: (item.start + length) * FRAME_SECONDS,
+        end: endFrame * FRAME_SECONDS,
         label: "High-energy section",
         type: "energy-peak",
         confidence: clamp(0.60 + (item.score / Math.max(threshold, 0.0001) - 1) * 0.10, 0.60, 0.82)
