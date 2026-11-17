@@ -65,13 +65,13 @@ Redeploy the Netlify site after setting variables. The browser calls the Netlify
 ## API
 
 - `GET /health` returns service version and whether vocal isolation is installed.
-- `POST /v1/transcribe` multipart fields: `file`, `language`, and optional `separate_vocals=true|false`.
+- `POST /v1/transcribe` multipart fields: `file`, `language`, optional `separate_vocals=true|false`, and optional `align_words=true|false`.
 
-When `separate_vocals=true`, Demucs creates a temporary vocals stem and faster-whisper transcribes that stem. Temporary audio and stems are deleted after the request. The response includes `vocals_separated`, the engine chain and warnings.
+When `separate_vocals=true`, Demucs creates a temporary vocals stem and faster-whisper transcribes that stem. Temporary audio and stems are deleted after the request. The response includes `vocals_separated`, `words_aligned`, the engine chain and warnings. When alignment is enabled, the API reuses the faster-whisper transcript and refines word boundaries with WhisperX against the chosen audio stem. If no language alignment model is available, it preserves the original timing and returns a warning.
 
 ## Still planned
 
-IndicConformer specialist routing, WhisperX forced alignment, semantic punchline detection, emotion classification, lyric preference learning, persistent song intelligence and direct DJ cue protection remain future milestones. Haryanvi and Bhojpuri use Hindi decoding only as a baseline.
+IndicConformer specialist routing, semantic punchline detection, emotion classification, lyric preference learning, persistent song intelligence and direct DJ cue protection remain future milestones. Haryanvi and Bhojpuri use Hindi decoding only as a baseline.
 
 Only upload recordings you have the rights and permission to process. The service does not retain uploaded audio.
 
