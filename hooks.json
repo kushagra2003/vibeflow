@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T19:06:55.193Z",
+  "updatedAt": "2026-11-17T19:07:05.324Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -7190,6 +7190,28 @@
       "title": "Monica _ Dhurandhar _ Ranveer S_ Sara_ Shashwat Sachdev_ Reble_ Asha Bhosle(MP3_160K)",
       "artist": "Run Down The City",
       "hooks": [
+        {
+          "id": "audio-60-0",
+          "t": 6,
+          "end": 14,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:06",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794942423455
+        },
+        {
+          "id": "audio-240-1",
+          "t": 24,
+          "end": 32,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:24",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794942423455
+        },
         {
           "id": "auto-93833248-244c-4b96-acb3-f1dc2f1eb1b3",
           "t": 50,
