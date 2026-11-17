@@ -1158,6 +1158,37 @@ function visibleTracks() {
   if(S.view==="history") return S.hist;
   return S.results;
 }
+// Lyrics intelligence bridge: expose read-only queue snapshots and a safe hook update method.
+window.VibeFlowDJ = {
+  getTracks() {
+    const current=cur();
+    const nextTrack=S.queue[S.idx+1] || null;
+    return {
+      current: current ? {...current,hooks:hooksOf(current)} : null,
+      next: nextTrack ? {...nextTrack,hooks:hooksOf(nextTrack)} : null,
+      queue: S.queue.map((track,index)=>({...track,hooks:hooksOf(track),queueIndex:index,isCurrent:index===S.idx}))
+    };
+  },
+  applyLyricsHooks(trackId, generatedHooks) {
+    const track=S.queue.find(item=>item.id===trackId);
+    if(!track || !Array.isArray(generatedHooks)) return false;
+    const existing=hooksOf(track);
+    const merged=[...existing];
+    for(const hook of generatedHooks) {
+      const duplicate=merged.some(item=>Math.abs(Number(item.t)-Number(hook.t))<5);
+      if(!duplicate) merged.push(hook);
+    }
+    track.hooks=merged.sort((a,b)=>Number(a.t)-Number(b.t));
+    syncTrackHooks(trackId,track.hooks);
+    if(track.provider==="mine") {
+      const entry=getLibTrack(trackId);
+      if(entry){entry.hooks=track.hooks;saveLib();}
+    }
+    save();
+    renderHooks();
+    return true;
+  }
+};
 function render() {
   const t=cur();
   $("#title").textContent=t?displaySongTitle(t.title):"Nothing playing yet";
@@ -1198,6 +1229,7 @@ function render() {
   syncControls();
   bindTrackActions();
   updateDJStatus();
+  window.dispatchEvent(new CustomEvent("vibeflow:queue-updated"));
 }
 function animateNextShadow(sourceRow) {
   const source=sourceRow?.getBoundingClientRect();

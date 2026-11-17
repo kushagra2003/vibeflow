@@ -69,18 +69,16 @@
     </section>
 
     <section id="lyricsStudio" class="panel lyrics-studio">
-      <div class="section-heading"><div><div class="eyebrow">VIBE FLOW · LYRICS INTELLIGENCE</div><h3>VIBE LYRICS Studio</h3></div><span class="lyrics-pill">LYRICS RETRIEVAL · NO AI SERVER</span></div>
-      <p class="subtle">Find existing synced lyrics from Better Lyrics and LRCLIB. Enter track details or use the currently playing song. No audio upload, Python service or API key required.</p>
-      <div class="lyrics-controls lyrics-metadata">
-        <label>Song title <input id="lyricsTrackTitle" type="text" placeholder="Song title"></label>
-        <label>Artist <input id="lyricsTrackArtist" type="text" placeholder="Artist name"></label>
-        <label>Album <input id="lyricsTrackAlbum" type="text" placeholder="Album (optional)"></label>
-        <label>Duration (seconds) <input id="lyricsTrackDuration" type="number" min="1" max="3600" step="1" placeholder="e.g. 214"></label>
-        <button id="lyricsUseCurrent" class="quiet-btn" type="button">Use currently playing</button>
-        <button id="lyricsFind" class="primary-btn" type="button">♫ Find synced lyrics</button>
-        <button id="lyricsExport" class="quiet-btn" type="button" hidden>↓ Export JSON</button>
+      <div class="section-heading"><div><div class="eyebrow">VIBE FLOW · LYRICS INTELLIGENCE</div><h3>VIBE LYRICS AUTO DJ</h3></div><span class="lyrics-pill">QUEUE-AWARE ANALYSIS</span></div>
+      <p class="subtle">Analyse the current track, the next track, or any queued song. Auto mode prepares lyrics and vocal cue points in the background as your queue moves.</p>
+      <div class="lyrics-auto-toolbar">
+        <label class="lyrics-track-picker">Analyse track
+          <select id="lyricsTrackSelect"><option value="current">Current song</option><option value="next">Next in queue</option></select>
+        </label>
+        <button id="lyricsAnalyseSelected" class="quiet-btn" type="button">Analyse selected</button>
+        <label class="lyrics-auto-switch"><input id="lyricsAutoMode" type="checkbox"><span><b>Auto analyse queue</b><small>Prepare current + next automatically</small></span></label>
       </div>
-      <p id="lyricsStatus" class="lyrics-status" role="status">Ready. Search a song to find timestamped lyrics.</p>
+      <p id="lyricsStatus" class="lyrics-status" role="status">Waiting for a song. Start playback or add tracks to your queue.</p>
       <div id="lyricsResult" class="lyrics-result" aria-live="polite"></div>
     </section>
 
