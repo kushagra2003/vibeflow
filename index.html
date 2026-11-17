@@ -69,12 +69,13 @@
     </section>
 
     <section id="lyricsStudio" class="panel lyrics-studio">
-      <div class="section-heading"><div><div class="eyebrow">VIBE FLOW · LYRICS INTELLIGENCE</div><h3>VIBE LYRICS Studio</h3></div><span class="lyrics-pill">MVP · VOCAL ISOLATION</span></div>
+      <div class="section-heading"><div><div class="eyebrow">VIBE FLOW · LYRICS INTELLIGENCE</div><h3>VIBE LYRICS Studio</h3></div><span class="lyrics-pill">MVP · WORD ALIGNMENT</span></div>
       <p class="subtle">Generate timestamped lyrics, review the transcript, correct mistakes and export structured song data. Audio is processed by your connected VIBE LYRICS service.</p>
       <div class="lyrics-controls">
         <label class="lyrics-file-label">Audio file <input id="lyricsFile" type="file" accept="audio/*,video/mp4,video/webm"></label>
         <label>Language <select id="lyricsLanguage"><option value="auto">Auto detect</option><option value="hindi">Hindi</option><option value="english">English</option><option value="punjabi">Punjabi</option><option value="haryanvi">Haryanvi (Hindi baseline)</option><option value="bhojpuri">Bhojpuri (Hindi baseline)</option></select></label>
         <label class="lyrics-isolation-toggle"><input id="lyricsSeparateVocals" type="checkbox"> Isolate vocals first <small>Demucs · slower, cleaner vocal input</small></label>
+        <label class="lyrics-isolation-toggle"><input id="lyricsAlignWords" type="checkbox"> Refine word timings <small>WhisperX · language dependent</small></label>
         <button id="lyricsTranscribe" class="primary-btn" type="button">♫ Transcribe lyrics</button>
         <button id="lyricsExport" class="quiet-btn" type="button" hidden>↓ Export JSON</button>
       </div>

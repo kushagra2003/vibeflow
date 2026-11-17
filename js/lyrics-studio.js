@@ -44,6 +44,22 @@
         line.edited = true;
       });
       result.append(row);
+      if (line.words?.length) {
+        const details = document.createElement("details");
+        details.className = "lyric-word-details";
+        const summary = document.createElement("summary");
+        summary.textContent = "Show " + line.words.length + " word timestamps";
+        details.append(summary);
+        const wordList = document.createElement("div");
+        wordList.className = "lyric-word-list";
+        for (const word of line.words) {
+          const chip = document.createElement("span");
+          chip.textContent = word.text + " · " + word.start.toFixed(2) + "–" + word.end.toFixed(2) + "s";
+          wordList.append(chip);
+        }
+        details.append(wordList);
+        result.append(details);
+      }
     }
     for (const warning of data.warnings || []) {
       const item = document.createElement("p");
@@ -64,17 +80,22 @@
     exportButton.hidden = true;
     result.replaceChildren();
     const isolate = $("#lyricsSeparateVocals").checked;
-    setStatus(isolate ? "Separating vocals, then generating timestamped lyrics. This can take several minutes…" : "Uploading audio and generating timestamped lyrics…", "busy");
+    const align = $("#lyricsAlignWords").checked;
+    setStatus(align ? "Generating transcript and refining word-level timing. This can take several minutes…" : isolate ? "Separating vocals, then generating timestamped lyrics. This can take several minutes…" : "Uploading audio and generating timestamped lyrics…", "busy");
     const body = new FormData();
     body.append("file", file);
     body.append("language", $("#lyricsLanguage").value);
     body.append("separate_vocals", isolate ? "true" : "false");
+    body.append("align_words", align ? "true" : "false");
     try {
-      const response = await fetch("/.netlify/functions/lyrics?path=v1/transcribe", { method: "POST", body });
+      const response = await fetch("/api/lyrics?path=v1/transcribe", { method: "POST", body });
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.detail || payload.error || `Request failed (${response.status})`);
       render(payload);
-      setStatus(payload.vocals_separated ? "Vocals isolated and transcript ready. Review the words and export JSON." : "Transcript ready. Review the words and export the corrected JSON.", "success");
+      const completed = [];
+      if (payload.vocals_separated) completed.push("Vocals isolated");
+      if (payload.words_aligned) completed.push("word timings aligned");
+      setStatus((completed.length ? completed.join(" · ") : "Transcript ready") + ". Review the words and export JSON.", "success");
     } catch (error) {
       setStatus(error.message, "error");
     } finally {
@@ -95,8 +116,13 @@
 
   transcribeButton.addEventListener("click", transcribe);
   exportButton.addEventListener("click", exportJson);
-  fetch("/.netlify/functions/lyrics?path=health")
+  fetch("/api/lyrics?path=health")
     .then(response => response.ok ? response.json() : Promise.reject())
-    .then(data => setStatus(data.vocal_isolation_available ? "Lyrics service connected · vocal isolation available." : "Lyrics service connected · vocal isolation not installed on server yet.", "success"))
-    .catch(() => setStatus("Lyrics service is not connected yet. Deploy the Python service and configure Netlify environment variables.", "warning"));
+    .then(data => {
+      const capabilities = ["Lyrics service connected"];
+      capabilities.push(data.vocal_isolation_available ? "vocal isolation ready" : "vocal isolation not installed");
+      capabilities.push(data.word_alignment_available ? "WhisperX alignment ready" : "WhisperX alignment not installed");
+      setStatus(capabilities.join(" · "), "success");
+    })
+    .catch(() => setStatus("Lyrics service is not connected yet. Lyrics API is not connected. Configure VIBE_LYRICS_API_URL and VIBE_LYRICS_API_TOKEN in your Cloudflare Pages project, then redeploy.", "warning"));
 })();
