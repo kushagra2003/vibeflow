@@ -259,3 +259,23 @@ body.party-mode-open{overflow:hidden}
 @keyframes handIdleLeft{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(0,-5px) rotate(-.65deg)}}
 @keyframes handIdleRight{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(0,-6px) rotate(.65deg)}}
 @media(prefers-reduced-motion:reduce){.party-center-title span,.party-hand-left,.party-hand-right{animation:none!important}}
+
+
+/* Highlight the exact hook currently selected by the DJ engine. */
+.hook-item.active-hook-item{
+  border-color:#b98aff;
+  background:linear-gradient(110deg,#39244f 0%,#251a36 72%);
+  box-shadow:0 0 0 1px #b98aff55,0 0 22px #a66cff35,inset 3px 0 0 #d7b5ff;
+  animation:activeHookGlow 2.2s ease-in-out infinite alternate;
+}
+.hook-item.active-hook-item .hook-time{color:#f0dfff;text-shadow:0 0 10px #c18cff88}
+.active-hook-badge{
+  display:inline-flex;vertical-align:middle;margin-left:8px;padding:3px 7px;
+  border-radius:99px;background:#a66cff24;border:1px solid #c59aff88;
+  color:#e7d2ff;font-size:8px;letter-spacing:.8px;font-weight:900;
+}
+@keyframes activeHookGlow{
+  from{box-shadow:0 0 0 1px #b98aff44,0 0 10px #a66cff22,inset 3px 0 0 #d7b5ff}
+  to{box-shadow:0 0 0 1px #b98aff88,0 0 24px #a66cff55,inset 3px 0 0 #d7b5ff}
+}
+@media(prefers-reduced-motion:reduce){.hook-item.active-hook-item{animation:none}}
