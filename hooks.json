@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T16:25:35.562Z",
+  "updatedAt": "2026-11-17T16:26:13.225Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -6151,6 +6151,30 @@
       "title": "Pappu Can_t Dance (REMIX) DJ PURVISH _ 2023_ Jaane Tu Ya Jaane Na _ Imran Khan _ A.R. Rahman(MP3_160K)",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "auto-02f8f3b4-3dc2-4c16-b3da-1e8f2745e403",
+          "t": 4,
+          "end": 37.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:04",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.52,
+          "generatedAt": 1794932771497
+        },
+        {
+          "id": "auto-e7aee325-7f2a-4a72-9b99-8512a6c5848e",
+          "t": 20,
+          "end": 37.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:20",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794932771497
+        },
         {
           "id": "auto-7d8dadbf-c410-4fa0-8c88-d7c5085f851f",
           "t": 58,
