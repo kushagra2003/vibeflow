@@ -138,6 +138,93 @@ async function importHooksBackup(file) {
 const getLibTrack = id => S.lib.find(f => "my:"+f.file === id);
 const hooksOf = t => Array.isArray(t?.hooks) ? t.hooks : [];
 
+// ---------- Manual punch library ----------
+// Punches are independent of hooks: each is a manually selected time range.
+function punchesFor(track) { return Array.isArray(track?.punches) ? track.punches : []; }
+function syncPunches(trackId, punches) {
+  const entry=getLibTrack(trackId); if(entry) entry.punches=punches;
+  for(const list of [S.queue,S.results,S.recs,S.favs,S.hist]) for(const t of list) if(t?.id===trackId)t.punches=punches;
+}
+function savePunchStart() {
+  const t=cur(), entry=t&&getLibTrack(t.id);
+  if(!entry) return toast("Punches can currently be saved for songs in My music.");
+  S.punchDraft={trackId:t.id,start:audio().currentTime};
+  $("#punchStartTime").textContent=fmt(S.punchDraft.start);
+  toast("Punch start marked. Play to the desired end and mark it.");
+}
+function savePunchEnd() {
+  const t=cur(), entry=t&&getLibTrack(t.id), draft=S.punchDraft;
+  if(!entry || !draft || draft.trackId!==t.id) return toast("Mark a punch start first.");
+  const end=audio().currentTime;
+  if(end-draft.start<2) return toast("A punch must be at least 2 seconds long.");
+  const name=$("#punchName").value.trim()||("Punch "+(punchesFor(entry).length+1));
+  const punch={id:crypto.randomUUID?.()||String(Date.now()),name,start:Number(draft.start.toFixed(2)),end:Number(end.toFixed(2)),createdAt:Date.now()};
+  entry.punches=[...punchesFor(entry),punch]; syncPunches(t.id,entry.punches);
+  saveLib();save();S.punchDraft=null;$("#punchName").value="";renderPunchDeck();
+  toast("Punch saved: "+name+" · "+fmt(punch.start)+"–"+fmt(punch.end));
+}
+function allPunches() {
+  return S.lib.flatMap(entry=>punchesFor(entry).map(p=>({...p,trackId:"my:"+entry.file,title:entry.title,artist:entry.artist})));
+}
+function renderPunchDeck() {
+  const root=$("#homePunches"); if(!root)return;
+  const pins=store.get("pinnedPunches",[]);
+  const selected=pins.map(id=>allPunches().find(p=>p.id===id)).filter(Boolean).slice(0,4);
+  root.innerHTML='<div class="punch-deck-head"><div><span class="eyebrow">YOUR QUICK CUES</span><b>Saved punches</b></div><button type="button" id="managePunches">Manage</button></div>'+
+    (selected.length?'<div class="punch-deck-grid">'+selected.map(p=>'<div class="punch-card"><div><b>'+esc(p.name)+'</b><small>'+esc(p.title)+' · '+fmt(p.start)+'–'+fmt(p.end)+'</small></div><div class="punch-card-actions"><button type="button" data-punch-preview="'+esc(p.id)+'">▶ Preview</button><button type="button" data-punch-queue="'+esc(p.id)+'">↗ Play next</button><button type="button" data-punch-unpin="'+esc(p.id)+'" aria-label="Remove from home">×</button></div></div>').join(''):'<div class="empty-state">Pin up to four punches here from Manage.</div>')+'</div>';
+  $("#managePunches").onclick=openPunchManager;
+  root.querySelectorAll("[data-punch-preview]").forEach(b=>b.onclick=()=>previewPunch(b.dataset.punchPreview));
+  root.querySelectorAll("[data-punch-queue]").forEach(b=>b.onclick=()=>queuePunch(b.dataset.punchQueue));
+  root.querySelectorAll("[data-punch-unpin]").forEach(b=>b.onclick=()=>{store.set("pinnedPunches",store.get("pinnedPunches",[]).filter(id=>id!==b.dataset.punchUnpin));renderPunchDeck();});
+}
+function openPunchManager() {
+  const punches=allPunches(), pins=store.get("pinnedPunches",[]);
+  const root=$("#modalRoot");
+  root.innerHTML='<div class="modal-backdrop" data-punch-dismiss="1"><div class="modal-card" role="dialog" aria-modal="true"><div class="modal-head"><div><div class="eyebrow">MANUAL DJ CUES</div><h2>Punch library</h2><p class="modal-sub">Pin up to four punches to your home screen.</p></div><button class="modal-close" data-punch-dismiss="1">×</button></div><div class="punch-manager-list">'+(punches.length?punches.map(p=>'<div class="punch-manager-row"><label><input type="checkbox" data-pin-punch="'+esc(p.id)+'" '+(pins.includes(p.id)?'checked':'')+' '+(!pins.includes(p.id)&&pins.length>=4?'disabled':'')+'><span><b>'+esc(p.name)+'</b><small>'+esc(p.title)+' · '+fmt(p.start)+'–'+fmt(p.end)+'</small></span></label><button type="button" data-punch-preview="'+esc(p.id)+'">Preview</button><button type="button" data-punch-queue="'+esc(p.id)+'">Play next</button><button type="button" data-punch-delete="'+esc(p.id)+'">Delete</button></div>').join(''):'<div class="empty-state">No punches saved yet. Play a song and mark a start and end.</div>')+'</div><div class="punch-manager-foot"><button type="button" data-punch-dismiss="1">Done</button></div></div></div>';
+  root.querySelectorAll("[data-punch-dismiss]").forEach(b=>b.onclick=e=>{if(e.target===b||!b.classList.contains("modal-backdrop"))root.innerHTML="";});
+  root.querySelectorAll("[data-pin-punch]").forEach(b=>b.onchange=()=>{let ids=store.get("pinnedPunches",[]);ids=b.checked?[...ids,b.dataset.pinPunch].slice(0,4):ids.filter(id=>id!==b.dataset.pinPunch);store.set("pinnedPunches",ids);openPunchManager();renderPunchDeck();});
+  root.querySelectorAll("[data-punch-delete]").forEach(b=>b.onclick=()=>{const p=punches.find(x=>x.id===b.dataset.punchDelete),entry=p&&getLibTrack(p.trackId);if(entry){entry.punches=punchesFor(entry).filter(x=>x.id!==p.id);saveLib();store.set("pinnedPunches",store.get("pinnedPunches",[]).filter(id=>id!==p.id));}openPunchManager();renderPunchDeck();});
+  root.querySelectorAll("[data-punch-preview]").forEach(b=>b.onclick=()=>previewPunch(b.dataset.punchPreview));
+  root.querySelectorAll("[data-punch-queue]").forEach(b=>b.onclick=()=>queuePunch(b.dataset.punchQueue));
+}
+async function previewPunch(id) {
+  const p=allPunches().find(x=>x.id===id); if(!p)return;
+  if(!cur()||audio().paused)return toast("Start a song first to preview a punch over it.");
+  if(p.trackId===cur().id)return toast("Choose a punch from a different song.");
+  const deck=A[1-ci], token=++S.punchPreviewToken;
+  try {
+    clearTimeout(S.punchPreviewTimer);deck.pause();deck.src=await getUrl(getLibTrack(p.trackId)&&toTrack(getLibTrack(p.trackId)));
+    await waitMetadata(deck);deck.currentTime=p.start;deck.volume=0;await deck.play();
+    const started=performance.now(),duration=1200;
+    clearInterval(deck._punchFade);
+    deck._punchFade=setInterval(()=>{const x=Math.min(1,(performance.now()-started)/duration);deck.volume=vol()*Math.min(1,x);if(x>=1){clearInterval(deck._punchFade);deck._punchFade=null;}},40);
+    clearTimeout(S.punchPreviewTimer);
+    S.punchPreviewTimer=setTimeout(()=>{if(token!==S.punchPreviewToken)return;const fadeStart=performance.now();const from=deck.volume;const timer=setInterval(()=>{const x=Math.min(1,(performance.now()-fadeStart)/900);deck.volume=from*(1-x);if(x>=1){clearInterval(timer);deck.pause();deck.removeAttribute("src");deck.load();}},35);},Math.max(500,(p.end-p.start)*1000));
+    toast("Punch preview playing over the current song.");
+  } catch(e){deck.pause();toast("Could not preview this punch: "+e.message);}
+}
+function queuePunch(id) {
+  const p=allPunches().find(x=>x.id===id);if(!p)return;
+  if(p.trackId===cur()?.id)return toast("Choose a punch from a different song.");
+  const entry=getLibTrack(p.trackId),track=toTrack(entry);
+  addQueue(track,"next");
+  const queued=S.queue.find(x=>x.id===track.id);
+  if(queued)queued._chosenPunch={id:p.id,start:p.start,end:p.end};
+  save();render();toast("Punch queued. It will take over at the current song's next hook transition.");
+}
+async function maybeSurprisePunch() {
+  if(!S.autoMix||S.transitioning||S.punchSurpriseBusy)return;
+  const count=allPunches().filter(p=>p.trackId!==cur()?.id);
+  if(!count.length)return;
+  S.punchSurpriseBusy=true;
+  const p=count[Math.floor(Math.random()*count.length)];
+  const entry=getLibTrack(p.trackId),track=entry&&toTrack(entry);
+  if(!track){S.punchSurpriseBusy=false;return;}
+  const hook=preferredHooks(track).find(h=>Number(h.t)>=p.start&&Number(h.t)<p.end)||{id:p.id,t:p.start,end:p.end,lyric:p.name,source:"manual"};
+  await transitionTo(track,hook,{manual:true,mode:"hook"});
+  S.punchSurpriseBusy=false;
+}
+
 // ---------- Settings ----------
 function openSettings() {
   const root = $("#modalRoot");
@@ -804,6 +891,7 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null,i
       ? "Now riding “"+(hook.lyric||"the hook")+"” · "+track.title
       : "Now playing "+track.title+" · keep the party moving","LIVE","mix");
     S.hist=[track,...S.hist.filter(x=>x.id!==track.id)].slice(0,100);
+    S.songChanges=(S.songChanges||0)+1; if(S.songChanges%7===0) maybeSurprisePunch();
     save();
     if(S.autoMix&&!S.training.active) ensureAutoMixNextTrack();
     if(settings.aiEnabled) suggest();
@@ -984,10 +1072,12 @@ async function nextAutomatic() {
     if(!S.autoMix || S.transitioning) return;
 
     const chosen=queuedNext?._chosenHook||null;
+    const punchCue=queuedNext?._chosenPunch||null;
     const availableHooks=preferredHooks(track);
     const chosenHook=chosen ? availableHooks.find(h=>String(h.id)===String(chosen.id)) : null;
-    const hook=settings.autoMode==="beginning" ? null : (chosenHook || (availableHooks.length ? fairHook(track) : null));
+    const hook=punchCue?{id:punchCue.id,t:punchCue.start,end:punchCue.end,lyric:"Saved punch",source:"manual"}:(settings.autoMode==="beginning" ? null : (chosenHook || (availableHooks.length ? fairHook(track) : null)));
     if(chosen) { delete track._chosenHook; save(); }
+    if(punchCue){delete track._chosenPunch;save();}
     if(hook) {
       setDJActivity("HOOK LINE FOUND · MIXING NOW","Cue locked on "+track.title+" · preparing the drop","READY","ready");
       showPartyMessage("Hook line found. Bass drop on the way! 🔊");
@@ -1254,6 +1344,7 @@ window.VibeFlowDJ = {
 };
 function render() {
   const t=cur();
+  renderPunchDeck();
   $("#title").textContent=t?displaySongTitle(t.title):"Nothing playing yet";
   $("#artist").textContent=t?.artist||"Choose a track from Discover or My music";
   const art=$("#art"), cover=art.closest(".cover-wrap"), vinyl=$("#vinylFallback");
@@ -1401,6 +1492,8 @@ function bindTrackActions() {
 
 // ---------- Player events ----------
 $("#addHook").onclick=addHook;
+$("#markPunchStart").onclick=savePunchStart; $("#markPunchEnd").onclick=savePunchEnd;
+$("#punchMenuButton").onclick=openPunchManager;
 $("#scanHooks").onclick=()=>scanCurrentSongHooks();
 $("#mix").onclick=mixNext;
 $("#forceMix").onclick=forceMixNow;
