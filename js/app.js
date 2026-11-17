@@ -78,7 +78,9 @@ async function initLib() {
     const merged = new Map();
     for (const song of discovered) {
       const old = localMap.get(song.file) || {};
-      merged.set(song.file, {...song,...old,hooks:mergeHookLists(old.hooks, archivedHooks[song.file], song.hooks)});
+      merged.set(song.file, {...song,...old,hooks:mergeHookLists(old.hooks, archivedHooks[song.file], song.hooks).map(h=>
+        h.source==="auto" && h.endSource!=="manual" ? {...h,end:null} : h
+      )});
     }
     S.lib = [...merged.values()];
     $("#libraryStatus").textContent = `${S.lib.length} songs discovered`;
@@ -229,6 +231,7 @@ function markHookEnd(id) {
   const end=+audio().currentTime.toFixed(2);
   if(end<=h.t) return toast("Hook end must be after its start.");
   h.end=end;
+  h.endSource="manual";
   h.endLyric=$("#endLine-"+CSS.escape(String(id)))?.value?.trim() || h.endLyric || "";
   t.hooks=entry.hooks;
   if(S.activeHook?.trackId===t.id && String(S.activeHook.hookId)===String(id)) S.activeHook.end=end;
