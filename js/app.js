@@ -1453,7 +1453,7 @@ seekSlider.addEventListener("pointercancel",finishSeek);
 seekSlider.addEventListener("touchend",finishSeek);
 seekSlider.addEventListener("keyup",e=>{if(S.seeking && ["ArrowLeft","ArrowRight","Home","End","PageUp","PageDown"].includes(e.key))finishSeek();});
 window.addEventListener("blur",finishSeek);
-$("#mixsec").onchange=e=>{settings.mixLength=[0,3,6,9].includes(+e.target.value)?+e.target.value:6;saveSettings();};
+$("#mixsec").onchange=e=>{settings.mixLength=e.target.value==="random"?"random":([0,3,6,9].includes(+e.target.value)?+e.target.value:6);saveSettings();updateCrossfadeIndicator();};
 $("#autoMode").onchange=e=>{settings.autoMode=e.target.value;saveSettings();};
 $("#searchForm").onsubmit=e=>{e.preventDefault();const q=$("#searchInput").value.trim();searchAudius(q);};
 document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=()=>switchView(b.dataset.view));
@@ -1461,6 +1461,7 @@ $("#refreshLibrary").onclick=async()=>{await initLib();toast(`Found ${S.lib.leng
 $("#exportHooks").onclick=exportHooksBackup;
 $("#importHooks").onclick=()=>$("#importHooksFile").click();
 $("#importHooksFile").onchange=e=>{importHooksBackup(e.target.files?.[0]);e.target.value="";};
+$("#lyricsPanelToggle").onclick=()=>{const panel=$("#lyricsStudio");const show=panel.hidden;panel.hidden=!show;$("#lyricsPanelToggle").setAttribute("aria-expanded",String(show));$("#lyricsPanelToggle").classList.toggle("active",show);};
 $("#partyModeButton").onclick=async()=>{
   $("#partyMode").hidden=false; document.body.classList.add("party-mode-open");
   startPartyBrandLoop(); syncPartyMotion();
