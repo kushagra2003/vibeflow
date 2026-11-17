@@ -208,5 +208,123 @@
     }
   }
 
-  window.VibeHookScanner = Object.freeze({ analyse });
+
+
+  // Detailed structure analysis: BPM, beat phase, bars, 8-bar phrases,
+  // intro/outro energy and phrase-aligned mix windows.
+  async function analyseDetailed(url) {
+    if (!url) throw new Error("The song audio URL is missing.");
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) throw new Error("Web Audio is not supported in this browser.");
+    const audioUrl = new URL(url, document.baseURI).href;
+    const response = await fetch(audioUrl, { cache: "no-store", credentials: "same-origin" });
+    if (!response.ok) throw new Error("Audio download failed (" + response.status + "). This host may block browser-side analysis.");
+    const type = response.headers.get("content-type") || "";
+    if (/text\/html/i.test(type)) throw new Error("The audio URL returned HTML instead of an audio file.");
+    const bytes = await response.arrayBuffer();
+    if (!bytes.byteLength || bytes.byteLength > 60 * 1024 * 1024) throw new Error("Audio must be non-empty and under 60 MB for browser analysis.");
+    const context = new AudioContextClass();
+    try {
+      const buffer = await context.decodeAudioData(bytes.slice(0));
+      if (buffer.duration > 1200) throw new Error("Audio analysis is limited to tracks under 20 minutes.");
+      const features = extractFeatures(buffer);
+      if (features.length < 24) throw new Error("Track is too short for structural analysis.");
+      const seconds = FRAME_SECONDS;
+      const duration = buffer.duration;
+      const rms = features.map(f => f[0]);
+      const transient = features.map(f => f[2]);
+      const flux = features.map((f, i) => Math.max(0, f[2] - (features[i - 1]?.[2] || 0)) + Math.max(0, f[0] - (features[i - 1]?.[0] || 0)) * 0.7);
+      const medianFlux = percentile(flux, 0.5);
+      const centered = flux.map(x => Math.max(0, x - medianFlux * 0.7));
+      const bpmScores = [];
+      for (let bpm = 60; bpm <= 180; bpm += 0.5) {
+        const lag = 120 / bpm / seconds;
+        let score = 0, count = 0;
+        for (let i = Math.ceil(lag); i < centered.length; i++) {
+          score += centered[i] * centered[Math.max(0, Math.round(i - lag))];
+          count++;
+        }
+        bpmScores.push({ bpm, score: score / Math.max(1, count) });
+      }
+      bpmScores.sort((a, b) => b.score - a.score);
+      let best = bpmScores[0] || { bpm: 120, score: 0 };
+      // Prefer a musically plausible half/double-time interpretation when it
+      // explains the same pulse without an extreme score penalty.
+      const alternatives = [best.bpm / 2, best.bpm * 2].filter(x => x >= 60 && x <= 180);
+      for (const bpm of alternatives) {
+        const candidate = bpmScores.reduce((bestSoFar, x) => Math.abs(x.bpm - bpm) < Math.abs(bestSoFar.bpm - bpm) ? x : bestSoFar, bpmScores[0]);
+        if (candidate.score >= best.score * 0.82 && candidate.bpm >= 70 && candidate.bpm <= 150) best = candidate;
+      }
+      const bpm = Math.round(best.bpm * 10) / 10;
+      const beatSeconds = 60 / bpm;
+      const beatFrames = beatSeconds / seconds;
+      let bestPhase = 0, phaseScore = -1;
+      const phaseSteps = Math.max(1, Math.round(beatFrames * 4));
+      for (let phase = 0; phase < phaseSteps; phase++) {
+        let score = 0;
+        for (let frame = phase; frame < centered.length; frame += Math.max(1, Math.round(beatFrames))) score += centered[frame];
+        if (score > phaseScore) { phaseScore = score; bestPhase = phase * seconds; }
+      }
+      const beatTimes = [];
+      for (let t = bestPhase; t < duration; t += beatSeconds) if (t >= 0) beatTimes.push(Number(t.toFixed(3)));
+      const barDuration = beatSeconds * 4;
+      const phraseDuration = barDuration * 8;
+      const barStarts = [];
+      for (let t = bestPhase; t < duration; t += barDuration) if (t >= 0) barStarts.push(Number(t.toFixed(3)));
+      const phraseStarts = [];
+      for (let t = bestPhase; t < duration; t += phraseDuration) if (t >= 0) phraseStarts.push(Number(t.toFixed(3)));
+
+      const medianRms = percentile(rms, 0.5);
+      const activeThreshold = Math.max(0.0015, medianRms * 0.32);
+      let introEnd = 0;
+      for (let i = 0; i < rms.length; i++) {
+        if (rms.slice(i, Math.min(rms.length, i + 4)).filter(v => v > activeThreshold).length >= 3) {
+          introEnd = i * seconds; break;
+        }
+      }
+      let outroStart = duration;
+      for (let i = rms.length - 1; i >= 3; i--) {
+        if (rms.slice(Math.max(0, i - 3), i + 1).filter(v => v > activeThreshold).length >= 3) {
+          outroStart = i * seconds; break;
+        }
+      }
+      const snap = (time, grid) => {
+        if (!grid.length) return time;
+        return grid.reduce((bestTime, t) => Math.abs(t - time) < Math.abs(bestTime - time) ? t : bestTime, grid[0]);
+      };
+      const mixIn = snap(Math.max(introEnd, Math.min(duration * 0.12, 18)), barStarts);
+      const mixOut = snap(Math.max(duration * 0.55, Math.min(outroStart, duration - 18)), barStarts);
+      const energyHooks = findRepeatedSections(features);
+      findEnergySections(features, energyHooks);
+      const spacedHooks = [];
+      for (const candidate of [...energyHooks].sort((a, b) => b.confidence - a.confidence)) {
+        if (spacedHooks.every(item => Math.abs(item.t - candidate.t) >= 24)) spacedHooks.push(candidate);
+        if (spacedHooks.length >= 4) break;
+      }
+      const onsetAverage = average(centered);
+      const onsetVariance = average(centered.map(x => (x - onsetAverage) ** 2));
+      const bpmConfidence = Math.max(0, Math.min(0.99, (best.score / Math.max(1e-8, bpmScores[Math.min(10, bpmScores.length - 1)]?.score || best.score)) * 0.55));
+      return {
+        version: 1, duration: Number(duration.toFixed(2)), bpm,
+        bpmConfidence: Number(bpmConfidence.toFixed(2)),
+        beatSeconds: Number(beatSeconds.toFixed(4)),
+        beatTimes, barStarts, phraseStarts,
+        introEnd: Number(introEnd.toFixed(2)), outroStart: Number(outroStart.toFixed(2)),
+        mixIn: Number(mixIn.toFixed(2)), mixOut: Number(mixOut.toFixed(2)),
+        energyHooks: spacedHooks,
+        energyProfile: {
+          low: Number(percentile(rms, 0.2).toFixed(4)),
+          median: Number(medianRms.toFixed(4)),
+          peak: Number(percentile(rms, 0.95).toFixed(4)),
+          onsetVariance: Number(onsetVariance.toFixed(6))
+        },
+        method: "browser waveform/transient heuristics",
+        limitations: ["BPM is an estimate; half-time/double-time ambiguity is possible.", "Energy is not vocal detection.", "Intro/outro are energy-based, not stem-aware."]
+      };
+    } finally {
+      try { await context.close(); } catch {}
+    }
+  }
+
+  window.VibeHookScanner = Object.freeze({ analyse, analyseDetailed });
 })();
