@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T13:52:32.433Z",
+  "updatedAt": "2026-11-17T13:54:11.638Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -1739,6 +1739,28 @@
       "title": "Dil Dooba Lyrical Video Song _ Khakee _ Sonu Nigam_ Shreya Ghoshal _ Aishwarya Rai_ Akshaye Kumar(MP3_160K)",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "audio-140-0",
+          "t": 14,
+          "end": 40.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:14",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794923649787
+        },
+        {
+          "id": "audio-300-1",
+          "t": 30,
+          "end": 40,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:30",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794923649787
+        },
         {
           "id": "auto-590291fe-992d-4e85-958b-80bbc5689c0a",
           "t": 72,
