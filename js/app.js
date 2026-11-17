@@ -651,14 +651,17 @@ function updateDJStatus() {
     return;
   }
   const hook=S.activeHook?.trackId===t.id?S.activeHook:null;
-  const deadline=hook?(hook.t+settings.hookPlaySeconds):(S.activeNoHookDeadline?.trackId===t.id?S.activeNoHookDeadline.at:settings.noHookSeconds);
-  const resetCountdown=S.seeking
+  const approvedEnd=hook && hook.endSource==="manual" && hook.end!=null && Number.isFinite(Number(hook.end)) ? Number(hook.end) : null;
+  const deadline=hook?(approvedEnd??(hook.t+settings.hookPlaySeconds)):(S.activeNoHookDeadline?.trackId===t.id?S.activeNoHookDeadline.at:settings.noHookSeconds);
+  const resetCountdown=approvedEnd!=null ? null : (S.seeking
     ? S.seekResetDelay
-    : (S.seekResumeAt ? S.seekResetDelay-(a.currentTime-S.seekResetMediaTime) : null);
+    : (S.seekResumeAt ? S.seekResetDelay-(a.currentTime-S.seekResetMediaTime) : null));
   const left=Math.max(0,resetCountdown==null?deadline-a.currentTime:resetCountdown);
   const clock=String(Math.floor(left/60)).padStart(2,"0")+":"+String(Math.floor(left%60)).padStart(2,"0");
   const nextName=upcoming?.title||"next random pick";
-  if(chosen) {
+  if(approvedEnd!=null) {
+    setDJActivity("HOOK ENDING FOUND","Hook ending saved · merging to next song from "+fmt(approvedEnd),"HOOK END","ready");
+  } else if(chosen) {
     if(left<=8) setDJActivity("BEAT SYNC · HOOK LOCKED","Lining up “"+(chosen.lyric||"your selected hook")+"” on "+nextName+". Get ready!",clock,"sync");
     else setDJActivity("HOOK LOCKED · READY","Next: "+nextName+" · “"+(chosen.lyric||"selected hook")+"” at "+fmt(chosen.t),clock,"ready");
   } else if(upcoming && hooksOf(upcoming).length) {
@@ -961,7 +964,8 @@ function handleAutoAdvance() {
 function seekResetDuration() {
   const t=cur();
   const h=S.activeHook && S.activeHook.trackId===t?.id ? S.activeHook : null;
-  // The configured play window is measured from the hook start, not its marked end.
+  // A manually saved ending is the authoritative transition point.
+  if(h && h.endSource==="manual" && h.end!=null) return Math.max(0,Number(h.end)-audio().currentTime);
   if(h) return settings.hookPlaySeconds;
   return settings.noHookSeconds;
 }
@@ -978,10 +982,9 @@ function checkHookTimer() {
   }
   const h=S.activeHook && S.activeHook.trackId===t.id ? S.activeHook : null;
   if(h) {
-    // A captured end point is authoritative; otherwise use the configured hook-duration fallback.
-    const deadline=(h.endApproved===true || h.endSource==="manual") && h.endSource==="manual" && h.end!==null && h.end!==undefined && Number.isFinite(Number(h.end))
-      ? Number(h.end)
-      : h.t+settings.hookPlaySeconds;
+    // A manually saved ending always overrides the configured hook-duration fallback.
+    const manuallySavedEnd=h.endSource==="manual" && h.end!==null && h.end!==undefined && Number.isFinite(Number(h.end));
+    const deadline=manuallySavedEnd ? Number(h.end) : h.t+settings.hookPlaySeconds;
     if(a.currentTime>=deadline) handleAutoAdvance();
   } else {
     const fallback=S.activeNoHookDeadline?.trackId===t.id
