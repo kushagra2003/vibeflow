@@ -17,7 +17,7 @@ const S = {
   queue: store.get("queue", []), idx: store.get("idx", -1),
   favs: store.get("favs", []), hist: store.get("hist", []),
   patterns: store.get("patterns", []), hookPlays: store.get("hookPlays", {}),
-  trackPlays: store.get("trackPlays", {}), radio: false, shuffle: false,
+  trackPlays: store.get("trackPlays", {}), shuffle: false,
   repeat: false, autoMix: store.get("autoMix", false), view: "discover", results: [], recs: [], busy: false,
   tok: 0, mixing: false, transitioning: false, activeHook: null, autoTransitionPending:false,
   transitionTimer: null, env: {}, lib: [], dragIndex: null,
@@ -233,7 +233,7 @@ function markHookEnd(id) {
   if(S.activeHook?.trackId===t.id && String(S.activeHook.hookId)===String(id)) S.activeHook.end=end;
   syncTrackHooks(t.id,entry.hooks);
   saveLib(); save(); renderHooks(); render();
-  toast(`Hook end saved at ${fmt(end)}. AI DJ will switch at this point.`);
+  toast(`Hook end saved at ${fmt(end)}. Auto mix will switch at this point.`);
 }
 function verifyAutoHook(id) {
   const t=cur(), entry=t && getLibTrack(t.id);
@@ -399,7 +399,7 @@ function renderHooks() {
           <button type="button" data-hook-start-adjust="${esc(h.id)}" data-delta="0.5" aria-label="Move hook start forward half a second" title="+0.5 seconds">+</button>
         </div>
         <div class="hook-detail">
-          <b title="${esc(h.lyric || "Hook "+(i+1))}">${esc(h.lyric || "Hook "+(i+1))}${isActive?'<span class="active-hook-badge">NOW PLAYING · AI DJ CUE</span>':""}</b>
+          <b title="${esc(h.lyric || "Hook "+(i+1))}">${esc(h.lyric || "Hook "+(i+1))}${isActive?'<span class="active-hook-badge">NOW PLAYING · AUTO MIX CUE</span>':""}</b>
           <small><span class="hook-origin ${h.source==="auto"?"auto":"manual"}">${h.source==="auto"?"AUTO":"MANUAL"}</span> · ${h.source==="auto"?(h.detector==="repeated-section"?"Pattern match":"Energy peak"):"User cue"} · ${h.end!=null?`Ends ${fmt(h.end)}${h.endLyric?" · "+esc(h.endLyric):""}`:"End not marked"}</small>
         </div>
       </div>
@@ -1062,7 +1062,7 @@ function renderRecommendations() {
   const panel=$("#aiPanel");
   if(!settings.aiEnabled) { panel.style.display="none"; return; }
   panel.style.display="";
-  $("#recs").innerHTML=S.recs.length ? S.recs.map((t,i)=>trackRow(t,i,"recs")).join("") : '<div class="empty-state">Play a track to receive AI DJ suggestions.</div>';
+  $("#recs").innerHTML=S.recs.length ? S.recs.map((t,i)=>trackRow(t,i,"recs")).join("") : '<div class="empty-state">Play a track to receive AI recommendations.</div>';
   bindTrackActions();
 }
 function visibleTracks() {
