@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T16:16:50.515Z",
+  "updatedAt": "2026-11-17T16:17:25.255Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -1425,6 +1425,18 @@
       "title": "Besharmi Ki Height (Remix) _ Full Video Song _ Main Tera Hero _ Varun Dhawan_ Ileana D_Cruz(MP3_160K)",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "auto-914ff430-1fdd-48d9-ab3c-f2ff18fd173d",
+          "t": 22,
+          "end": 30.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:22",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794932243262
+        },
         {
           "id": "auto-a6327ea5-1065-4527-9cbe-466d8615b6d5",
           "t": 58,
