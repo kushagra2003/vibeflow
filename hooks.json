@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T13:44:54.011Z",
+  "updatedAt": "2026-11-17T13:44:59.928Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -3798,6 +3798,28 @@
       "title": "Race _ Saif Ali Khan_ Katrina Kaif _Monali Thakur_ Neeraj_ Pritam(MP3_160K)",
       "artist": "Lyrical_ Khwab Dekhe (Sexy Lady)",
       "hooks": [
+        {
+          "id": "audio-320-0",
+          "t": 32,
+          "end": 40,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:32",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794923095639
+        },
+        {
+          "id": "audio-480-1",
+          "t": 48,
+          "end": 56,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:48",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794923095639
+        },
         {
           "id": "audio-660-3",
           "t": 66,
