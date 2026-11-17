@@ -162,14 +162,19 @@
     inFlight.add(track.id);
     if(!silent)setStatus("Finding timed lyrics for "+track.title+"…","busy");
     try{
-      let audioSummary=null;
-      try {
-        const audioResult=await window.VibeFlowDJ?.analyseAudio?.(track.id);
-        if(audioResult?.analysis) audioSummary=audioResult.analysis;
-      } catch(error) {
-        console.info("Audio structure analysis unavailable for "+track.title+":",error.message);
-      }
+      // Fetch catalogue lyrics first. Heavy waveform decoding must never delay
+      // lyric availability or hold up the DJ queue's preparation flow.
       const data=await retrieve(track);
+      let audioSummary=null;
+      const audioAnalysisPromise=(async()=>{
+        try {
+          const audioResult=await window.VibeFlowDJ?.analyseAudio?.(track.id);
+          return audioResult?.analysis||null;
+        } catch(error) {
+          console.info("Audio structure analysis unavailable for "+track.title+":",error.message);
+          return null;
+        }
+      })();
       if(!data){
         if(audioSummary){
           cache.set(track.id,{data:null,hooks:[],audioSummary});
@@ -185,7 +190,17 @@
         return;
       }
       const hooks=lyricHooks(data.lines);
-      cache.set(track.id,{data,hooks,audioSummary});
+      cache.set(track.id,{data,hooks,audioSummary:null});
+      // Continue audio analysis in the background; it is not a prerequisite for playback.
+      audioAnalysisPromise.then(summary=>{
+        if(!summary)return;
+        const existing=cache.get(track.id);
+        if(existing)cache.set(track.id,{...existing,audioSummary:summary});
+        if(!silent && resolveSelected()?.id===track.id){
+          const refreshed=cache.get(track.id);
+          renderResult(track,refreshed.data,refreshed.hooks,summary);
+        }
+      });
       if(hooks.length)window.VibeFlowDJ?.applyLyricsHooks?.(track.id,hooks);
       analysed.add(track.id);
       if(!silent){renderResult(track,data,hooks,audioSummary);setStatus("Prepared "+track.title+". "+hooks.length+" repeated-lyric cue points are available to the DJ engine."+(audioSummary?" BPM "+audioSummary.bpm+" · phrase grid ready.":" Lyrics found; audio structure analysis was unavailable."),"success");}
