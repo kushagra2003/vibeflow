@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T13:44:51.237Z",
+  "updatedAt": "2026-11-17T13:44:54.011Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -301,6 +301,28 @@
       "artist": "Unknown",
       "hooks": [
         {
+          "id": "audio-0-0",
+          "t": 0,
+          "end": 8,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:00",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.52,
+          "generatedAt": 1794923092670
+        },
+        {
+          "id": "audio-160-1",
+          "t": 16,
+          "end": 36,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:16",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794923092670
+        },
+        {
           "id": "audio-220-3",
           "t": 22,
           "end": 33,
@@ -333,6 +355,17 @@
           "detector": "repeated-section",
           "confidence": 0.7410237486109377,
           "generatedAt": 1794895287842
+        },
+        {
+          "id": "audio-700-2",
+          "t": 70,
+          "end": 78,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7410237544923077,
+          "generatedAt": 1794915996895
         },
         {
           "id": "auto-25985a3b-d028-4304-ab59-299823e92008",
@@ -369,6 +402,17 @@
           "detector": "repeated-section",
           "confidence": 0.7991677936240087,
           "generatedAt": 1794895287842
+        },
+        {
+          "id": "audio-1040-0",
+          "t": 104,
+          "end": 112,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7991677940611751,
+          "generatedAt": 1794915996895
         },
         {
           "id": "auto-d432ad3b-7561-4c64-b98c-5ba4b282bd11",
