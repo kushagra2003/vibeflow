@@ -24,7 +24,7 @@ const S = {
   seeking: false, seekResetMediaTime: null, seekResetDelay: 0, seekResumeAt: 0,
   activeNoHookDeadline: null, displayUpdateTimer: null,
   hookScans: store.get("hookScans", {}), autoHookInFlight: new Set(), autoHookStartedAt: {},
-  aiHookTrackId: null, aiHookScanning: false, bpmCache: store.get("bpmCache", {}), aiNextPromise: null
+  aiHookTrackId: null, aiHookScanning: false, bpmCache: store.get("bpmCache", {}), autoMixNextPromise: null
 };
 const save = () => {
   for (const [k, v] of Object.entries({
