@@ -77,28 +77,76 @@ async function initLib() {
         hooks:[]
       };
     });
+    // Pull the shared GitHub hook archive before reconciling this browser's local copy.
+    let sharedHooks = {};
+    try {
+      const shared = await fetch("/api/hooks", {cache:"no-store"});
+      if (shared.ok) {
+        const payload = await shared.json();
+        for (const item of (payload.songs || [])) if (item?.file) sharedHooks[item.file] = item.hooks || [];
+        S.hookCloudReady = true;
+        S.hookCloudConfigured = true;
+      } else {
+        const issue = await shared.json().catch(()=>({}));
+        S.hookCloudReady = false;
+        S.hookCloudConfigured = shared.status !== 503;
+        console.warn("Shared hook archive unavailable:", issue.error || shared.status);
+      }
+    } catch (error) {
+      S.hookCloudReady = false;
+      S.hookCloudConfigured = false;
+      console.warn("Shared hook archive unavailable; using this browser's backup.", error);
+    }
     const localMap = new Map((Array.isArray(local)?local:[]).filter(x=>x?.file).map(x=>[x.file,x]));
     const archivedHooks = store.get("hookArchive", {});
     const merged = new Map();
     for (const song of discovered) {
       const old = localMap.get(song.file) || {};
-      merged.set(song.file, {...song,...old,hooks:mergeHookLists(old.hooks, archivedHooks[song.file], song.hooks)});
+      merged.set(song.file, {...song,...old,hooks:mergeHookLists(sharedHooks[song.file], old.hooks, archivedHooks[song.file], song.hooks)});
     }
     S.lib = [...merged.values()];
-    $("#libraryStatus").textContent = `${S.lib.length} songs discovered`;
+    $("#libraryStatus").textContent = S.hookCloudReady ? `${S.lib.length} songs · shared hooks loaded` : `${S.lib.length} songs discovered · local hook backup`;
     saveLib();
   } catch (e) {
     console.error("GitHub discovery:", e);
     S.lib = Array.isArray(local) ? local : [];
+    S.hookCloudConfigured = false; S.hookCloudReady = false;
     $("#libraryStatus").textContent = "GitHub library unavailable";
     toast(`GitHub library error: ${e.message}`);
   }
   render();
 }
+let hookCloudTimer = null;
+let hookCloudInFlight = false;
+let hookCloudPending = false;
+const hooksBackupPayload = () => ({app:"VIBE FLOW",version:1,updatedAt:new Date().toISOString(),
+  songs:S.lib.filter(x=>x?.file).map(x=>({file:x.file,title:x.title,artist:x.artist,hooks:hooksOf(x)}))});
+async function syncHooksToGitHub() {
+  if (!S.hookCloudConfigured || !S.hookCloudReady) return;
+  if (hookCloudInFlight) { hookCloudPending = true; return; }
+  hookCloudInFlight = true;
+  try {
+    const response = await fetch("/api/hooks", {method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(hooksBackupPayload())});
+    const result = await response.json().catch(()=>({}));
+    if (!response.ok) throw new Error(result.error || "GitHub hook backup failed ("+response.status+")");
+    S.hookCloudReady = true;
+    const status=$("#libraryStatus");
+    if(status) status.textContent = S.lib.length+" songs · hooks backed up to GitHub";
+  } catch(error) {
+    console.error("GitHub hook backup:",error);
+    S.hookCloudReady = false;
+    toast("Hooks are saved in this browser, but GitHub backup failed. Export a backup or retry later.");
+  } finally {
+    hookCloudInFlight = false;
+    if(hookCloudPending){hookCloudPending=false;syncHooksToGitHub();}
+  }
+}
 const saveLib = () => {
   store.set("lib", S.lib);
   const archive = Object.fromEntries(S.lib.filter(x=>x?.file).map(x=>[x.file, hooksOf(x)]));
   store.set("hookArchive", archive);
+  clearTimeout(hookCloudTimer);
+  hookCloudTimer = setTimeout(syncHooksToGitHub, 900);
 };
 function mergeHookLists(...lists) {
   const merged=[];
