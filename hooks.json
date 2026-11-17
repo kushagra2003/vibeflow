@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T16:26:15.950Z",
+  "updatedAt": "2026-11-17T16:26:54.081Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -7005,6 +7005,30 @@
       "title": "Sapna Super Hit Song Teri Aakhya Ka Yo Kajal _ Lyrics Video _ New Haryanvi Song 2018 _ Sonotek(MP3_160K)",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "auto-75d86638-b488-4509-ba19-e53604fe4533",
+          "t": 12,
+          "end": 20,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:12",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794932812087
+        },
+        {
+          "id": "auto-51690559-d71d-40e3-bd13-3731a710e64d",
+          "t": 28,
+          "end": 36,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:28",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794932812087
+        },
         {
           "id": "auto-438b3247-0825-4b39-b197-e9a410003371",
           "t": 88,
