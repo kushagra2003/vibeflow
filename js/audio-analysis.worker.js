@@ -86,16 +86,50 @@ self.onmessage = event => {
       let active=0;for(let j=Math.max(0,i-3);j<=i;j++)if(rms[j]>threshold)active++;
       if(active>=3){outroStart=i*frameSeconds;break;}
     }
+    // Score overlapping 8-second windows from the very beginning of the track.
+    // Select strong, time-distributed candidates so a loud late chorus cannot
+    // crowd out a useful intro/early hook.
     const energyHooks=[];
-    for(let i=2;i<frameCount-2;i++){
-      const local=(rms[i-2]+rms[i-1]+rms[i]+rms[i+1]+rms[i+2])/5;
-      if(local>medianRms*1.35 && rms[i]>=rms[i-1] && rms[i]>=rms[i+1]){
-        if(energyHooks.every(h=>Math.abs(h.t-i*frameSeconds)>=24))
-          energyHooks.push({t:Number((i*frameSeconds).toFixed(2)),end:Number(Math.min(duration,(i+8)*frameSeconds).toFixed(2)),label:"Energy section",type:"energy-peak",confidence:Math.min(.8,.55+local/Math.max(.001,medianRms)*.03)});
+    const windowFrames=16,stepFrames=4;
+    const candidates=[];
+    for(let start=0;start+windowFrames<=frameCount;start+=stepFrames){
+      let energy=0,variation=0,peak=0;
+      for(let j=start;j<start+windowFrames;j++){
+        energy+=rms[j];
+        peak=Math.max(peak,rms[j]);
+        variation+=Math.abs(rms[j]-rms[Math.max(start,j-1)]);
       }
+      energy/=windowFrames;variation/=windowFrames;
+      const score=(energy*0.68)+(variation*0.22)+(peak*0.10);
+      if(energy>=Math.max(0.0015,medianRms*0.48))
+        candidates.push({start,energy,score,confidence:Math.min(.9,.52+(score/Math.max(.0001,medianRms)-0.7)*.08)});
     }
-    energyHooks.sort((a,b)=>b.confidence-a.confidence);
-    const spaced=energyHooks.slice(0,4).sort((a,b)=>a.t-b.t);
+    const chosen=[];
+    const addBest=(fromSec,toSec,maxCount)=>{
+      const pool=candidates.filter(x=>x.start*frameSeconds>=fromSec&&x.start*frameSeconds<toSec)
+        .sort((x,y)=>y.score-x.score);
+      for(const candidate of pool){
+        if(chosen.every(x=>Math.abs(x.start-candidate.start)>=windowFrames*2)){
+          chosen.push(candidate);
+          if(chosen.filter(x=>x.start*frameSeconds>=fromSec&&x.start*frameSeconds<toSec).length>=maxCount)break;
+        }
+      }
+    };
+    addBest(0,60,2);
+    addBest(60,150,1);
+    addBest(150,300,1);
+    addBest(300,duration,2);
+    for(const item of chosen.sort((x,y)=>x.start-y.start)){
+      const start=item.start;
+      let end=Math.min(frameCount,start+windowFrames);
+      const maxEnd=Math.min(frameCount-3,start+120);
+      for(let j=start+windowFrames;j<=maxEnd;j++){
+        const next=(rms[j]+rms[j+1]+rms[j+2])/3;
+        if(next<item.energy*0.62){end=j;break;}
+      }
+      energyHooks.push({t:Number((start*frameSeconds).toFixed(2)),end:Number((end*frameSeconds).toFixed(2)),label:"Energy section · "+Math.floor(start*frameSeconds/60)+":"+String(Math.floor(start*frameSeconds%60)).padStart(2,"0"),type:"energy-peak",confidence:Number(item.confidence.toFixed(2))});
+    }
+    const spaced=energyHooks.slice(0,6);
     self.postMessage({id,ok:true,analysis:{
       version:2,duration:Number(duration.toFixed(2)),bpm,bpmConfidence:Number(confidence.toFixed(2)),
       beatSeconds:Number(beatSeconds.toFixed(4)),beatTimes,barStarts,phraseStarts,

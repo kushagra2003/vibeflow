@@ -94,7 +94,7 @@
         <input id="hookLabel" placeholder="Hook name or lyric line (e.g. Chorus)">
         <button id="addHook" class="primary-btn">＋ Mark hook here</button>
       </div>
-      <div class="punch-create"><input id="punchName" placeholder="Punch name (optional)"><button id="markPunchStart" type="button">Mark punch start</button><span id="punchStartTime">Not set</span><button id="markPunchEnd" class="primary-btn" type="button">Save punch end</button></div>
+      <div class="punch-create"><input id="punchName" placeholder="Punch name (optional)"><select id="punchTriggerHook" aria-label="Hook to start when punch is queued"><option value="">Use punch start when queued</option></select><button id="markPunchStart" type="button">Mark punch start</button><span id="punchStartTime">Not set</span><button id="markPunchEnd" class="primary-btn" type="button">Save punch end</button></div>
       <div id="hooksList" class="hooks-list"><div class="empty-state">Play a song and mark its best moments as hooks.</div></div>
       <div class="hook-data-actions"><button id="exportHooks" type="button">↓ Export hook backup</button><button id="importHooks" type="button">↑ Restore hook backup</button><input id="importHooksFile" type="file" accept="application/json,.json" hidden></div>
       <div class="ai-hook-tools"><div class="ai-hook-tools-copy"><b>VIBE FLOW · LOCAL HOOK ANALYSIS</b><small>Detect repeated musical sections and high-energy moments directly in your browser. No AI API key or audio upload required.</small></div><button id="scanHooks" class="primary-btn" type="button">⌕ Analyse for hooks</button></div>
