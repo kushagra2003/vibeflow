@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T15:25:04.825Z",
+  "updatedAt": "2026-11-17T15:40:04.222Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -2215,6 +2215,30 @@
       "title": "Magenta Riddim(MP3_160K)",
       "artist": "DJ Snake",
       "hooks": [
+        {
+          "id": "auto-f0ef053f-0f10-4ebd-bb51-56cca967724f",
+          "t": 14,
+          "end": 27,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:14",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.55,
+          "generatedAt": 1794929996098
+        },
+        {
+          "id": "auto-fbc58ff7-bb5f-4b64-98d8-75b5d3fe42f5",
+          "t": 44,
+          "end": 53.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:44",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.56,
+          "generatedAt": 1794929996098
+        },
         {
           "id": "auto-50279ea9-7596-429d-bf1c-5fbdfe5d810b",
           "t": 108,
