@@ -1003,6 +1003,17 @@ function seekResetDuration() {
   if(h) return settings.hookPlaySeconds;
   return settings.noHookSeconds;
 }
+function phraseAlignedDeadline(track,target) {
+  const analysis=track?.mixAnalysis;
+  if(!analysis || Number(analysis.bpmConfidence||0)<0.12) return target;
+  const phrases=analysis.phraseStarts||[];
+  const bars=analysis.barStarts||[];
+  const nextPhrase=phrases.find(time=>time>=target);
+  if(nextPhrase!=null && nextPhrase-target<=16) return nextPhrase;
+  const nextBar=bars.find(time=>time>=target);
+  if(nextBar!=null && nextBar-target<=2) return nextBar;
+  return target;
+}
 function checkHookTimer() {
   // Hook-end and fallback timers are automatic transitions, never manual controls.
   if (!automaticSwitchingEnabled()) return;
@@ -1020,13 +1031,15 @@ function checkHookTimer() {
     const manuallySavedEnd=h.source!=="auto" && h.end!==null && h.end!==undefined && Number.isFinite(Number(h.end));
     const learnedEnd=S.training.active?window.VibeLearningModel.getOffset(t,{id:h.hookId,t:h.t},"outgoing"):0;
     // Manual saved ends already carry the learned end offset; generated/no-end hooks use duration + offset.
-    const deadline=manuallySavedEnd?Number(h.end):h.t+settings.hookPlaySeconds+learnedEnd;
+    const rawDeadline=manuallySavedEnd?Number(h.end):h.t+settings.hookPlaySeconds+learnedEnd;
+    const deadline=phraseAlignedDeadline(t,rawDeadline);
     if(a.currentTime>=deadline) handleAutoAdvance();
   } else {
     const fallback=S.activeNoHookDeadline?.trackId===t.id
       ? S.activeNoHookDeadline.at
       : settings.noHookSeconds;
-    if(a.currentTime>=fallback) handleAutoAdvance();
+    const deadline=phraseAlignedDeadline(t,fallback);
+    if(a.currentTime>=deadline) handleAutoAdvance();
   }
 }
 
