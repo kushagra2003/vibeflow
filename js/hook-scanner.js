@@ -233,37 +233,62 @@
       const duration = buffer.duration;
       const rms = features.map(f => f[0]);
       const transient = features.map(f => f[2]);
-      const flux = features.map((f, i) => Math.max(0, f[2] - (features[i - 1]?.[2] || 0)) + Math.max(0, f[0] - (features[i - 1]?.[0] || 0)) * 0.7);
-      const medianFlux = percentile(flux, 0.5);
-      const centered = flux.map(x => Math.max(0, x - medianFlux * 0.7));
-      const bpmScores = [];
-      for (let bpm = 60; bpm <= 180; bpm += 0.5) {
-        const lag = 120 / bpm / seconds;
-        let score = 0, count = 0;
-        for (let i = Math.ceil(lag); i < centered.length; i++) {
-          score += centered[i] * centered[Math.max(0, Math.round(i - lag))];
+      // Use a 20 ms onset envelope for tempo estimation. The 0.5 s
+      // structural features are intentionally too coarse for beat tracking.
+      const fineFrame = 0.02;
+      const fineSize = Math.max(1, Math.floor(buffer.sampleRate * fineFrame));
+      const fineCount = Math.floor(buffer.length / fineSize);
+      const fineEnergy = new Float32Array(fineCount);
+      for (let frame = 0; frame < fineCount; frame++) {
+        const from = frame * fineSize, to = from + fineSize;
+        let sum = 0, count = 0;
+        for (let i = from; i < to; i += 2) {
+          let sample = 0;
+          for (let channel = 0; channel < buffer.numberOfChannels; channel++) sample += buffer.getChannelData(channel)[i] || 0;
+          sample /= Math.max(1, buffer.numberOfChannels);
+          sum += sample * sample;
           count++;
         }
-        bpmScores.push({ bpm, score: score / Math.max(1, count) });
+        fineEnergy[frame] = Math.sqrt(sum / Math.max(1, count));
+      }
+      const onset = new Float32Array(fineCount);
+      let onsetMean = 0;
+      for (let i = 1; i < fineCount; i++) {
+        onset[i] = Math.max(0, fineEnergy[i] - fineEnergy[i - 1]);
+        onsetMean += onset[i];
+      }
+      onsetMean /= Math.max(1, fineCount - 1);
+      for (let i = 0; i < fineCount; i++) onset[i] = Math.max(0, onset[i] - onsetMean * 0.45);
+      const bpmScores = [];
+      for (let candidateBpm = 60; candidateBpm <= 180; candidateBpm += 1) {
+        const lag = Math.max(1, Math.round(60 / candidateBpm / fineFrame));
+        let score = 0, count = 0;
+        for (let i = lag; i < fineCount; i++) {
+          score += onset[i] * onset[i - lag];
+          count++;
+        }
+        bpmScores.push({ bpm: candidateBpm, score: score / Math.max(1, count) });
       }
       bpmScores.sort((a, b) => b.score - a.score);
       let best = bpmScores[0] || { bpm: 120, score: 0 };
-      // Prefer a musically plausible half/double-time interpretation when it
-      // explains the same pulse without an extreme score penalty.
+      // Resolve common half/double-time ambiguity toward a conventional DJ tempo.
       const alternatives = [best.bpm / 2, best.bpm * 2].filter(x => x >= 60 && x <= 180);
-      for (const bpm of alternatives) {
-        const candidate = bpmScores.reduce((bestSoFar, x) => Math.abs(x.bpm - bpm) < Math.abs(bestSoFar.bpm - bpm) ? x : bestSoFar, bpmScores[0]);
-        if (candidate.score >= best.score * 0.82 && candidate.bpm >= 70 && candidate.bpm <= 150) best = candidate;
+      for (const candidateBpm of alternatives) {
+        const candidate = bpmScores.find(x => x.bpm === Math.round(candidateBpm));
+        if (candidate && candidate.score >= best.score * 0.82 && candidate.bpm >= 70 && candidate.bpm <= 150) best = candidate;
       }
       const bpm = Math.round(best.bpm * 10) / 10;
+      const sortedScores = bpmScores.map(x => x.score).sort((a, b) => a - b);
+      const medianScore = sortedScores[Math.floor(sortedScores.length * 0.5)] || 0;
+      const bpmConfidence = Math.max(0, Math.min(0.95, (best.score / Math.max(1e-10, medianScore) - 1) / 8));
       const beatSeconds = 60 / bpm;
-      const beatFrames = beatSeconds / seconds;
+      const beatFrames = beatSeconds / fineFrame;
       let bestPhase = 0, phaseScore = -1;
-      const phaseSteps = Math.max(1, Math.round(beatFrames * 4));
+      const phaseSteps = Math.max(1, Math.round(beatFrames * 2));
       for (let phase = 0; phase < phaseSteps; phase++) {
         let score = 0;
-        for (let frame = phase; frame < centered.length; frame += Math.max(1, Math.round(beatFrames))) score += centered[frame];
-        if (score > phaseScore) { phaseScore = score; bestPhase = phase * seconds; }
+        for (let frame = phase; frame < onset.length; frame += Math.max(1, Math.round(beatFrames))) score += onset[frame];
+        if (score > phaseScore) { phaseScore = score; bestPhase = phase * fineFrame; }
       }
       const beatTimes = [];
       for (let t = bestPhase; t < duration; t += beatSeconds) if (t >= 0) beatTimes.push(Number(t.toFixed(3)));
