@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T16:20:49.524Z",
+  "updatedAt": "2026-11-17T16:21:24.857Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -4639,6 +4639,30 @@
       "title": "DJ RD _ KAL HO NA HO _ Shah Rukh Khan_ Saif Ali_ Preity(MP3_160K)",
       "artist": "ITS THE TIME TO DISCO (REMIX)",
       "hooks": [
+        {
+          "id": "auto-f675b0ca-cee7-492b-8c3b-c954659ddb06",
+          "t": 16,
+          "end": 40,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:16",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794932482427
+        },
+        {
+          "id": "auto-738c0d8a-42df-435e-aa2e-334063fc2fe6",
+          "t": 32,
+          "end": 40.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:32",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794932482427
+        },
         {
           "id": "auto-c7371662-9619-4b6c-bf06-631273cb935e",
           "t": 86,
