@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T18:08:14.450Z",
+  "updatedAt": "2026-11-17T18:08:24.175Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -6778,6 +6778,17 @@
       "artist": "Unknown",
       "hooks": [
         {
+          "id": "audio-60-0",
+          "t": 6,
+          "end": 37,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:06",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794938902636
+        },
+        {
           "id": "c02d3e8e-af70-4f75-8257-d7365d8037b2",
           "t": 14.01,
           "end": null,
@@ -6785,12 +6796,22 @@
           "endLyric": ""
         },
         {
+          "id": "audio-220-1",
+          "t": 22,
+          "end": 37,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:22",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794938902636
+        },
+        {
           "id": "52b0f02f-a396-4b23-883e-7980dbc5a259",
           "t": 34.4,
           "end": null,
           "lyric": "kehta hai dil rasta mushkil",
-          "endLyric": "",
-          "duration": 30
+          "endLyric": ""
         },
         {
           "id": "auto-b9836fd0-f12a-4c34-a060-e519380ce24a",
