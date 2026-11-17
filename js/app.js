@@ -1462,7 +1462,53 @@ $("#exportHooks").onclick=exportHooksBackup;
 $("#importHooks").onclick=()=>$("#importHooksFile").click();
 $("#importHooksFile").onchange=e=>{importHooksBackup(e.target.files?.[0]);e.target.value="";};
 $("#lyricsPanelToggle").onclick=()=>{const panel=$("#lyricsStudio");const show=panel.hidden;panel.hidden=!show;$("#lyricsPanelToggle").setAttribute("aria-expanded",String(show));$("#lyricsPanelToggle").classList.toggle("active",show);};
+async function pickRandomManualHookTrack() {
+  if(!S.lib.length) await initLib();
+  const candidates=S.lib.filter(entry=>Array.isArray(entry.hooks)&&entry.hooks.some(h=>h&&h.source!=="auto"&&Number.isFinite(Number(h.t))));
+  if(!candidates.length) {
+    toast("No manually saved hooks found yet. Save at least one hook in My music first.");
+    return false;
+  }
+  const currentId=cur()?.id;
+  const fresh=candidates.filter(entry=>"my:"+entry.file!==currentId);
+  const pool=fresh.length?fresh:candidates;
+  const entry=pool[Math.floor(Math.random()*pool.length)];
+  const track=toTrack(entry);
+  const hook=verifiedRandomHook(track);
+  if(!hook) return false;
+  transitionTo(track,hook,{manual:true,mode:"hook"});
+  return true;
+}
+function enablePartyDJTools() {
+  settings.mixLength="random";
+  saveSettings();
+  syncControls();
+  const panel=$("#lyricsStudio"), toggle=$("#lyricsPanelToggle");
+  if(panel.hidden) panel.hidden=false;
+  toggle.setAttribute("aria-expanded","true");
+  toggle.classList.add("active");
+  const auto=$("#lyricsAutoMode");
+  if(auto && !auto.checked) { auto.checked=true; auto.dispatchEvent(new Event("change",{bubbles:true})); }
+  if(!S.autoMix) { S.autoMix=true; store.set("autoMix",true); syncControls(); }
+}
+async function launchPartyWithManualHook() {
+  enablePartyDJTools();
+  if(!cur() || audio().paused) await pickRandomManualHookTrack();
+  else {
+    // Party mode always starts on a saved-hook track, even if another track was already playing.
+    await pickRandomManualHookTrack();
+  }
+}
+$("#firstPlayButton").onclick=async()=>{
+  const button=$("#firstPlayButton"), prompt=$("#firstPlayPrompt");
+  button.disabled=true;
+  button.textContent="Finding a saved hook…";
+  const started=await pickRandomManualHookTrack();
+  if(started) prompt.hidden=true;
+  else { button.disabled=false; button.innerHTML='<span aria-hidden="true">▶</span> Start listening'; }
+};
 $("#partyModeButton").onclick=async()=>{
+  await launchPartyWithManualHook();
   $("#partyMode").hidden=false; document.body.classList.add("party-mode-open");
   startPartyBrandLoop(); syncPartyMotion();
   showPartyMessage("Surprise incoming… VIBE FLOW is taking over! 🪩");
