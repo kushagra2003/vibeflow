@@ -1,5 +1,5 @@
 function json(data,status=200){return new Response(JSON.stringify(data),{status,headers:{"Content-Type":"application/json","Cache-Control":"no-store"}});}
-const api=(path,token,init={})=>fetch("https://api.github.com"+path,{...init,headers:{"Accept":"application/vnd.github+json","Authorization":"Bearer "+token,"X-GitHub-Api-Version":"2022-11-28","Content-Type":"application/json",...(init.headers||{})}});
+const api=(path,token,init={})=>fetch("https://api.github.com"+path,{...init,headers:{"Accept":"application/vnd.github+json","User-Agent":"VIBE-FLOW-Cloudflare-Hooks","Authorization":"Bearer "+token,"X-GitHub-Api-Version":"2022-11-28","Content-Type":"application/json",...(init.headers||{})}});
 const decode=b64=>Uint8Array.from(atob(b64.replace(/\n/g,"")),c=>c.charCodeAt(0));
 const encode=value=>{const bytes=new TextEncoder().encode(value);let binary="";for(let i=0;i<bytes.length;i+=0x8000)binary+=String.fromCharCode(...bytes.subarray(i,i+0x8000));return btoa(binary);};
 function mergeHooks(...lists){const byId=new Map();for(const list of lists)for(const h of Array.isArray(list)?list:[]){const key=String(h.id||"");if(key)byId.set(key,h);else byId.set("legacy:"+Number(h.t)+":"+String(h.lyric||""),h);}return [...byId.values()].sort((a,b)=>Number(a.t)-Number(b.t));}
