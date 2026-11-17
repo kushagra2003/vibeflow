@@ -88,7 +88,7 @@
     body.append("separate_vocals", isolate ? "true" : "false");
     body.append("align_words", align ? "true" : "false");
     try {
-      const response = await fetch("/.netlify/functions/lyrics?path=v1/transcribe", { method: "POST", body });
+      const response = await fetch("/api/lyrics?path=v1/transcribe", { method: "POST", body });
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.detail || payload.error || `Request failed (${response.status})`);
       render(payload);
@@ -116,7 +116,7 @@
 
   transcribeButton.addEventListener("click", transcribe);
   exportButton.addEventListener("click", exportJson);
-  fetch("/.netlify/functions/lyrics?path=health")
+  fetch("/api/lyrics?path=health")
     .then(response => response.ok ? response.json() : Promise.reject())
     .then(data => {
       const capabilities = ["Lyrics service connected"];
@@ -124,5 +124,5 @@
       capabilities.push(data.word_alignment_available ? "WhisperX alignment ready" : "WhisperX alignment not installed");
       setStatus(capabilities.join(" · "), "success");
     })
-    .catch(() => setStatus("Lyrics service is not connected yet. Deploy the Python service and configure Netlify environment variables.", "warning"));
+    .catch(() => setStatus("Lyrics service is not connected yet. Lyrics API is not connected. Configure VIBE_LYRICS_API_URL and VIBE_LYRICS_API_TOKEN in your Cloudflare Pages project, then redeploy.", "warning"));
 })();
