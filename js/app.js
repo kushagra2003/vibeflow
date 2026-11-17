@@ -751,13 +751,13 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
     if(S.currentCrossfadeSeconds===0) {
       // Crossfade disabled: switch decks instantly without overlapping audio.
       old.pause(); old.removeAttribute("src"); old.load();
-      nextAudio.volume=vol(); S.mixing=false; S.transitioning=false;
+      nextAudio.volume=vol(); S.mixing=false; S.transitioning=false; updateCrossfadeIndicator();
       $(".dj-upcoming")?.classList.remove("upcoming-mixing");
     } else {
-      S.mixing=true;
+      S.mixing=true; updateCrossfadeIndicator();
       if(wasPlaying) equalPowerCrossfade(old,nextAudio,S.currentCrossfadeSeconds*1000,()=>{
         old.pause();old.removeAttribute("src");old.load();
-        S.mixing=false;S.transitioning=false;$(".dj-upcoming")?.classList.remove("upcoming-mixing");
+        S.mixing=false;S.transitioning=false;updateCrossfadeIndicator();$(".dj-upcoming")?.classList.remove("upcoming-mixing");
       });
       else {
         old.pause(); nextAudio.volume=vol();
@@ -765,7 +765,7 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
         $(".dj-upcoming")?.classList.remove("upcoming-mixing");
       }
     }
-    S.activeHook=hook?{trackId:track.id,hookId:hook.id,t:hook.t,end:hook.end??null,lyric:hook.lyric||"Hook"}:null;
+    S.activeHook=hook?{trackId:track.id,hookId:hook.id,t:hook.t,end:hook.end??null,endApproved:hook.endApproved===true||hook.endSource==="manual",lyric:hook.lyric||"Hook"}:null;
     renderHooks();
     S.activeNoHookDeadline=hook?null:{trackId:track.id,at:startAt+settings.noHookSeconds};
     if(hook) markHookPlayed(track,hook);
@@ -979,7 +979,7 @@ function checkHookTimer() {
   const h=S.activeHook && S.activeHook.trackId===t.id ? S.activeHook : null;
   if(h) {
     // A captured end point is authoritative; otherwise use the configured hook-duration fallback.
-    const deadline=h.endApproved===true && h.endSource==="manual" && h.end!==null && h.end!==undefined && Number.isFinite(Number(h.end))
+    const deadline=(h.endApproved===true || h.endSource==="manual") && h.endSource==="manual" && h.end!==null && h.end!==undefined && Number.isFinite(Number(h.end))
       ? Number(h.end)
       : h.t+settings.hookPlaySeconds;
     if(a.currentTime>=deadline) handleAutoAdvance();
