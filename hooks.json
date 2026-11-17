@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T15:24:05.681Z",
+  "updatedAt": "2026-11-17T15:24:46.623Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -2940,6 +2940,30 @@
       "title": "Haryane Ka Jaat – Raju Punjabi _ Parmeet Singh (Official Haryanvi Song 2023)(MP3_160K)",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "auto-5113bc3c-c482-40ae-bbcb-42ffeddeed1c",
+          "t": 12,
+          "end": 37,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:12",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794929083433
+        },
+        {
+          "id": "auto-0c0b3ce4-a078-4c99-9094-dc9389452fe3",
+          "t": 28,
+          "end": 37,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:28",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794929083433
+        },
         {
           "id": "auto-e7ec8012-8d77-487b-86c0-98e32d81de5c",
           "t": 61,
