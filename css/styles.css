@@ -353,3 +353,10 @@ body.party-mode-open{overflow:hidden}
 .lyrics-controls .lyrics-isolation-toggle{flex-direction:row;align-items:center;gap:9px;padding:10px 12px;border:1px solid var(--border);border-radius:9px;background:rgba(255,255,255,.025);min-height:40px}
 .lyrics-controls .lyrics-isolation-toggle input{width:16px;min-height:16px;margin:0;accent-color:#8ce8c9}
 .lyrics-isolation-toggle small{display:block;color:var(--muted);font-size:10px;font-weight:500}
+
+.lyrics-controls .lyrics-isolation-toggle{flex-wrap:wrap;}
+.lyric-word-details{margin:-3px 0 5px 120px;color:var(--muted);font-size:10px}
+.lyric-word-details summary{cursor:pointer;color:#a8e5ef;font-weight:800;letter-spacing:.3px;padding:5px 0}
+.lyric-word-list{display:flex;flex-wrap:wrap;gap:6px;padding:7px 0}
+.lyric-word-list span{padding:5px 7px;border:1px solid #34546a;border-radius:7px;background:#101c27;color:#d6eff2;font-variant-numeric:tabular-nums}
+@media(max-width:600px){.lyric-word-details{margin-left:0}}
