@@ -1229,6 +1229,7 @@ function render() {
   syncControls();
   bindTrackActions();
   updateDJStatus();
+  window.dispatchEvent(new CustomEvent("vibeflow:queue-updated"));
 }
 function animateNextShadow(sourceRow) {
   const source=sourceRow?.getBoundingClientRect();
