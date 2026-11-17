@@ -176,6 +176,7 @@
         }
       })();
       if(!data){
+        audioSummary=await audioAnalysisPromise;
         if(audioSummary){
           cache.set(track.id,{data:null,hooks:[],audioSummary});
           analysed.add(track.id);
@@ -184,13 +185,14 @@
             const metrics=document.createElement("div");metrics.className="lyrics-audio-metrics";
             metrics.textContent="Audio structure ready · BPM "+audioSummary.bpm+" · intro "+audioSummary.introEnd.toFixed(1)+"s · outro "+audioSummary.outroStart.toFixed(1)+"s · "+audioSummary.energyHooks.length+" audio cue candidates. No lyrics match was found.";
             result.append(metrics);
-            setStatus("Audio analysis is ready for "+track.title+". Lyrics were not available from the connected catalogues.","success");
+            setStatus("Audio analysis is ready for "+track.title+". Lyrics were not available from the connected catalogues; vocal-safe mixing cannot be verified.","success");
           }
         } else if(!silent)setStatus("No matching lyrics or audio analysis found for "+track.title+".","warning");
         return;
       }
       const hooks=lyricHooks(data.lines);
-      cache.set(track.id,{data,hooks,audioSummary:null});
+      const vocalMap=window.VibeFlowDJ?.applyVocalMap?.(track.id,data.lines,track.duration||0)||null;
+      cache.set(track.id,{data,hooks,audioSummary:null,vocalMap});
       // Continue audio analysis in the background; it is not a prerequisite for playback.
       audioAnalysisPromise.then(summary=>{
         if(!summary)return;
