@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T16:18:48.953Z",
+  "updatedAt": "2026-11-17T16:19:29.667Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -7363,6 +7363,17 @@
       "artist": "Unknown",
       "hooks": [
         {
+          "id": "audio-120-0",
+          "t": 12,
+          "end": 41.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:12",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.55,
+          "generatedAt": 1794932367856
+        },
+        {
           "id": "auto-261306aa-eb71-4b88-9bf4-fb4773d08a29",
           "t": 14,
           "end": 45,
@@ -7385,6 +7396,17 @@
           "detector": "energy-peak",
           "confidence": 0.55,
           "generatedAt": 1794928793055
+        },
+        {
+          "id": "audio-340-1",
+          "t": 34,
+          "end": 42,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:34",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794932367856
         },
         {
           "id": "auto-158471db-e05d-4f63-8708-65f97233d955",
