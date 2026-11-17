@@ -308,3 +308,8 @@ body.party-mode-open{overflow:hidden}
 .hook-time-control .hook-time{min-width:42px;text-align:center;font-size:11px;color:#d5b7ff;font-weight:850;white-space:nowrap}
 .hook-end-help{max-width:120px;text-align:center;font-size:8px;color:var(--muted);line-height:1.25}
 @media(max-width:560px){.hook-item{align-items:flex-start;flex-wrap:wrap}.hook-main{width:100%;gap:10px}.hook-controls{width:100%;justify-content:flex-end;flex-wrap:wrap}.hook-time-editor{min-width:86px}}
+
+
+.crossfade-status{display:inline-flex;align-items:center;justify-content:center;margin:7px auto 0;padding:5px 10px;border:1px solid #554665;border-radius:99px;background:#17121f;color:#bca8ce;font-size:9px;font-weight:900;letter-spacing:1px}
+.crossfade-status.crossfade-active{border-color:#45d9b4;background:#10382f;color:#9af3d8;box-shadow:0 0 14px #45d9b433;animation:crossfadePulse 1.2s ease-in-out infinite alternate}
+@keyframes crossfadePulse{from{box-shadow:0 0 4px #45d9b422}to{box-shadow:0 0 16px #45d9b455}}
