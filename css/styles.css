@@ -391,3 +391,15 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 .lyrics-panel-toggle.active{border-color:#58d7c0;background:linear-gradient(135deg,#153b3b,#20334a);color:#a8ffea;box-shadow:0 0 0 1px #58d7c044}
 .lyrics-studio[hidden]{display:none!important}
 @media(prefers-reduced-motion:reduce){button,select,input,textarea{transition:none}}
+
+
+/* First-visit random hook launch */
+.first-play-prompt{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 24px;margin:0 0 16px;border:1px solid #356b79;border-radius:18px;background:linear-gradient(110deg,#102b35 0%,#17223a 58%,#211a3b 100%);box-shadow:0 14px 34px #0003}
+.first-play-prompt[hidden]{display:none!important}
+.first-play-prompt>div{display:flex;flex-direction:column;gap:5px}
+.first-play-prompt strong{font-size:17px;letter-spacing:-.3px;color:#f4fbff}
+.first-play-prompt small{font-size:12px;color:#a9c4d0}
+.first-play-button{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:46px;padding:0 20px;border:1px solid #73d9d0;border-radius:13px;background:linear-gradient(135deg,#28a99f,#287eaa);color:#fff;font-weight:850;white-space:nowrap;box-shadow:0 8px 22px #1c9d9b35;cursor:pointer;transition:transform .18s ease,filter .18s ease}
+.first-play-button:hover{transform:translateY(-2px);filter:brightness(1.12)}
+.first-play-button:disabled{opacity:.7;cursor:wait;transform:none}
+@media(max-width:700px){.first-play-prompt{align-items:flex-start;flex-direction:column}.first-play-button{width:100%}}
