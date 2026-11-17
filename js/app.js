@@ -18,7 +18,7 @@ const S = {
   favs: store.get("favs", []), hist: store.get("hist", []),
   patterns: store.get("patterns", []), hookPlays: store.get("hookPlays", {}),
   trackPlays: store.get("trackPlays", {}), shuffle: false,
-  repeat: false, autoMix: store.get("autoMix", false), view: "discover", results: [], recs: [], busy: false,
+  repeat: false, autoMix: store.get("autoMix", false), currentCrossfadeSeconds: null, view: "discover", results: [], recs: [], busy: false,
   tok: 0, mixing: false, transitioning: false, activeHook: null, autoTransitionPending:false,
   transitionTimer: null, env: {}, lib: [], dragIndex: null,
   seeking: false, seekResetMediaTime: null, seekResetDelay: 0, seekResumeAt: 0,
@@ -43,7 +43,8 @@ const displaySongTitle = value => { const full=String(value||"Untitled"); const 
 const fmt = n => Number.isFinite(+n) ? `${Math.floor(+n/60)}:${String(Math.floor(+n%60)).padStart(2,"0")}` : "0:00";
 const fmtHook = n => `${fmt(n)}${Math.abs((+n)-Math.round(+n))>.01?".5":""}`;
 const cur = () => S.queue[S.idx] || null;
-const mixSec = () => +settings.mixLength;
+const mixSec = () => Number.isFinite(Number(settings.mixLength)) ? Number(settings.mixLength) : 6;
+const chooseCrossfadeSeconds = () => settings.mixLength === "random" ? [3,6,9][Math.floor(Math.random()*3)] : mixSec();
 const vol = () => $("#vol").value / 100;
 const hookKey = (track, hook) => `${track.id}::${hook.id || hook.t}`;
 const toTrack = f => ({
@@ -143,7 +144,7 @@ function openSettings() {
     <div class="modal-head"><div><div class="eyebrow">PERSONALISE YOUR DJ</div><h2>VibeFlow settings</h2><p class="modal-sub">Control how tracks are selected, mixed and repeated.</p></div><button class="modal-close" data-close="1">×</button></div>
     <div class="toggle-row"><div><b>AI recommendations</b><small>Control personalised track suggestions.</small></div><input class="switch" id="setAI" type="checkbox" ${settings.aiEnabled?"checked":""}></div>
     <div class="settings-grid" style="margin-top:14px">
-      <div class="setting-field"><label for="setMix">Crossfade length</label><select id="setMix"><option value="0">Off (no crossfade)</option><option value="3">3 seconds</option><option value="6">6 seconds</option><option value="9">9 seconds</option></select><small>How long both songs overlap.</small></div>
+      <div class="setting-field"><label for="setMix">Crossfade length</label><select id="setMix"><option value="0">Off (no crossfade)</option><option value="3">3 seconds</option><option value="6">6 seconds</option><option value="9">9 seconds</option><option value="random">Random (3 / 6 / 9 seconds)</option></select><small>Random chooses a fresh 3, 6 or 9 second crossfade for each transition.</small></div>
       <div class="setting-field"><label for="setLead">Seconds to subtract from mix length</label><input id="setLead" type="number" min="0" max="8" step="1" value="${settings.leadSubtract}"><small>Default 2. Hook starts at hook time − (mix length − this value).</small></div>
       <div class="setting-field"><label for="setHookDuration">Play time after hook start</label><input id="setHookDuration" type="number" min="5" max="300" step="1" value="${settings.hookPlaySeconds}"><div class="seconds-stepper" aria-label="Adjust hook seconds"><button type="button" id="hookSecondsDown" title="Decrease by 1 second" aria-label="Decrease hook seconds">▼</button><span>−1 sec</span><button type="button" id="hookSecondsUp" title="Increase by 1 second" aria-label="Increase hook seconds">▲</button></div><small>Play the selected hook for this many seconds from its start, even if an end point is marked. Use the arrows to adjust by exactly 1 second.</small></div>
       <div class="setting-field"><label for="setNoHook">Fallback time without a hook end</label><input id="setNoHook" type="number" min="5" max="600" step="5" value="${settings.noHookSeconds}"><small>Switch after this many seconds if no hook end is available.</small></div>
@@ -162,7 +163,7 @@ function openSettings() {
   }));
   $("#saveSettings").onclick = () => {
     settings.aiEnabled = $("#setAI").checked;
-    settings.mixLength = [0,3,6,9].includes(+$("#setMix").value) ? +$("#setMix").value : 6;
+    settings.mixLength = $("#setMix").value==="random" ? "random" : ([0,3,6,9].includes(+$("#setMix").value) ? +$("#setMix").value : 6);
     settings.leadSubtract = Math.max(0,Math.min(8,+$("#setLead").value || 0));
     settings.hookPlaySeconds = Math.max(5,Math.min(300,+$("#setHookDuration").value || 24));
     settings.noHookSeconds = Math.max(5,Math.min(600,+$("#setNoHook").value || 45));
@@ -172,8 +173,21 @@ function openSettings() {
     toast("DJ settings saved.");
   };
 }
+function updateCrossfadeIndicator() {
+  const el=$("#crossfadeStatus");
+  if(!el) return;
+  const active=S.currentCrossfadeSeconds;
+  if(S.mixing && active!=null && active>0) {
+    el.textContent="CROSSFADE · "+active+"s";
+    el.classList.add("crossfade-active");
+  } else {
+    el.textContent=settings.mixLength==="random"?"CROSSFADE · RANDOM (3 / 6 / 9s)":"CROSSFADE · "+(mixSec()===0?"OFF":mixSec()+"s");
+    el.classList.remove("crossfade-active");
+  }
+}
 function syncControls() {
   $("#mixsec").value = String(settings.mixLength);
+  updateCrossfadeIndicator();
   $("#autoMode").value = settings.autoMode;
   const toggle=$("#autoMixToggle");
   if(toggle) {
@@ -212,14 +226,14 @@ function adjustHookTime(id,delta,target="start") {
     if(h.end==null) return toast("Mark an ending first, then adjust it by half a second.");
     const minEnd=Number(h.t||0)+0.5;
     h.end=Math.max(minEnd,Math.round((Number(h.end)+delta)*2)/2);
-    h.endSource="manual";
+    h.endSource="manual"; h.endApproved=true;
   } else {
     const maxStart=h.end!=null ? Math.max(0,Number(h.end)-0.5) : Infinity;
     h.t=Math.max(0,Math.min(maxStart,Math.round((Number(h.t||0)+delta)*2)/2));
   }
   t.hooks=entry.hooks;
   if(S.activeHook?.trackId===t.id && String(S.activeHook.hookId)===String(id)) {
-    S.activeHook.t=h.t; S.activeHook.end=h.end ?? null;
+    S.activeHook.t=h.t; S.activeHook.end=h.end ?? null; S.activeHook.endApproved=h.endApproved===true;
   }
   syncTrackHooks(t.id,entry.hooks);
   saveLib(); save();
@@ -233,10 +247,10 @@ function markHookEnd(id) {
   const end=+audio().currentTime.toFixed(2);
   if(end<=h.t) return toast("Hook end must be after its start.");
   h.end=end;
-  h.endSource="manual";
+  h.endSource="manual"; h.endApproved=true;
   h.endLyric=$("#endLine-"+CSS.escape(String(id)))?.value?.trim() || h.endLyric || "";
   t.hooks=entry.hooks;
-  if(S.activeHook?.trackId===t.id && String(S.activeHook.hookId)===String(id)) S.activeHook.end=end;
+  if(S.activeHook?.trackId===t.id && String(S.activeHook.hookId)===String(id)) { S.activeHook.end=end; S.activeHook.endApproved=true; }
   syncTrackHooks(t.id,entry.hooks);
   saveLib(); save(); renderHooks(); render();
   toast(`Hook end saved at ${fmt(end)}. Auto mix will switch at this point.`);
@@ -262,7 +276,7 @@ function playHookDirect(h) {
   const t=cur(); if(!t || !audio().src) return;
   audio().currentTime=h.t;
   S.activeNoHookDeadline=null;
-  S.activeHook={trackId:t.id,hookId:h.id,t:h.t,end:h.end ?? null,lyric:h.lyric||"Hook"};
+  S.activeHook={trackId:t.id,hookId:h.id,t:h.t,end:h.end ?? null,endApproved:h.endApproved===true,lyric:h.lyric||"Hook"};
   markHookPlayed(t,h);
   renderHooks();
   $("#hookStatus").textContent=`${h.lyric || "Hook"} · ${fmt(h.t)}`;
@@ -433,7 +447,7 @@ function renderHooks() {
         </div>
         <div class="hook-detail">
           <b title="${esc(h.lyric || "Hook "+(i+1))}">${esc(h.lyric || "Hook "+(i+1))}${isActive?'<span class="active-hook-badge">NOW PLAYING · AUTO MIX CUE</span>':""}</b>
-          <small><span class="hook-origin ${h.source==="auto"?"auto":"manual"}">${h.source==="auto"?"AUTO":"MANUAL"}</span> · ${h.source==="auto"?(h.detector==="repeated-section"?"Pattern match":"Energy peak"):"User cue"} · ${h.end!=null?`Ends ${fmt(h.end)}${h.endSource==="manual"?" · edited":""}${h.endLyric?" · "+esc(h.endLyric):""}`:"End not marked"}</small>
+          <small><span class="hook-origin ${h.source==="auto"?"auto":"manual"}">${h.source==="auto"?"AUTO":"MANUAL"}</span> · ${h.source==="auto"?(h.detector==="repeated-section"?"Pattern match":"Energy peak"):"User cue"} · ${h.end!=null?`Ends ${fmt(h.end)}${h.endSource==="manual"?" · approved": " · detected, not used until approved"}${h.endLyric?" · "+esc(h.endLyric):""}`:"End not marked"}</small>
         </div>
       </div>
       <div class="hook-controls">
@@ -512,7 +526,7 @@ function ensureQueued(track) {
   return i;
 }
 function mixStartForHook(hook) {
-  const lead=Math.max(0,mixSec()-settings.leadSubtract);
+  const lead=Math.max(0,(S.currentCrossfadeSeconds ?? mixSec())-settings.leadSubtract);
   return Math.max(0,hook.t-lead);
 }
 
@@ -669,7 +683,7 @@ function showTransition(track,hook,automatic=true) {
     : "Preparing "+track.title+" from "+settings.noHookStartSeconds+"s · beat sync in progress","SYNC","sync");
   banner.classList.add("show");
   clearTimeout(showTransition.timer);
-  showTransition.timer=setTimeout(()=>{banner.classList.remove("show");$("#engineState").textContent="READY";updateDJStatus();},Math.max(1800,mixSec()*1000+500));
+  showTransition.timer=setTimeout(()=>{banner.classList.remove("show");$("#engineState").textContent="READY";updateDJStatus();},Math.max(1800,(S.currentCrossfadeSeconds ?? mixSec())*1000+500));
 }
 function fade(el,to,ms,done) {
   clearInterval(el._fade);
@@ -717,6 +731,8 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
   clearTimeout(S.displayUpdateTimer);
   document.querySelector(".queue-list .track-row.current")?.classList.add("track-entering");
   $(".dj-upcoming")?.classList.add("upcoming-mixing");
+  S.currentCrossfadeSeconds=chooseCrossfadeSeconds();
+  updateCrossfadeIndicator();
   const startAt=hook ? mixStartForHook(hook) : ((automatic || mode==="no-hook") ? settings.noHookStartSeconds : 0);
   showTransition(track,hook,automatic);
   try {
@@ -732,16 +748,16 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
     await nextAudio.play();
     if(token!==S.tok){nextAudio.pause();return;}
     ci=1-ci;
-    if(mixSec()===0) {
+    if(S.currentCrossfadeSeconds===0) {
       // Crossfade disabled: switch decks instantly without overlapping audio.
       old.pause(); old.removeAttribute("src"); old.load();
-      nextAudio.volume=vol(); S.mixing=false; S.transitioning=false;
+      nextAudio.volume=vol(); S.mixing=false; S.transitioning=false; updateCrossfadeIndicator();
       $(".dj-upcoming")?.classList.remove("upcoming-mixing");
     } else {
-      S.mixing=true;
-      if(wasPlaying) equalPowerCrossfade(old,nextAudio,mixSec()*1000,()=>{
+      S.mixing=true; updateCrossfadeIndicator();
+      if(wasPlaying) equalPowerCrossfade(old,nextAudio,S.currentCrossfadeSeconds*1000,()=>{
         old.pause();old.removeAttribute("src");old.load();
-        S.mixing=false;S.transitioning=false;$(".dj-upcoming")?.classList.remove("upcoming-mixing");
+        S.mixing=false;S.transitioning=false;updateCrossfadeIndicator();$(".dj-upcoming")?.classList.remove("upcoming-mixing");
       });
       else {
         old.pause(); nextAudio.volume=vol();
@@ -749,7 +765,7 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
         $(".dj-upcoming")?.classList.remove("upcoming-mixing");
       }
     }
-    S.activeHook=hook?{trackId:track.id,hookId:hook.id,t:hook.t,end:hook.end??null,lyric:hook.lyric||"Hook"}:null;
+    S.activeHook=hook?{trackId:track.id,hookId:hook.id,t:hook.t,end:hook.end??null,endApproved:hook.endApproved===true||hook.endSource==="manual",lyric:hook.lyric||"Hook"}:null;
     renderHooks();
     S.activeNoHookDeadline=hook?null:{trackId:track.id,at:startAt+settings.noHookSeconds};
     if(hook) markHookPlayed(track,hook);
@@ -963,7 +979,7 @@ function checkHookTimer() {
   const h=S.activeHook && S.activeHook.trackId===t.id ? S.activeHook : null;
   if(h) {
     // A captured end point is authoritative; otherwise use the configured hook-duration fallback.
-    const deadline=h.end!==null && h.end!==undefined && Number.isFinite(Number(h.end))
+    const deadline=(h.endApproved===true || h.endSource==="manual") && h.endSource==="manual" && h.end!==null && h.end!==undefined && Number.isFinite(Number(h.end))
       ? Number(h.end)
       : h.t+settings.hookPlaySeconds;
     if(a.currentTime>=deadline) handleAutoAdvance();
