@@ -418,3 +418,14 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 .hook-controls [data-hook-rename]{border-color:var(--accent,#8b5cf6)}
 .punch-manager-row select,.punch-create select{min-width:150px;max-width:220px;padding:8px;border:1px solid var(--border);border-radius:9px;background:var(--panel);color:inherit;font:inherit;font-size:12px}
 .punch-create select{flex:1}
+
+/* Compact punch deck and two-step punch capture */
+.home-punches{margin:0 0 10px;padding:8px 11px;border-radius:12px}
+.punch-deck-head{margin-bottom:6px}.punch-deck-head .eyebrow{display:none}.punch-deck-head b{font-size:11px}
+.punch-deck-grid{display:flex;flex-wrap:wrap;gap:6px}
+.punch-card{display:flex;align-items:center;gap:8px;padding:5px 7px;flex:0 1 auto;min-width:0;border-radius:8px}
+.punch-card>b{font-size:10px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.punch-card-actions{gap:4px;flex-wrap:nowrap}.punch-card-actions button{font-size:9px;padding:5px 7px;white-space:nowrap}
+.punch-create{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.punch-create input{min-width:150px;flex:1}.punch-create span{min-width:100px;font-size:10px}
+.punch-manager-row{justify-content:flex-start;flex-wrap:wrap}.punch-manager-row>b{min-width:100px;flex:1}.punch-manager-row>span{font-size:10px;color:var(--muted);min-width:100px}
+.punch-manager-row button{white-space:nowrap}
