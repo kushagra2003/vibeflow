@@ -4,7 +4,7 @@ VIBE FLOW is a browser-based AI DJ prototype. The player, library, queue, hook s
 
 ## Hosting
 
-The static frontend is hosted on Cloudflare Pages. The current lyrics lookup feature needs no Python transcription server, Docker service, Oracle VM, Netlify Function or Cloudflare Container.
+The static frontend is hosted on Cloudflare Pages. The current lyrics lookup feature runs entirely in the browser and needs no separate backend.
 
 ## Lyrics retrieval
 
