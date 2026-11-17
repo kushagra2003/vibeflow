@@ -8,7 +8,7 @@ const store = {
   set(k, v) { try { localStorage.setItem("vf_" + k, JSON.stringify(v)); } catch {} }
 };
 const defaults = {
-  mixLength: 6, leadSubtract: 2, hookPlaySeconds: 24, noHookSeconds: 45, noHookStartSeconds: 20, bpmTolerance: 8,
+  mixLength: 6, leadSubtract: 2, hookPlaySeconds: 24, noHookSeconds: 45, minTrackPlaySeconds: 40, noHookStartSeconds: 20, bpmTolerance: 8,
   displayUpdateDelay: 0, aiEnabled: true, autoHookDetection: true, profileHookDisplay: "manual", autoMode: "hook"
 };
 const settings = { ...defaults, ...store.get("settings", {}) };
@@ -21,7 +21,7 @@ const S = {
   patterns: store.get("patterns", []), hookPlays: store.get("hookPlays", {}),
   trackPlays: store.get("trackPlays", {}), shuffle: false,
   repeat: false, autoMix: store.get("autoMix", false), currentCrossfadeSeconds: null, view: "discover", results: [], recs: [], busy: false,
-  tok: 0, mixing: false, transitioning: false, activeHook: null, autoTransitionPending:false,
+  tok: 0, mixing: false, transitioning: false, activeHook: null, activeTrackStartedAt:null, autoTransitionPending:false,
   transitionTimer: null, env: {}, lib: [], dragIndex: null,
   seeking: false, seekResetMediaTime: null, seekResetDelay: 0, seekResumeAt: 0,
   activeNoHookDeadline: null, displayUpdateTimer: null,
@@ -339,6 +339,7 @@ function openSettings() {
       <div class="setting-field"><label for="setLead">Seconds to subtract from mix length</label><input id="setLead" type="number" min="0" max="8" step="1" value="${settings.leadSubtract}"><small>Default 2. Hook starts at hook time − (mix length − this value).</small></div>
       <div class="setting-field"><label for="setHookDuration">Play time after hook start</label><input id="setHookDuration" type="number" min="5" max="300" step="1" value="${settings.hookPlaySeconds}"><div class="seconds-stepper" aria-label="Adjust hook seconds"><button type="button" id="hookSecondsDown" title="Decrease by 1 second" aria-label="Decrease hook seconds">▼</button><span>−1 sec</span><button type="button" id="hookSecondsUp" title="Increase by 1 second" aria-label="Increase hook seconds">▲</button></div><small>Play the selected hook for this many seconds from its start, even if an end point is marked. Use the arrows to adjust by exactly 1 second.</small></div>
       <div class="setting-field"><label for="setNoHook">Fallback time without a hook end</label><input id="setNoHook" type="number" min="5" max="600" step="5" value="${settings.noHookSeconds}"><small>Switch after this many seconds if no hook end is available.</small></div>
+      <div class="setting-field"><label for="setMinTrackPlay">Minimum track playtime</label><input id="setMinTrackPlay" type="number" min="5" max="600" step="5" value="${settings.minTrackPlaySeconds??40}"><small>Minimum actual playback before Auto Mix switches. A manually saved hook end may trigger earlier.</small></div>
       <div class="setting-field"><label for="setNoHookStart">Start position when no hook is saved</label><input id="setNoHookStart" type="number" min="0" max="300" step="1" value="${settings.noHookStartSeconds}"><small>Start unmarked songs at this position. Default: 20 seconds.</small></div>
       <div class="setting-field"><label for="setDisplayDelay">Update current / next song details</label><select id="setDisplayDelay"><option value="0">Immediately (0 seconds)</option><option value="1">After 1 second</option><option value="2">After 2 seconds</option><option value="3">After 3 seconds</option><option value="4">After 4 seconds</option><option value="5">After 5 seconds</option></select><small>Wait this long after the new track starts before refreshing the Now Playing and Coming Up Next details.</small></div>
     </div>
@@ -361,6 +362,7 @@ function openSettings() {
     settings.leadSubtract = Math.max(0,Math.min(8,+$("#setLead").value || 0));
     settings.hookPlaySeconds = Math.max(5,Math.min(300,+$("#setHookDuration").value || 24));
     settings.noHookSeconds = Math.max(5,Math.min(600,+$("#setNoHook").value || 45));
+    settings.minTrackPlaySeconds = Math.max(5,Math.min(600,+$("#setMinTrackPlay").value || 40));
     settings.noHookStartSeconds = Math.max(0,Math.min(300,+$("#setNoHookStart").value || 0));
     settings.displayUpdateDelay = [0,1,2,3,4,5].includes(+$("#setDisplayDelay").value)?+$("#setDisplayDelay").value:0;
     saveSettings(); root.innerHTML=""; syncControls(); render();
@@ -1000,6 +1002,7 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null,i
       }
     }
     S.activeHook=hook?{trackId:track.id,hookId:hook.id,t:hook.t,end:hook.end??null,source:hook.source??"manual",endSource:hook.endSource??null,endApproved:hook.endApproved===true||hook.endSource==="manual",lyric:hook.lyric||"Hook"}:null;
+    S.activeTrackStartedAt={trackId:track.id,mediaTime:Number(nextAudio.currentTime)||0};
     renderHooks();
     S.activeNoHookDeadline=hook?null:{trackId:track.id,at:startAt+settings.noHookSeconds};
     if(hook) markHookPlayed(track,hook);
@@ -1209,39 +1212,33 @@ function handleAutoAdvance() {
   nextAutomatic();
 }
 function seekResetDuration() {
-  const t=cur();
-  const h=S.activeHook && S.activeHook.trackId===t?.id ? S.activeHook : null;
-  // A manually saved ending is the authoritative transition point.
-  if(h && h.source!=="auto" && h.end!=null && Number.isFinite(Number(h.end))) return Math.max(0,Number(h.end)-audio().currentTime);
-  if(h) return settings.hookPlaySeconds;
-  return settings.noHookSeconds;
+  const t=cur(), h=S.activeHook && S.activeHook.trackId===t?.id ? S.activeHook : null, a=audio();
+  if(h && h.source!=="auto" && h.endSource==="manual" && h.end!=null && Number.isFinite(Number(h.end))) return Math.max(0,Number(h.end)-a.currentTime);
+  const started=S.activeTrackStartedAt?.trackId===t?.id?S.activeTrackStartedAt.mediaTime:a.currentTime;
+  const minimum=Math.max(5,Number(settings.minTrackPlaySeconds)||40);
+  const cueDeadline=h?h.t+settings.hookPlaySeconds:(S.activeNoHookDeadline?.at??(started+settings.noHookSeconds));
+  return Math.max(0,Math.max(started+minimum,cueDeadline)-a.currentTime);
 }
 function checkHookTimer() {
-  // Hook-end and fallback timers are automatic transitions, never manual controls.
   if (!automaticSwitchingEnabled()) return;
-  const t=cur(), a=audio(); if(!t || a.paused || S.transitioning || S.mixing || S.seeking || (S.training.active&&S.training.pending)) return;
+  const t=cur(), a=audio();
+  if(!t || a.paused || S.transitioning || S.mixing || S.seeking || (S.training.active&&S.training.pending)) return;
   if(S.seekResumeAt) {
-    if(a.currentTime-S.seekResetMediaTime>=S.seekResetDelay) {
-      S.seekResumeAt=0;
-      handleAutoAdvance();
-    }
+    if(a.currentTime-S.seekResetMediaTime>=S.seekResetDelay) { S.seekResumeAt=0; handleAutoAdvance(); }
     return;
   }
   const h=S.activeHook && S.activeHook.trackId===t.id ? S.activeHook : null;
+  const started=S.activeTrackStartedAt?.trackId===t.id?S.activeTrackStartedAt.mediaTime:a.currentTime;
+  const minimumDeadline=started+Math.max(5,Number(settings.minTrackPlaySeconds)||40);
   if(h) {
-    // A manually saved ending always overrides the configured hook-duration fallback.
-    const manuallySavedEnd=h.source!=="auto" && h.end!==null && h.end!==undefined && Number.isFinite(Number(h.end));
+    const manuallySavedEnd=h.source!=="auto" && h.endSource==="manual" && h.end!==null && h.end!==undefined && Number.isFinite(Number(h.end));
     const learnedEnd=S.training.active?window.VibeLearningModel.getOffset(t,{id:h.hookId,t:h.t},"outgoing"):0;
-    // Manual saved ends already carry the learned end offset; generated/no-end hooks use duration + offset.
-    const rawDeadline=manuallySavedEnd?Number(h.end):h.t+settings.hookPlaySeconds+learnedEnd;
-    const deadline=rawDeadline;
+    const cueDeadline=h.t+settings.hookPlaySeconds+learnedEnd;
+    const deadline=manuallySavedEnd?Number(h.end):Math.max(minimumDeadline,cueDeadline);
     if(a.currentTime>=deadline) handleAutoAdvance();
   } else {
-    const fallback=S.activeNoHookDeadline?.trackId===t.id
-      ? S.activeNoHookDeadline.at
-      : settings.noHookSeconds;
-    const deadline=fallback;
-    if(a.currentTime>=deadline) handleAutoAdvance();
+    const fallback=S.activeNoHookDeadline?.trackId===t.id?S.activeNoHookDeadline.at:started+settings.noHookSeconds;
+    if(a.currentTime>=Math.max(minimumDeadline,fallback)) handleAutoAdvance();
   }
 }
 
