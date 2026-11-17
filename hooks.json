@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T16:21:28.491Z",
+  "updatedAt": "2026-11-17T16:22:06.147Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -4566,6 +4566,30 @@
       "title": "DJ Abhishek _ DJ Vinisha Remix _ Sukhbir(MP3_160K)",
       "artist": "Ishq Tera Tadpave (Oh Ho Ho Ho)",
       "hooks": [
+        {
+          "id": "auto-65dc9bdd-71f9-41b2-955b-c4617e01f114",
+          "t": 14,
+          "end": 48.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:14",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794932524443
+        },
+        {
+          "id": "auto-456fc383-bd27-4a8b-8878-f333752c25bb",
+          "t": 30,
+          "end": 48.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:30",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794932524443
+        },
         {
           "id": "auto-b2339531-86cf-4489-bc5a-3bfedc92ee07",
           "t": 113,
