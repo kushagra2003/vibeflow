@@ -158,13 +158,13 @@ function savePunchEnd() {
   const end=audio().currentTime;
   if(end-draft.start<2) return toast("A punch must be at least 2 seconds long.");
   const name=$("#punchName").value.trim()||("Punch "+(punchesFor(entry).length+1));
-  const punch={id:crypto.randomUUID?.()||String(Date.now()),name,start:Number(draft.start.toFixed(2)),end:Number(end.toFixed(2)),createdAt:Date.now()};
+  const punch={id:crypto.randomUUID?.()||String(Date.now()),name,start:Number(draft.start.toFixed(2)),end:Number(end.toFixed(2)),triggerHookId:$("#punchTriggerHook")?.value||"",createdAt:Date.now()};
   entry.punches=[...punchesFor(entry),punch]; syncPunches(t.id,entry.punches);
   saveLib();save();S.punchDraft=null;$("#punchName").value="";renderPunchDeck();
   toast("Punch saved: "+name+" · "+fmt(punch.start)+"–"+fmt(punch.end));
 }
 function allPunches() {
-  return S.lib.flatMap(entry=>punchesFor(entry).map(p=>({...p,trackId:"my:"+entry.file,title:entry.title,artist:entry.artist})));
+  return S.lib.flatMap(entry=>punchesFor(entry).map(p=>({...p,trackId:"my:"+entry.file,title:entry.title,artist:entry.artist,hooks:hooksOf(entry)})));
 }
 function renderPunchDeck() {
   const root=$("#homePunches"); if(!root)return;
@@ -175,12 +175,13 @@ function renderPunchDeck() {
   $("#managePunches").onclick=openPunchManager;
   root.querySelectorAll("[data-punch-preview]").forEach(b=>b.onclick=()=>previewPunch(b.dataset.punchPreview));
   root.querySelectorAll("[data-punch-queue]").forEach(b=>b.onclick=()=>queuePunch(b.dataset.punchQueue));
+  root.querySelectorAll("[data-punch-hook]").forEach(sel=>sel.onchange=()=>{const p=allPunches().find(x=>x.id===sel.dataset.punchHook);const entry=p&&getLibTrack(p.trackId);if(!entry)return;const cue=punchesFor(entry).find(x=>x.id===p.id);if(cue){cue.triggerHookId=sel.value;saveLib();syncPunches(p.trackId,punchesFor(entry));toast("Punch destination hook saved.");}});
   root.querySelectorAll("[data-punch-unpin]").forEach(b=>b.onclick=()=>{store.set("pinnedPunches",store.get("pinnedPunches",[]).filter(id=>id!==b.dataset.punchUnpin));renderPunchDeck();});
 }
 function openPunchManager() {
   const punches=allPunches(), pins=store.get("pinnedPunches",[]);
   const root=$("#modalRoot");
-  root.innerHTML='<div class="modal-backdrop" data-punch-dismiss="1"><div class="modal-card" role="dialog" aria-modal="true"><div class="modal-head"><div><div class="eyebrow">MANUAL DJ CUES</div><h2>Punch library</h2><p class="modal-sub">Pin up to four punches to your home screen.</p></div><button class="modal-close" data-punch-dismiss="1">×</button></div><div class="punch-manager-list">'+(punches.length?punches.map(p=>'<div class="punch-manager-row"><label><input type="checkbox" data-pin-punch="'+esc(p.id)+'" '+(pins.includes(p.id)?'checked':'')+' '+(!pins.includes(p.id)&&pins.length>=4?'disabled':'')+'><span><b>'+esc(p.name)+'</b><small>'+esc(p.title)+' · '+fmt(p.start)+'–'+fmt(p.end)+'</small></span></label><button type="button" data-punch-preview="'+esc(p.id)+'">Preview</button><button type="button" data-punch-queue="'+esc(p.id)+'">Play next</button><button type="button" data-punch-delete="'+esc(p.id)+'">Delete</button></div>').join(''):'<div class="empty-state">No punches saved yet. Play a song and mark a start and end.</div>')+'</div><div class="punch-manager-foot"><button type="button" data-punch-dismiss="1">Done</button></div></div></div>';
+  root.innerHTML='<div class="modal-backdrop" data-punch-dismiss="1"><div class="modal-card" role="dialog" aria-modal="true"><div class="modal-head"><div><div class="eyebrow">MANUAL DJ CUES</div><h2>Punch library</h2><p class="modal-sub">Pin up to four punches to your home screen.</p></div><button class="modal-close" data-punch-dismiss="1">×</button></div><div class="punch-manager-list">'+(punches.length?punches.map(p=>'<div class="punch-manager-row"><label><input type="checkbox" data-pin-punch="'+esc(p.id)+'" '+(pins.includes(p.id)?'checked':'')+' '+(!pins.includes(p.id)&&pins.length>=4?'disabled':'')+'><span><b>'+esc(p.name)+'</b><small>'+esc(p.title)+' · '+fmt(p.start)+'–'+fmt(p.end)+'</small></span></label><select data-punch-hook="'+esc(p.id)+'" aria-label="Hook to start when this punch is queued"><option value="">Use punch start</option>'+(p.hooks||[]).map(h=>'<option value="'+esc(h.id)+'" '+(String(p.triggerHookId||"")===String(h.id)?"selected":"")+' >'+esc(h.name||h.lyric||("Hook "+fmt(h.t)))+' · '+fmt(h.t)+'</option>').join('')+'</select><button type="button" data-punch-preview="'+esc(p.id)+'">Preview</button><button type="button" data-punch-queue="'+esc(p.id)+'">Play next</button><button type="button" data-punch-delete="'+esc(p.id)+'">Delete</button></div>').join(''):'<div class="empty-state">No punches saved yet. Play a song and mark a start and end.</div>')+'</div><div class="punch-manager-foot"><button type="button" data-punch-dismiss="1">Done</button></div></div></div>';
   root.querySelectorAll("[data-punch-dismiss]").forEach(b=>b.onclick=e=>{if(e.target===b||!b.classList.contains("modal-backdrop"))root.innerHTML="";});
   root.querySelectorAll("[data-pin-punch]").forEach(b=>b.onchange=()=>{let ids=store.get("pinnedPunches",[]);ids=b.checked?[...ids,b.dataset.pinPunch].slice(0,4):ids.filter(id=>id!==b.dataset.pinPunch);store.set("pinnedPunches",ids);openPunchManager();renderPunchDeck();});
   root.querySelectorAll("[data-punch-delete]").forEach(b=>b.onclick=()=>{const p=punches.find(x=>x.id===b.dataset.punchDelete),entry=p&&getLibTrack(p.trackId);if(entry){entry.punches=punchesFor(entry).filter(x=>x.id!==p.id);saveLib();store.set("pinnedPunches",store.get("pinnedPunches",[]).filter(id=>id!==p.id));}openPunchManager();renderPunchDeck();});
@@ -254,7 +255,7 @@ function queuePunch(id) {
   const entry=getLibTrack(p.trackId),track=toTrack(entry);
   addQueue(track,"next");
   const queued=S.queue.find(x=>x.id===track.id);
-  if(queued)queued._chosenPunch={id:p.id,start:p.start,end:p.end};
+  if(queued){queued._chosenPunch={id:p.id,start:p.start,end:p.end};const destination=(p.hooks||[]).find(h=>String(h.id)===String(p.triggerHookId||""));if(destination)queued._chosenHook={id:destination.id};}
   save();render();toast("Punch queued. It will take over at the current song's next hook transition.");
 }
 async function maybeSurprisePunch() {
@@ -355,6 +356,16 @@ function addHook() {
   t.hooks=entry.hooks; S.activeNoHookDeadline=null; S.activeHook={trackId:t.id,hookId:h.id,t:h.t,end:null};
   $("#hookLabel").value=""; saveLib(); save(); renderHooks(); render();
   toast(`Hook marked at ${fmt(h.t)}. Mark its end when the hook finishes.`);
+}
+function renameHook(id) {
+  const t=cur(),entry=t&&getLibTrack(t.id);if(!entry)return;
+  const hook=hooksOf(entry).find(h=>String(h.id)===String(id));if(!hook)return;
+  const next=prompt("Name this hook (use the lyric or chorus line):",hook.name||hook.lyric||"");
+  if(next===null)return;
+  const name=next.trim();if(!name)return toast("Hook name cannot be empty.");
+  hook.name=name;hook.lyric=name;
+  syncTrackHooks(t.id,entry.hooks);saveLib();save();renderHooks();render();
+  toast("Hook renamed to "+name+".");
 }
 function adjustHookTime(id,delta,target="start") {
   const t=cur(), entry=t && getLibTrack(t.id);
@@ -593,7 +604,7 @@ function renderHooks() {
         </div>
       </div>
       <div class="hook-controls">
-        <button data-hook-go="${esc(h.id)}" title="Jump exactly to hook start">Go</button>
+        <button data-hook-go="${esc(h.id)}" title="Jump exactly to hook start">Go</button><button data-hook-rename="${esc(h.id)}" title="Rename this hook">Rename</button>
         <input id="endLine-${esc(h.id)}" aria-label="Hook ending lyric" placeholder="End line" value="${esc(h.endLyric||"")}" style="width:110px;padding:6px;font-size:10px">
         <button data-hook-end="${esc(h.id)}" title="Capture the current song time as hook end">Mark end</button>
         ${h.source==="auto"?`<button data-hook-verify="${esc(h.id)}" title="Save and verify this generated hook">Save hook</button>`:""}
@@ -602,6 +613,7 @@ function renderHooks() {
     </div>`;
   }).join("");
   $("#hooksList").querySelectorAll("[data-hook-go]").forEach(b=>b.onclick=()=>playHookDirect(hooks.find(h=>String(h.id)===b.dataset.hookGo)));
+  $("#hooksList").querySelectorAll("[data-hook-rename]").forEach(b=>b.onclick=()=>renameHook(b.dataset.hookRename));
   $("#hooksList").querySelectorAll("[data-hook-target]").forEach(b=>b.onclick=()=>{
     S.hookEditTarget[b.dataset.hookTarget]=b.dataset.target; renderHooks();
   });
@@ -1120,7 +1132,7 @@ async function nextAutomatic() {
     const punchCue=queuedNext?._chosenPunch||null;
     const availableHooks=preferredHooks(track);
     const chosenHook=chosen ? availableHooks.find(h=>String(h.id)===String(chosen.id)) : null;
-    const hook=punchCue?{id:punchCue.id,t:punchCue.start,end:punchCue.end,lyric:"Saved punch",source:"manual"}:(settings.autoMode==="beginning" ? null : (chosenHook || (availableHooks.length ? fairHook(track) : null)));
+    const hook=punchCue?(chosenHook||availableHooks.find(h=>String(h.id)===String(punchCue.triggerHookId||""))||{id:punchCue.id,t:punchCue.start,end:punchCue.end,lyric:"Saved punch",source:"manual"}):(settings.autoMode==="beginning" ? null : (chosenHook || (availableHooks.length ? fairHook(track) : null)));
     if(chosen) { delete track._chosenHook; save(); }
     if(punchCue){delete track._chosenPunch;save();}
     if(hook) {
