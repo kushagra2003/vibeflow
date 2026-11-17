@@ -132,7 +132,7 @@
     if(value.startsWith("track:"))return snapshot.queue.find(t=>t.id===value.slice(6))||null;
     return null;
   }
-  function renderResult(track,data,hooks){
+  function renderResult(track,data,hooks,audioSummary=null){
     result.replaceChildren();
     const heading=document.createElement("div");
     heading.className="lyrics-result-meta";
@@ -142,6 +142,11 @@
     cue.className="lyrics-cue-summary";
     cue.textContent=hooks.length+" repeated-lyric cue points identified"+(hooks.length?" · attached to DJ hook memory":" · no repeated lyric sections found");
     result.append(cue);
+    if(audioSummary){
+      const metrics=document.createElement("div");metrics.className="lyrics-audio-metrics";
+      metrics.textContent="BPM "+audioSummary.bpm+" · "+Math.round(audioSummary.bpmConfidence*100)+"% pulse confidence · intro "+audioSummary.introEnd.toFixed(1)+"s · outro "+audioSummary.outroStart.toFixed(1)+"s · phrase-aligned mix cues";
+      result.append(metrics);
+    }
     for(const line of data.lines.slice(0,80)){
       const row=document.createElement("div");row.className="lyric-preview-line";
       const stamp=document.createElement("time");stamp.textContent=line.start==null?"—":line.start.toFixed(2)+"s";
@@ -153,17 +158,37 @@
     if(!track){if(!silent)setStatus("There is no selected track yet. Start a song or add tracks to the queue.","warning");return;}
     if(inFlight.has(track.id)||attempted.has(track.id))return;
     attempted.add(track.id);
-    if(cache.has(track.id)){const cached=cache.get(track.id);if(!silent)renderResult(track,cached.data,cached.hooks);return;}
+    if(cache.has(track.id)){const cached=cache.get(track.id);if(!silent){if(cached.data)renderResult(track,cached.data,cached.hooks,cached.audioSummary);else if(cached.audioSummary){result.replaceChildren();const metrics=document.createElement("div");metrics.className="lyrics-audio-metrics";metrics.textContent="Audio structure ready · BPM "+cached.audioSummary.bpm+" · intro "+cached.audioSummary.introEnd.toFixed(1)+"s · outro "+cached.audioSummary.outroStart.toFixed(1)+"s · no lyrics match.";result.append(metrics);}}return;}
     inFlight.add(track.id);
     if(!silent)setStatus("Finding timed lyrics for "+track.title+"…","busy");
     try{
+      let audioSummary=null;
+      try {
+        const audioResult=await window.VibeFlowDJ?.analyseAudio?.(track.id);
+        if(audioResult?.analysis) audioSummary=audioResult.analysis;
+      } catch(error) {
+        console.info("Audio structure analysis unavailable for "+track.title+":",error.message);
+      }
       const data=await retrieve(track);
-      if(!data){if(!silent)setStatus("No matching lyrics found for "+track.title+". This provider catalogue may not contain it.","warning");return;}
+      if(!data){
+        if(audioSummary){
+          cache.set(track.id,{data:null,hooks:[],audioSummary});
+          analysed.add(track.id);
+          if(!silent){
+            result.replaceChildren();
+            const metrics=document.createElement("div");metrics.className="lyrics-audio-metrics";
+            metrics.textContent="Audio structure ready · BPM "+audioSummary.bpm+" · intro "+audioSummary.introEnd.toFixed(1)+"s · outro "+audioSummary.outroStart.toFixed(1)+"s · "+audioSummary.energyHooks.length+" audio cue candidates. No lyrics match was found.";
+            result.append(metrics);
+            setStatus("Audio analysis is ready for "+track.title+". Lyrics were not available from the connected catalogues.","success");
+          }
+        } else if(!silent)setStatus("No matching lyrics or audio analysis found for "+track.title+".","warning");
+        return;
+      }
       const hooks=lyricHooks(data.lines);
-      cache.set(track.id,{data,hooks});
+      cache.set(track.id,{data,hooks,audioSummary});
       if(hooks.length)window.VibeFlowDJ?.applyLyricsHooks?.(track.id,hooks);
       analysed.add(track.id);
-      if(!silent){renderResult(track,data,hooks);setStatus("Prepared "+track.title+". "+hooks.length+" repeated-lyric cue points are now available to the DJ engine.","success");}
+      if(!silent){renderResult(track,data,hooks,audioSummary);setStatus("Prepared "+track.title+". "+hooks.length+" repeated-lyric cue points are available to the DJ engine."+(audioSummary?" BPM "+audioSummary.bpm+" · phrase grid ready.":" Lyrics found; audio structure analysis was unavailable."),"success");}
     }catch(error){
       if(!silent)setStatus("Lyrics lookup failed ("+error.message+"). Try again later.","error");
     }finally{inFlight.delete(track.id);}

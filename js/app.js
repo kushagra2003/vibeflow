@@ -541,9 +541,16 @@ function ensureQueued(track) {
   if(i<0) { S.queue.splice(Math.max(0,S.idx+1),0,track); i=Math.max(0,S.idx+1); }
   return i;
 }
-function mixStartForHook(hook) {
+function mixStartForHook(hook,track=cur()) {
   const lead=Math.max(0,(S.currentCrossfadeSeconds ?? mixSec())-settings.leadSubtract);
-  return Math.max(0,hook.t-lead);
+  const raw=Math.max(0,hook.t-lead);
+  const analysis=track?.mixAnalysis;
+  const phraseGrid=analysis?.phraseStarts||[];
+  const barGrid=analysis?.barStarts||[];
+  const grid=phraseGrid.length?phraseGrid:barGrid;
+  if(!grid.length) return raw;
+  const aligned=grid.reduce((best,t)=>Math.abs(t-raw)<Math.abs(best-raw)?t:best,grid[0]);
+  return Math.abs(aligned-raw)<=8?Math.max(0,aligned):raw;
 }
 
 // ---------- Mix choice dialog ----------
@@ -752,7 +759,7 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
   $(".dj-upcoming")?.classList.add("upcoming-mixing");
   S.currentCrossfadeSeconds=chooseCrossfadeSeconds();
   updateCrossfadeIndicator();
-  const startAt=hook ? mixStartForHook(hook) : ((automatic || mode==="no-hook") ? settings.noHookStartSeconds : 0);
+  const startAt=hook ? mixStartForHook(hook,track) : ((automatic || mode==="no-hook") ? settings.noHookStartSeconds : 0);
   showTransition(track,hook,automatic);
   try {
     const url=await getUrl(track);
@@ -851,8 +858,10 @@ function pickRandomDJTrack() {
 }
 // Estimate tempo locally from onset-strength autocorrelation; no external API.
 async function estimateTrackBpm(track) {
-  if(!track || track.provider!=="mine") return null;
+  if(!track) return null;
+  if(Number.isFinite(Number(track.mixAnalysis?.bpm)) && Number(track.mixAnalysis?.bpmConfidence||0)>=0.12) return Number(track.mixAnalysis.bpm);
   const cached=S.bpmCache[track.id];
+  if(track.provider!=="mine") return null;
   if(cached && Number.isFinite(cached.bpm)) return cached.bpm;
   const url=await getUrl(track);
   const ctx=new (window.AudioContext||window.webkitAudioContext)();
@@ -996,6 +1005,17 @@ function seekResetDuration() {
   if(h) return settings.hookPlaySeconds;
   return settings.noHookSeconds;
 }
+function phraseAlignedDeadline(track,target) {
+  const analysis=track?.mixAnalysis;
+  if(!analysis || Number(analysis.bpmConfidence||0)<0.12) return target;
+  const phrases=analysis.phraseStarts||[];
+  const bars=analysis.barStarts||[];
+  const nextPhrase=phrases.find(time=>time>=target);
+  if(nextPhrase!=null && nextPhrase-target<=16) return nextPhrase;
+  const nextBar=bars.find(time=>time>=target);
+  if(nextBar!=null && nextBar-target<=2) return nextBar;
+  return target;
+}
 function checkHookTimer() {
   // Hook-end and fallback timers are automatic transitions, never manual controls.
   if (!automaticSwitchingEnabled()) return;
@@ -1013,13 +1033,15 @@ function checkHookTimer() {
     const manuallySavedEnd=h.source!=="auto" && h.end!==null && h.end!==undefined && Number.isFinite(Number(h.end));
     const learnedEnd=S.training.active?window.VibeLearningModel.getOffset(t,{id:h.hookId,t:h.t},"outgoing"):0;
     // Manual saved ends already carry the learned end offset; generated/no-end hooks use duration + offset.
-    const deadline=manuallySavedEnd?Number(h.end):h.t+settings.hookPlaySeconds+learnedEnd;
+    const rawDeadline=manuallySavedEnd?Number(h.end):h.t+settings.hookPlaySeconds+learnedEnd;
+    const deadline=phraseAlignedDeadline(t,rawDeadline);
     if(a.currentTime>=deadline) handleAutoAdvance();
   } else {
     const fallback=S.activeNoHookDeadline?.trackId===t.id
       ? S.activeNoHookDeadline.at
       : settings.noHookSeconds;
-    if(a.currentTime>=fallback) handleAutoAdvance();
+    const deadline=phraseAlignedDeadline(t,fallback);
+    if(a.currentTime>=deadline) handleAutoAdvance();
   }
 }
 
@@ -1164,10 +1186,37 @@ window.VibeFlowDJ = {
     const current=cur();
     const nextTrack=S.queue[S.idx+1] || null;
     return {
-      current: current ? {...current,hooks:hooksOf(current)} : null,
-      next: nextTrack ? {...nextTrack,hooks:hooksOf(nextTrack)} : null,
-      queue: S.queue.map((track,index)=>({...track,hooks:hooksOf(track),queueIndex:index,isCurrent:index===S.idx}))
+      current: current ? {...current,hooks:hooksOf(current),mixAnalysis:current.mixAnalysis||null} : null,
+      next: nextTrack ? {...nextTrack,hooks:hooksOf(nextTrack),mixAnalysis:nextTrack.mixAnalysis||null} : null,
+      queue: S.queue.map((track,index)=>({...track,hooks:hooksOf(track),mixAnalysis:track.mixAnalysis||null,queueIndex:index,isCurrent:index===S.idx}))
     };
+  },
+  async analyseAudio(trackId) {
+    const track=S.queue.find(item=>item.id===trackId) || [...S.lib.map(toTrack),...S.results,...S.recs,...S.favs].find(item=>item.id===trackId);
+    if(!track) throw new Error("Track is no longer in the queue.");
+    const url=await getUrl(track);
+    const analysis=await window.VibeHookScanner.analyseDetailed(url);
+    track.mixAnalysis=analysis;
+    S.bpmCache[track.id]={bpm:analysis.bpm,confidence:analysis.bpmConfidence,at:Date.now(),source:"audio-structure"};
+    store.set("bpmCache",S.bpmCache);
+    const cues=(analysis.energyHooks||[]).map((candidate,index)=>({
+      id:"audio-"+Math.round(candidate.t*10)+"-"+index,
+      t:Math.round(candidate.t*2)/2,
+      end:candidate.end!=null?Math.round(candidate.end*2)/2:null,
+      endSource:"auto",lyric:candidate.label||"Audio energy section",
+      source:"auto",detector:candidate.type||"energy-peak",
+      confidence:candidate.confidence,generatedAt:Date.now()
+    }));
+    track.hooks=mergeHookLists(hooksOf(track),cues);
+    syncTrackHooks(track.id,track.hooks);
+    if(track.provider==="mine") {
+      const entry=getLibTrack(track.id);
+      if(entry){entry.mixAnalysis=analysis;entry.hooks=track.hooks;saveLib();}
+    }
+    save();
+    renderHooks();
+    render();
+    return {analysis,generatedHooks:cues.length};
   },
   applyLyricsHooks(trackId, generatedHooks) {
     const track=S.queue.find(item=>item.id===trackId);
