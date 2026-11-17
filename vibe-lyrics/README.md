@@ -74,3 +74,14 @@ When `separate_vocals=true`, Demucs creates a temporary vocals stem and faster-w
 IndicConformer specialist routing, WhisperX forced alignment, semantic punchline detection, emotion classification, lyric preference learning, persistent song intelligence and direct DJ cue protection remain future milestones. Haryanvi and Bhojpuri use Hindi decoding only as a baseline.
 
 Only upload recordings you have the rights and permission to process. The service does not retain uploaded audio.
+
+
+## Optional WhisperX word alignment
+
+Install the optional dependency with `pip install -r requirements-alignment.txt`, or build Docker with `--build-arg INSTALL_ALIGNMENT=1`. To enable both vocal isolation and alignment, use `docker build --build-arg INSTALL_DEMUCS=1 --build-arg INSTALL_ALIGNMENT=1 -t vibe-lyrics .`.
+
+The API accepts `align_words=true` on `POST /v1/transcribe`. It reuses the faster-whisper transcript and asks WhisperX to refine word boundaries against the selected audio (the original track or Demucs vocal stem). The response includes `words_aligned`; the engine string includes `whisperx-align` when successful. If the alignment package is missing, the explicit request returns HTTP 503. If the language has no configured default alignment model or alignment itself fails, the service keeps the original transcript/timestamps and includes a warning.
+
+Set `WHISPERX_DEVICE=cpu` by default, or `cuda` on a correctly provisioned GPU host. `WHISPERX_ALIGN_MODEL` can override the default alignment model for a language, but must be tested with that language/script. WhisperX alignment coverage is language-specific, not universal; the upstream project documents Hindi and English default models among its supported languages. See [WhisperX installation and Python alignment examples](https://github.com/m-bain/whisperX#setup).
+
+WhisperX adds a substantial PyTorch/model dependency. Build and test this optional profile on the actual hosting provider before enabling it for production traffic.
