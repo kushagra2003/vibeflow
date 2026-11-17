@@ -35,7 +35,6 @@
       <div><span class="eyebrow">YOUR MUSIC. YOUR DJ.</span><strong>Ready to let VIBE FLOW take over?</strong><small>Start a random track with a manually saved hook.</small></div>
       <button id="firstPlayButton" class="first-play-button" type="button"><span aria-hidden="true">▶</span> Start listening</button>
     </section>
-    <section id="homePunches" class="home-punches" aria-label="Pinned music punches"></section>
     <section class="now-card">
       <div class="cover-wrap no-art"><img id="art" alt="" src=""><div class="vinyl-fallback paused" id="vinylFallback" aria-hidden="true"><div class="vinyl-disc"><div class="vinyl-label"><span>V</span></div></div><span class="vinyl-caption">VIBE FLOW</span></div><div class="cover-shine"></div></div>
       <div class="now-info">
@@ -88,13 +87,15 @@
       <div id="lyricsResult" class="lyrics-result" aria-live="polite"></div>
     </section>
 
+    <section id="homePunches" class="home-punches" aria-label="Pinned music punches"></section>
+
     <section id="hookEditor" class="panel hook-panel">
       <div class="section-heading"><div><div class="eyebrow">CUE POINTS</div><h3>Hooks in the current song</h3></div><span class="subtle" id="hookCount">0 saved</span></div>
       <div class="hook-create">
         <input id="hookLabel" placeholder="Hook name or lyric line (e.g. Chorus)">
         <button id="addHook" class="primary-btn">＋ Mark hook here</button>
       </div>
-      <div class="punch-create"><input id="punchName" placeholder="Punch name (optional)"><select id="punchTriggerHook" aria-label="Hook to start when punch is queued"><option value="">Use punch start when queued</option></select><button id="markPunchStart" type="button">Mark punch start</button><span id="punchStartTime">Not set</span><button id="markPunchEnd" class="primary-btn" type="button">Save punch end</button></div>
+      <div class="punch-create"><button id="markPunchStart" type="button">Punch IN</button><span id="punchStartTime">Not set</span><input id="punchName" placeholder="Name this punch"><button id="markPunchEnd" type="button">Punch OUT</button><button id="savePunch" class="primary-btn" type="button" disabled>Save punch</button></div>
       <div id="hooksList" class="hooks-list"><div class="empty-state">Play a song and mark its best moments as hooks.</div></div>
       <div class="hook-data-actions"><button id="exportHooks" type="button">↓ Export hook backup</button><button id="importHooks" type="button">↑ Restore hook backup</button><input id="importHooksFile" type="file" accept="application/json,.json" hidden></div>
       <div class="ai-hook-tools"><div class="ai-hook-tools-copy"><b>VIBE FLOW · LOCAL HOOK ANALYSIS</b><small>Detect repeated musical sections and high-energy moments directly in your browser. No AI API key or audio upload required.</small></div><button id="scanHooks" class="primary-btn" type="button">⌕ Analyse for hooks</button></div>
