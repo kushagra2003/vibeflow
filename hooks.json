@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T13:54:15.071Z",
+  "updatedAt": "2026-11-17T13:54:41.615Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -2531,9 +2531,31 @@
       "artist": "Unknown",
       "hooks": [
         {
+          "id": "audio-40-0",
+          "t": 4,
+          "end": 29,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:04",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794923680054
+        },
+        {
+          "id": "audio-200-1",
+          "t": 20,
+          "end": 29,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:20",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794923680054
+        },
+        {
           "id": "auto-db2ec438-ac62-4aea-b59b-eb4aeb26f00e",
           "t": 88,
-          "end": null,
+          "end": 96,
           "lyric": "Repeated musical section",
           "endLyric": "",
           "source": "auto",
@@ -2544,7 +2566,7 @@
         {
           "id": "auto-b5b9a5aa-94a2-4e56-a042-7652e78d167d",
           "t": 98,
-          "end": null,
+          "end": 106,
           "lyric": "Repeated musical section",
           "endLyric": "",
           "source": "auto",
@@ -2555,7 +2577,7 @@
         {
           "id": "auto-18443c46-ae8e-4de5-a6cc-4cac738761f2",
           "t": 134,
-          "end": null,
+          "end": 142,
           "lyric": "Repeated musical section",
           "endLyric": "",
           "source": "auto",
@@ -2566,7 +2588,7 @@
         {
           "id": "auto-b902c670-a877-42cb-b003-02365b38f9d5",
           "t": 143,
-          "end": null,
+          "end": 151,
           "lyric": "Repeated musical section",
           "endLyric": "",
           "source": "auto",
@@ -2577,7 +2599,7 @@
         {
           "id": "auto-1d074c1b-fb71-4e8d-bd63-05a958825792",
           "t": 153,
-          "end": null,
+          "end": 169,
           "lyric": "Repeated musical section",
           "endLyric": "",
           "source": "auto",
@@ -2588,7 +2610,7 @@
         {
           "id": "auto-4c1bcde6-1050-4d03-8ebb-ea9dfa744c9d",
           "t": 163,
-          "end": null,
+          "end": 179,
           "lyric": "Repeated musical section",
           "endLyric": "",
           "source": "auto",
