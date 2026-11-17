@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T18:04:54.824Z",
+  "updatedAt": "2026-11-17T18:08:11.118Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -1258,7 +1258,7 @@
           "source": "auto",
           "detector": "energy-peak",
           "confidence": 0.53,
-          "generatedAt": 1794924150376
+          "generatedAt": 1794938888454
         },
         {
           "id": "audio-200-1",
@@ -1269,7 +1269,7 @@
           "source": "auto",
           "detector": "energy-peak",
           "confidence": 0.53,
-          "generatedAt": 1794924150376
+          "generatedAt": 1794938888454
         },
         {
           "id": "auto-e5c6c61c-0c4b-4116-a6cb-291a8f86472b",
@@ -1286,6 +1286,18 @@
           "endApproved": true
         },
         {
+          "id": "auto-47d5de19-592a-42aa-a593-2e7eeb6b77c1",
+          "t": 50,
+          "end": 58,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.6810901898435319,
+          "generatedAt": 1794865222802,
+          "verifiedAt": 1794865229534
+        },
+        {
           "id": "auto-a11163e8-5669-4096-a0d4-7a3f398ca4a0",
           "t": 115,
           "end": null,
@@ -1295,6 +1307,18 @@
           "detector": "repeated-section",
           "confidence": 0.7189130765560517,
           "generatedAt": 1794867922952
+        },
+        {
+          "id": "auto-0133c491-79a2-48f9-8c73-4b59fea0d082",
+          "t": 115,
+          "end": 139,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7189130765560517,
+          "generatedAt": 1794865222802,
+          "verifiedAt": 1794865232851
         },
         {
           "id": "auto-e75124e1-4515-48a9-82b4-1b09f6a56bfd",
