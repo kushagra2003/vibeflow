@@ -158,7 +158,7 @@
     if(!track){if(!silent)setStatus("There is no selected track yet. Start a song or add tracks to the queue.","warning");return;}
     if(inFlight.has(track.id)||attempted.has(track.id))return;
     attempted.add(track.id);
-    if(cache.has(track.id)){const cached=cache.get(track.id);if(!silent)renderResult(track,cached.data,cached.hooks,cached.audioSummary);return;}
+    if(cache.has(track.id)){const cached=cache.get(track.id);if(!silent){if(cached.data)renderResult(track,cached.data,cached.hooks,cached.audioSummary);else if(cached.audioSummary){result.replaceChildren();const metrics=document.createElement("div");metrics.className="lyrics-audio-metrics";metrics.textContent="Audio structure ready · BPM "+cached.audioSummary.bpm+" · intro "+cached.audioSummary.introEnd.toFixed(1)+"s · outro "+cached.audioSummary.outroStart.toFixed(1)+"s · no lyrics match.";result.append(metrics);}}return;}
     inFlight.add(track.id);
     if(!silent)setStatus("Finding timed lyrics for "+track.title+"…","busy");
     try{
