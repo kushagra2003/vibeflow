@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T15:40:48.559Z",
+  "updatedAt": "2026-11-17T15:41:22.994Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -2142,6 +2142,30 @@
       "title": "BOYFRIEND (REMIX) _ KARAN AUJLA _ SUNANDA _ IKKY(MP3_160K)",
       "artist": "DJ CHETAS",
       "hooks": [
+        {
+          "id": "auto-d5e38091-f122-462f-bfd4-94e578fda6be",
+          "t": 18,
+          "end": 38,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:18",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794930068993
+        },
+        {
+          "id": "auto-cad9583d-78dd-448f-88d8-38bfb9c283c5",
+          "t": 40,
+          "end": 48,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:40",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794930068993
+        },
         {
           "id": "auto-fffb4e37-c482-48c8-b82f-b8a0697e48a0",
           "t": 127,
