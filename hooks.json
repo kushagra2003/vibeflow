@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T14:00:30.820Z",
+  "updatedAt": "2026-11-17T14:01:38.462Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -1607,6 +1607,28 @@
       "title": "Chalti Hai Kya 9 Se 12 Full Song _ Judwaa 2 _ Varun _ Jacqueline _ Taapsee _ David Dhawan _Anu Malik(MP3_160K)",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "audio-200-0",
+          "t": 20,
+          "end": 29.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:20",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794924096855
+        },
+        {
+          "id": "audio-380-1",
+          "t": 38,
+          "end": 46,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:38",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794924096855
+        },
         {
           "id": "auto-7df6c231-5b31-4895-9df1-0e9f260aa738",
           "t": 114,
