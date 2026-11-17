@@ -1,253 +1,194 @@
 (() => {
   const panel = document.querySelector("#lyricsStudio");
   if (!panel) return;
-  const $ = (selector) => panel.querySelector(selector);
-  const titleInput = $("#lyricsTrackTitle");
-  const artistInput = $("#lyricsTrackArtist");
-  const albumInput = $("#lyricsTrackAlbum");
-  const durationInput = $("#lyricsTrackDuration");
+  const $ = selector => panel.querySelector(selector);
+  const picker = $("#lyricsTrackSelect");
   const status = $("#lyricsStatus");
   const result = $("#lyricsResult");
-  const findButton = $("#lyricsFind");
-  const exportButton = $("#lyricsExport");
-  let songData = null;
+  const autoToggle = $("#lyricsAutoMode");
+  const analysed = new Set();
+  const inFlight = new Set();
+  const cache = new Map();
+  let autoEnabled = false;
 
-  function setStatus(message, state = "") {
+  const setStatus = (message, state = "") => {
     status.textContent = message;
     status.dataset.state = state;
-  }
-
-  function parseTime(value) {
+  };
+  const parseTime = value => {
     if (value == null) return null;
     const raw = String(value).trim();
-    if (/^\d+(\.\d+)?s$/.test(raw)) return Number(raw.slice(0, -1));
+    if (/^\d+(\.\d+)?s$/.test(raw)) return Number(raw.slice(0,-1));
     const parts = raw.split(":");
-    if (parts.length === 3) return Number(parts[0]) * 3600 + Number(parts[1]) * 60 + Number(parts[2]);
-    if (parts.length === 2) return Number(parts[0]) * 60 + Number(parts[1]);
-    const number = Number(raw);
-    return Number.isFinite(number) ? number : null;
+    if (parts.length === 3) return +parts[0]*3600 + +parts[1]*60 + +parts[2];
+    if (parts.length === 2) return +parts[0]*60 + +parts[1];
+    const n=Number(raw); return Number.isFinite(n)?n:null;
+  };
+  function parseTtml(xml) {
+    const doc=new DOMParser().parseFromString(xml||"","application/xml");
+    if(doc.querySelector("parsererror")) return [];
+    return [...doc.getElementsByTagNameNS("*","p")].map((p,i)=>{
+      const spans=[...p.getElementsByTagNameNS("*","span")];
+      const words=spans.map(s=>({text:(s.textContent||"").trim(),start:parseTime(s.getAttribute("begin")),end:parseTime(s.getAttribute("end"))})).filter(w=>w.text&&w.start!=null&&w.end!=null);
+      const text=(p.textContent||"").replace(/\s+/g," ").trim();
+      const start= parseTime(p.getAttribute("begin")) ?? words[0]?.start;
+      const end= parseTime(p.getAttribute("end")) ?? words.at(-1)?.end;
+      return {id:"l"+i,text,start,end,words};
+    }).filter(x=>x.text&&x.start!=null&&x.end!=null);
   }
-
-  function parseTtml(xmlText) {
-    const doc = new DOMParser().parseFromString(xmlText, "application/xml");
-    if (doc.querySelector("parsererror")) return [];
-    return [...doc.getElementsByTagNameNS("*", "p")].map((paragraph, index) => {
-      const spans = [...paragraph.getElementsByTagNameNS("*", "span")];
-      const words = spans.map(span => ({
-        text: span.textContent || "",
-        start: parseTime(span.getAttribute("begin")),
-        end: parseTime(span.getAttribute("end")),
-      })).filter(word => word.text.trim() && word.start != null && word.end != null);
-      const start = parseTime(paragraph.getAttribute("begin")) ?? words[0]?.start;
-      const end = parseTime(paragraph.getAttribute("end")) ?? words.at(-1)?.end;
-      const text = (paragraph.textContent || "").replace(/\s+/g, " ").trim();
-      return { id: "line-" + (index + 1), text, start, end, words, tags: [] };
-    }).filter(line => line.text && line.start != null && line.end != null);
+  function parseLrc(text) {
+    const found=[];
+    for(const raw of String(text||"").split(/\r?\n/)){
+      const m=raw.match(/^\s*\[(\d{1,2}:\d{2}(?:\.\d{1,3})?)\]\s*(.+)$/);
+      if(m){const start=parseTime(m[1]);if(start!=null)found.push({text:m[2].trim(),start});}
+    }
+    return found.map((x,i)=>({id:"l"+i,text:x.text,start:x.start,end:found[i+1]?.start??x.start+4,words:[]}));
   }
-
-  function parseLrc(lrcText) {
-    const lines = [];
-    const pattern = /^\s*\[(\d{1,2}:\d{2}(?:\.\d{1,3})?)\]\s*(.*)$/;
-    for (const raw of String(lrcText || "").split(/\r?\n/)) {
-      const match = raw.match(pattern);
-      if (!match || !match[2].trim()) continue;
-      const time = parseTime(match[1]);
-      if (time != null) lines.push({ start: time, text: match[2].trim() });
-    }
-    return lines.map((line, index) => ({
-      id: "line-" + (index + 1), text: line.text, start: line.start,
-      end: lines[index + 1]?.start ?? line.start + 4, words: [], tags: [],
-    }));
-  }
-
-  function markRepeated(lines) {
-    const counts = new Map();
-    for (const line of lines) {
-      const key = line.text.toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
-      if (key) counts.set(key, (counts.get(key) || 0) + 1);
-    }
-    for (const line of lines) {
-      const key = line.text.toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
-      if (key && counts.get(key) > 1) line.tags.push("repeated-line");
-    }
-    return lines;
-  }
-
-  async function fetchJson(url, options = {}) {
-    const response = await fetch(url, options);
-    if (!response.ok) {
-      const error = new Error(response.status + " " + response.statusText);
-      error.status = response.status;
-      throw error;
-    }
+  async function getJson(url,headers={}) {
+    const response=await fetch(url,{headers});
+    if(!response.ok){const e=new Error("HTTP "+response.status);e.status=response.status;throw e;}
     return response.json();
   }
-
-  async function fromBetterLyrics(track) {
-    const params = new URLSearchParams({
-      s: track.title, a: track.artist, al: track.album || "",
-      d: String(Math.round(track.duration)),
-    });
-    try {
-      const data = await fetchJson("https://api.betterlyrics.org/getLyrics?" + params);
-      const lines = parseTtml(data.ttml);
-      if (lines.length) return { provider: "Better Lyrics · TTML", lines };
-    } catch (error) {
-      if (![401, 404, 429].includes(error.status)) console.info("Better Lyrics TTML lookup:", error.message);
-    }
-    try {
-      const data = await fetchJson("https://api.betterlyrics.org/kugou/getLyrics?" + params);
-      const lines = parseLrc(data.lyrics);
-      if (lines.length) return { provider: "Better Lyrics · Kugou", lines };
-    } catch (error) {
-      console.info("Better Lyrics Kugou lookup:", error.message);
-    }
-    return null;
-  }
-
-  async function fromLrclib(track) {
-    const headers = { "X-User-Agent": "VIBE-FLOW/1.0 (https://github.com/kushagra2003/vibeflow)" };
-    const params = new URLSearchParams({ track_name: track.title, artist_name: track.artist });
-    if (track.album) params.set("album_name", track.album);
-    if (track.duration > 0) params.set("duration", String(Math.round(track.duration)));
+  async function retrieve(track) {
+    const params=new URLSearchParams({s:track.title||"",a:track.artist||"",al:track.album||"",d:String(Math.round(track.duration||0))});
+    try{
+      const data=await getJson("https://api.betterlyrics.org/getLyrics?"+params);
+      const lines=parseTtml(data.ttml);
+      if(lines.length)return {provider:"Better Lyrics TTML",lines};
+    }catch(e){if(![401,404,429].includes(e.status))console.debug("Better Lyrics:",e.message);}
+    try{
+      const data=await getJson("https://api.betterlyrics.org/kugou/getLyrics?"+params);
+      const lines=parseLrc(data.lyrics);
+      if(lines.length)return {provider:"Better Lyrics Kugou",lines};
+    }catch(e){console.debug("Kugou lyrics:",e.message);}
+    const headers={"X-User-Agent":"VIBE-FLOW/1.0 (https://github.com/kushagra2003/vibeflow)"};
+    const query=new URLSearchParams({track_name:track.title||"",artist_name:track.artist||""});
+    if(track.album)query.set("album_name",track.album);
+    if(track.duration)query.set("duration",String(Math.round(track.duration)));
     let record;
-    try {
-      record = await fetchJson("https://lrclib.net/api/get?" + params, { headers });
-    } catch (error) {
-      if (error.status !== 404) throw error;
-      const search = new URLSearchParams({ track_name: track.title, artist_name: track.artist });
-      const matches = await fetchJson("https://lrclib.net/api/search?" + search, { headers });
-      record = matches.find(item => item.syncedLyrics) || matches.find(item => item.plainLyrics);
+    try{record=await getJson("https://lrclib.net/api/get?"+query,headers);}
+    catch(e){
+      if(e.status!==404)throw e;
+      const search=new URLSearchParams({track_name:track.title||"",artist_name:track.artist||""});
+      const matches=await getJson("https://lrclib.net/api/search?"+search,headers);
+      record=matches.find(x=>x.syncedLyrics)||matches.find(x=>x.plainLyrics);
     }
-    if (!record) return null;
-    const lines = parseLrc(record.syncedLyrics || "");
-    if (!lines.length && record.plainLyrics) {
-      return {
-        provider: "LRCLIB · plain lyrics (not timestamped)",
-        lines: record.plainLyrics.split(/\r?\n/).filter(Boolean).map((text, i) => ({
-          id: "line-" + (i + 1), text, start: null, end: null, words: [], tags: [],
-        })),
-      };
-    }
-    if (lines.length) return {
-      provider: record.hasWordSync ? "LRCLIB · word-synced record (LRC view)" : "LRCLIB · line-synced",
-      lines,
-    };
+    if(!record)return null;
+    const lines=parseLrc(record.syncedLyrics);
+    if(lines.length)return {provider:"LRCLIB synced lyrics",lines};
+    if(record.plainLyrics)return {provider:"LRCLIB plain lyrics",lines:record.plainLyrics.split(/\r?\n/).filter(Boolean).map((text,i)=>({id:"l"+i,text,start:null,end:null,words:[]}))};
     return null;
   }
-
-  function render(found, track) {
-    songData = {
-      track_name: track.title, artist: track.artist, album: track.album,
-      duration: track.duration || null, provider: found.provider,
-      fetched_at: new Date().toISOString(), lines: markRepeated(found.lines),
-    };
+  function lyricHooks(lines) {
+    const groups=new Map();
+    for(const line of lines){
+      if(line.start==null||!line.text)continue;
+      const key=line.text.toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu," ").trim();
+      if(key.length<5)continue;
+      if(!groups.has(key))groups.set(key,[]);
+      groups.get(key).push(line);
+    }
+    const hooks=[];
+    for(const occurrences of groups.values()){
+      if(occurrences.length<2)continue;
+      for(const line of occurrences){
+        hooks.push({
+          id:"lyric-"+Math.round(line.start*10),
+          t:Math.max(0,Number(line.start)),
+          end:Number(line.end)>Number(line.start)?Number(line.end):null,
+          endSource:"lyrics",
+          lyric:line.text,
+          source:"lyrics",
+          detector:"repeated-lyric",
+          confidence:Math.min(.95,.55+occurrences.length*.08),
+          generatedAt:Date.now()
+        });
+      }
+    }
+    return hooks.sort((a,b)=>a.t-b.t);
+  }
+  function getSnapshot(){
+    return window.VibeFlowDJ?.getTracks?.() || {current:null,next:null,queue:[]};
+  }
+  function fillPicker(){
+    const snapshot=getSnapshot();
+    const selected=picker.value;
+    const options=[
+      {value:"current",label:snapshot.current?"Current · "+snapshot.current.title:"Current song"},
+      {value:"next",label:snapshot.next?"Next · "+snapshot.next.title:"Next in queue"}
+    ];
+    for(const track of snapshot.queue||[]){
+      options.push({value:"track:"+track.id,label:(track.isCurrent?"Playing · ":"Queue "+(track.queueIndex+1)+" · ")+(track.title||"Unknown")+" — "+(track.artist||"Unknown")});
+    }
+    picker.replaceChildren();
+    for(const option of options){const el=document.createElement("option");el.value=option.value;el.textContent=option.label;picker.append(el);}
+    if(options.some(o=>o.value===selected))picker.value=selected;
+  }
+  function resolveSelected(){
+    const snapshot=getSnapshot(),value=picker.value;
+    if(value==="current")return snapshot.current;
+    if(value==="next")return snapshot.next;
+    if(value.startsWith("track:"))return snapshot.queue.find(t=>t.id===value.slice(6))||null;
+    return null;
+  }
+  function renderResult(track,data,hooks){
     result.replaceChildren();
-    const meta = document.createElement("div");
-    meta.className = "lyrics-result-meta";
-    meta.textContent = track.title + " · " + track.artist + " · " + found.provider + " · " + songData.lines.length + " lines";
-    result.append(meta);
-    for (const line of songData.lines) {
-      const row = document.createElement("article");
-      row.className = "lyric-line";
-      const time = document.createElement("div");
-      time.className = "lyric-line-time";
-      time.textContent = line.start == null ? "No timing" : line.start.toFixed(2) + "s – " + line.end.toFixed(2) + "s";
-      const editor = document.createElement("textarea");
-      editor.rows = 2;
-      editor.setAttribute("aria-label", "Edit lyric line");
-      editor.value = line.text;
-      editor.addEventListener("input", () => { line.text = editor.value; line.edited = true; });
-      const tags = document.createElement("div");
-      tags.className = "lyric-line-tags";
-      for (const tag of line.tags) {
-        const chip = document.createElement("span");
-        chip.textContent = tag;
-        tags.append(chip);
-      }
-      row.append(time, editor, tags);
-      result.append(row);
-      if (line.words?.length) {
-        const details = document.createElement("details");
-        details.className = "lyric-word-details";
-        const summary = document.createElement("summary");
-        summary.textContent = "Show " + line.words.length + " syllable timestamps";
-        const list = document.createElement("div");
-        list.className = "lyric-word-list";
-        for (const word of line.words) {
-          const chip = document.createElement("span");
-          chip.textContent = word.text + " · " + word.start.toFixed(2) + "–" + word.end.toFixed(2) + "s";
-          list.append(chip);
-        }
-        details.append(summary, list);
-        result.append(details);
-      }
-    }
-    exportButton.hidden = false;
-  }
-
-  async function findLyrics() {
-    const track = {
-      title: titleInput.value.trim(), artist: artistInput.value.trim(),
-      album: albumInput.value.trim(), duration: Number(durationInput.value) || 0,
-    };
-    if (!track.title || !track.artist) {
-      setStatus("Enter both a song title and artist.", "error");
-      return;
-    }
-    findButton.disabled = true;
-    exportButton.hidden = true;
-    result.replaceChildren();
-    setStatus("Searching Better Lyrics for syllable timing…", "busy");
-    try {
-      let found = await fromBetterLyrics(track);
-      if (!found) {
-        setStatus("No Better Lyrics match. Checking LRCLIB…", "busy");
-        found = await fromLrclib(track);
-      }
-      if (!found) {
-        setStatus("No existing lyrics found. Check the title, artist and duration.", "warning");
-        return;
-      }
-      render(found, track);
-      const timed = found.lines.some(line => line.start != null);
-      setStatus("Lyrics found via " + found.provider + ". " + (timed ? "Review timestamps and edit any mistakes." : "This result has no timestamps."), "success");
-    } catch (error) {
-      setStatus(error.status === 429
-        ? "Lyrics provider rate limit reached. Wait before trying again."
-        : "Lyrics lookup failed: " + error.message + ". Try again shortly.", "error");
-    } finally {
-      findButton.disabled = false;
+    const heading=document.createElement("div");
+    heading.className="lyrics-result-meta";
+    heading.textContent=track.title+" · "+track.artist+" · "+data.provider+" · "+data.lines.length+" lines";
+    result.append(heading);
+    const cue=document.createElement("div");
+    cue.className="lyrics-cue-summary";
+    cue.textContent=hooks.length+" repeated-lyric cue points identified"+(hooks.length?" · attached to DJ hook memory":" · no repeated lyric sections found");
+    result.append(cue);
+    for(const line of data.lines.slice(0,80)){
+      const row=document.createElement("div");row.className="lyric-preview-line";
+      const stamp=document.createElement("time");stamp.textContent=line.start==null?"—":line.start.toFixed(2)+"s";
+      const text=document.createElement("span");text.textContent=line.text;
+      row.append(stamp,text);result.append(row);
     }
   }
-
-  function useCurrentTrack() {
-    const title = document.querySelector("#title")?.textContent?.trim();
-    const artist = document.querySelector("#artist")?.textContent?.trim();
-    const time = document.querySelector("#time")?.textContent || "";
-    if (!title || !artist || title === "Nothing playing yet" || artist.startsWith("Choose a track")) {
-      setStatus("Start a song first, then use this button.", "warning");
-      return;
+  async function analyse(track,{silent=false}={}){
+    if(!track){if(!silent)setStatus("There is no selected track yet. Start a song or add tracks to the queue.","warning");return;}
+    if(inFlight.has(track.id))return;
+    if(cache.has(track.id)){const cached=cache.get(track.id);if(!silent)renderResult(track,cached.data,cached.hooks);return;}
+    inFlight.add(track.id);
+    if(!silent)setStatus("Finding timed lyrics for "+track.title+"…","busy");
+    try{
+      const data=await retrieve(track);
+      if(!data){if(!silent)setStatus("No matching lyrics found for "+track.title+". This provider catalogue may not contain it.","warning");return;}
+      const hooks=lyricHooks(data.lines);
+      cache.set(track.id,{data,hooks});
+      if(hooks.length)window.VibeFlowDJ?.applyLyricsHooks?.(track.id,hooks);
+      analysed.add(track.id);
+      if(!silent){renderResult(track,data,hooks);setStatus("Prepared "+track.title+". "+hooks.length+" repeated-lyric cue points are now available to the DJ engine.","success");}
+    }catch(error){
+      if(!silent)setStatus("Lyrics lookup failed ("+error.message+"). Try again later.","error");
+    }finally{inFlight.delete(track.id);}
+  }
+  async function autoPrepare(){
+    if(!autoEnabled)return;
+    const snapshot=getSnapshot();
+    const tracks=[snapshot.current,snapshot.next].filter(Boolean);
+    for(const track of tracks){
+      if(analysed.has(track.id)||inFlight.has(track.id))continue;
+      await analyse(track,{silent:true});
     }
-    titleInput.value = title;
-    artistInput.value = artist;
-    const match = (time.split("/")[1] || "").trim().match(/^(\d+):(\d{2})$/);
-    if (match) durationInput.value = String(Number(match[1]) * 60 + Number(match[2]));
-    setStatus("Current track details filled in. Add album if known, then find lyrics.", "success");
+    if(tracks.length)setStatus("Auto mode ready · prepared "+tracks.map(t=>t.title).join(" and ")+".","success");
   }
-
-  function exportJson() {
-    if (!songData) return;
-    const blob = new Blob([JSON.stringify(songData, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = (songData.track_name || "track").replace(/[^a-z0-9-_]+/gi, "-") + "-lyrics.json";
-    anchor.click();
-    URL.revokeObjectURL(url);
-  }
-
-  $("#lyricsUseCurrent").addEventListener("click", useCurrentTrack);
-  findButton.addEventListener("click", findLyrics);
-  exportButton.addEventListener("click", exportJson);
+  $("#lyricsAnalyseSelected").addEventListener("click",()=>analyse(resolveSelected()));
+  autoToggle.addEventListener("change",()=>{
+    autoEnabled=autoToggle.checked;
+    try{localStorage.setItem("vf_lyrics_auto",autoEnabled?"1":"0");}catch{}
+    if(autoEnabled){setStatus("Auto analysis enabled. Preparing current and next tracks…","busy");autoPrepare();}
+    else setStatus("Auto analysis paused. You can still analyse any selected queue track.");
+  });
+  picker.addEventListener("change",()=>{const track=resolveSelected();if(track)setStatus("Selected "+track.title+". Click Analyse selected to prepare it.");});
+  window.addEventListener("vibeflow:queue-updated",()=>{
+    fillPicker();
+    if(autoEnabled)autoPrepare();
+  });
+  try{autoEnabled=localStorage.getItem("vf_lyrics_auto")==="1";autoToggle.checked=autoEnabled;}catch{}
+  fillPicker();
+  if(autoEnabled)autoPrepare();
 })();
