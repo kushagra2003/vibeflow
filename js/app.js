@@ -284,7 +284,7 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
     if(!automatic) toast("Could not locate this song in your GitHub music folder.");
     return;
   }
-  if(S.aiHookScanning || (automatic && (S.autoHookInFlight.has(track.id)||S.hookScans[track.id]))) return;
+  if(S.aiHookScanning || (automatic && (S.autoHookInFlight.has(track.id)||(S.hookScans[track.id]?.version||0)>=2))) return;
   const button=$("#scanHooks");
   if(automatic) {
     S.autoHookInFlight.add(track.id);
@@ -299,6 +299,18 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
   try {
     const candidates=await window.VibeHookScanner.analyse("songs/"+encodeURIComponent(entry.file));
     const existing=hooksOf(entry);
+    let upgradedEnds=0;
+    for(const candidate of candidates) {
+      const match=existing.find(h=>h.source==="auto" && (
+        Math.abs(Number(h.t)-candidate.t)<8 ||
+        String(h.lyric||"").trim().toLowerCase()===candidate.label.toLowerCase()
+      ));
+      if(match && match.end==null && candidate.end!=null && Number(candidate.end)>Number(match.t)) {
+        match.end=Math.max(Number(match.t)+0.5,Math.round(Number(candidate.end)*2)/2);
+        match.endSource="auto";
+        upgradedEnds++;
+      }
+    }
     const accepted=candidates.filter(candidate=>!existing.some(h=>
       Math.abs(Number(h.t)-candidate.t)<8 ||
       (String(h.lyric||"").trim().toLowerCase()===candidate.label.toLowerCase())
@@ -317,19 +329,19 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
       confidence:candidate.confidence,
       generatedAt:Date.now()
     }));
-    if(generated.length) {
+    if(generated.length || upgradedEnds) {
       entry.hooks=[...existing,...generated].sort((a,b)=>a.t-b.t);
       syncTrackHooks(track.id,entry.hooks);
       saveLib();
     }
-    S.hookScans[track.id]={at:Date.now(),generated:generated.length,version:1};
+    S.hookScans[track.id]={at:Date.now(),generated:generated.length,upgradedEnds,version:2};
     save();
     if(automatic) {
       setDJActivity(generated.length?"HOOKS AUTO-DETECTED":"SCAN COMPLETE · NO STRONG MATCH",
-        generated.length?generated.length+" local cue point(s) ready on "+track.title:"No strong repeated section found on "+track.title,
+        (generated.length||upgradedEnds)?generated.length+" new cue(s), "+upgradedEnds+" existing ending(s) updated on "+track.title:"No strong repeated section found on "+track.title,
         "READY","ready");
     } else if(generated.length) {
-      toast("Found "+generated.length+" possible hook(s). They are saved as AUTO cues and ready to mix.");
+      toast("Found "+generated.length+" new hook(s); updated "+upgradedEnds+" existing hook ending(s). AUTO cues are saved and ready to mix.");
     } else {
       toast("Analysis complete. No strong hook patterns found; your existing hooks were left untouched.");
     }
@@ -361,8 +373,10 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
   }
 }
 function maybeAutoScanUpcoming(track) {
-  if(!S.autoMix || settings.autoMode!=="hook" || !track || track.provider!=="mine" || hooksOf(track).length) return;
-  if(S.hookScans[track.id] || S.autoHookInFlight.has(track.id) || S.aiHookScanning) return;
+  if(!S.autoMix || settings.autoMode!=="hook" || !track || track.provider!=="mine") return;
+  const needsEndUpgrade=hooksOf(track).some(h=>h.source==="auto" && h.end==null);
+  if(hooksOf(track).length && !needsEndUpgrade) return;
+  if((S.hookScans[track.id]?.version||0)>=2 || S.autoHookInFlight.has(track.id) || S.aiHookScanning) return;
   scanCurrentSongHooks({automatic:true,trackOverride:track});
 }
 function renderAIHookSuggestions() {
