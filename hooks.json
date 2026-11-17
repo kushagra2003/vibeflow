@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T14:45:04.238Z",
+  "updatedAt": "2026-11-17T14:47:27.936Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -3896,6 +3896,30 @@
       "title": "Latest 2016 Moka Soka _ Ajay Hooda _ New Song _ Raju _ Anu Kadyan _ Mor Music(MP3_160K)",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "auto-2a2eefae-8b1b-4ca7-a89b-036438a95d03",
+          "t": 16,
+          "end": 42,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:16",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794926846543
+        },
+        {
+          "id": "auto-201d7e57-0185-4d0c-9fe6-8426f481e2b1",
+          "t": 32,
+          "end": 42,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:32",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794926846543
+        },
         {
           "id": "auto-778bb884-f2ed-4b13-b2c2-ae8034a2f8c5",
           "t": 72,
