@@ -29,3 +29,22 @@ turn on AI Radio, confirm three picks appear, reload the page and see the queue 
 - A track is skipped automatically: Audius does not allow streaming that track.
 - Nothing plays on first click: browsers block autoplay, so press the play button.
 - Running locally needs `npx netlify dev`; opening index.html directly will not work.
+
+
+## VIBE LYRICS (new MVP module)
+
+The repository now includes a separate Python transcription service and a browser-based Lyrics Studio. It does not replace the existing VIBE FLOW playback or DJ engine.
+
+- Service setup, Docker deployment, environment variables, API schema and current model limitations: [vibe-lyrics/README.md](vibe-lyrics/README.md)
+- API source: [vibe-lyrics/app/main.py](vibe-lyrics/app/main.py)
+- Netlify server-side proxy: [netlify/functions/lyrics.mjs](netlify/functions/lyrics.mjs)
+
+### Quick connection checklist
+
+1. Deploy the `vibe-lyrics/` directory as a Docker service.
+2. Set `VIBE_LYRICS_API_URL` and `VIBE_LYRICS_API_TOKEN` in Netlify.
+3. Set the same `VIBE_LYRICS_API_TOKEN` on the Python service.
+4. Set `LYRICS_ALLOWED_ORIGIN` to the VIBE FLOW site origin and redeploy Netlify.
+5. Open VIBE LYRICS Studio, upload a permitted audio file, transcribe, review and export JSON.
+
+Current MVP uses faster-whisper. IndicConformer, Demucs, WhisperX alignment, semantic punchline/emotion models and direct DJ cue protection are subsequent milestones, not claimed as implemented.
