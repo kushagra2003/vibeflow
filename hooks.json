@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T13:45:36.352Z",
+  "updatedAt": "2026-11-17T13:45:40.734Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -518,6 +518,28 @@
       "title": "Lyrical Video _ Rowdy Rathore _ Akshay Kumar _ Mamta Sharma _ Sajid Wajid(MP3_160K)",
       "artist": "Aa Re Pritam Pyaare",
       "hooks": [
+        {
+          "id": "audio-60-0",
+          "t": 6,
+          "end": 14,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:06",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794923138599
+        },
+        {
+          "id": "audio-240-1",
+          "t": 24,
+          "end": 32,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:24",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794923138599
+        },
         {
           "id": "auto-45e0018b-9959-403f-8106-e9d64ddabd1c",
           "t": 98,
