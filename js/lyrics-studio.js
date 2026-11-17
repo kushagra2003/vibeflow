@@ -44,6 +44,22 @@
         line.edited = true;
       });
       result.append(row);
+      if (line.words?.length) {
+        const details = document.createElement("details");
+        details.className = "lyric-word-details";
+        const summary = document.createElement("summary");
+        summary.textContent = "Show " + line.words.length + " word timestamps";
+        details.append(summary);
+        const wordList = document.createElement("div");
+        wordList.className = "lyric-word-list";
+        for (const word of line.words) {
+          const chip = document.createElement("span");
+          chip.textContent = word.text + " · " + word.start.toFixed(2) + "–" + word.end.toFixed(2) + "s";
+          wordList.append(chip);
+        }
+        details.append(wordList);
+        result.append(details);
+      }
     }
     for (const warning of data.warnings || []) {
       const item = document.createElement("p");
