@@ -156,7 +156,7 @@ function savePunchStart() {
 function savePunchEnd() {
   const draft=S.punchDraft;
   if(!draft) return toast("Mark punch IN first.");
-  if(cur()?.id!==draft.trackId) return toast("Return to "+draft.trackTitle+" to mark punch OUT. Your punch draft is محفوظ.");
+  if(cur()?.id!==draft.trackId) return toast("Return to "+draft.trackTitle+" to mark punch OUT. Your punch draft is still saved.");
   const end=Number(audio().currentTime.toFixed(2));
   if(end-draft.start<2) return toast("A punch must be at least 2 seconds long.");
   draft.end=end;
