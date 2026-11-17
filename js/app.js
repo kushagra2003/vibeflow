@@ -193,15 +193,51 @@ async function previewPunch(id) {
   if(p.trackId===cur().id)return toast("Choose a punch from a different song.");
   const deck=A[1-ci], token=++S.punchPreviewToken;
   try {
-    clearTimeout(S.punchPreviewTimer);deck.pause();deck.src=await getUrl(getLibTrack(p.trackId)&&toTrack(getLibTrack(p.trackId)));
-    await waitMetadata(deck);deck.currentTime=p.start;deck.volume=0;await deck.play();
-    const started=performance.now(),duration=1200;
-    clearInterval(deck._punchFade);
-    deck._punchFade=setInterval(()=>{const x=Math.min(1,(performance.now()-started)/duration);deck.volume=vol()*Math.min(1,x);if(x>=1){clearInterval(deck._punchFade);deck._punchFade=null;}},40);
     clearTimeout(S.punchPreviewTimer);
-    S.punchPreviewTimer=setTimeout(()=>{if(token!==S.punchPreviewToken)return;const fadeStart=performance.now();const from=deck.volume;const timer=setInterval(()=>{const x=Math.min(1,(performance.now()-fadeStart)/900);deck.volume=from*(1-x);if(x>=1){clearInterval(timer);deck.pause();deck.removeAttribute("src");deck.load();}},35);},Math.max(500,(p.end-p.start)*1000));
-    toast("Punch preview playing over the current song.");
-  } catch(e){deck.pause();toast("Could not preview this punch: "+e.message);}
+    clearInterval(deck._punchFade);
+    deck._punchFade=null;
+    deck.pause();
+    deck.src=await getUrl(getLibTrack(p.trackId)&&toTrack(getLibTrack(p.trackId)));
+    await waitMetadata(deck);
+    const punchLength=Math.max(0.1,Number(p.end)-Number(p.start));
+    // Scale each ramp with punch length; neither ramp can exceed 1.5 seconds.
+    const rampSeconds=Math.min(1.5,punchLength*0.2);
+    const rampMs=Math.max(100,rampSeconds*1000);
+    deck.currentTime=p.start;
+    deck.volume=0;
+    await deck.play();
+    const fade=(from,to,duration,onDone)=>{
+      const started=performance.now();
+      clearInterval(deck._punchFade);
+      deck._punchFade=setInterval(()=>{
+        const progress=Math.min(1,(performance.now()-started)/duration);
+        const eased=progress*progress*(3-2*progress);
+        deck.volume=from+(to-from)*eased;
+        if(progress>=1){
+          clearInterval(deck._punchFade);
+          deck._punchFade=null;
+          if(onDone)onDone();
+        }
+      },25);
+    };
+    fade(0,vol(),rampMs);
+    clearTimeout(S.punchPreviewTimer);
+    // Start the fade-out early enough to reach silence exactly at the punch end.
+    S.punchPreviewTimer=setTimeout(()=>{
+      if(token!==S.punchPreviewToken)return;
+      fade(deck.volume,0,rampMs,()=>{
+        deck.pause();
+        deck.removeAttribute("src");
+        deck.load();
+      });
+    },Math.max(0,punchLength*1000-rampMs));
+    toast("Punch preview playing with a short fade-in and fade-out.");
+  } catch(e){
+    clearInterval(deck._punchFade);
+    deck._punchFade=null;
+    deck.pause();
+    toast("Could not preview this punch: "+e.message);
+  }
 }
 function queuePunch(id) {
   const p=allPunches().find(x=>x.id===id);if(!p)return;
