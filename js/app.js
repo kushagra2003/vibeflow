@@ -9,11 +9,12 @@ const store = {
 };
 const defaults = {
   mixLength: 6, leadSubtract: 2, hookPlaySeconds: 24, noHookSeconds: 45, noHookStartSeconds: 20, bpmTolerance: 8,
-  displayUpdateDelay: 0, aiEnabled: true, autoHookDetection: true, autoMode: "hook"
+  displayUpdateDelay: 0, aiEnabled: true, autoHookDetection: true, profileHookDisplay: "manual", autoMode: "hook"
 };
 const settings = { ...defaults, ...store.get("settings", {}) };
 settings.autoMode = settings.autoMode === "beginning" ? "beginning" : "hook";
 settings.autoHookDetection = settings.autoHookDetection !== false;
+settings.profileHookDisplay = settings.profileHookDisplay === "all" ? "all" : "manual";
 const S = {
   queue: store.get("queue", []), idx: store.get("idx", -1),
   favs: store.get("favs", []), hist: store.get("hist", []),
@@ -145,6 +146,7 @@ function openSettings() {
     <div class="modal-head"><div><div class="eyebrow">PERSONALISE YOUR DJ</div><h2>VibeFlow settings</h2><p class="modal-sub">Control how tracks are selected, mixed and repeated.</p></div><button class="modal-close" data-close="1">×</button></div>
     <div class="toggle-row"><div><b>AI recommendations</b><small>Control personalised track suggestions.</small></div><input class="switch" id="setAI" type="checkbox" ${settings.aiEnabled?"checked":""}></div>
     <div class="toggle-row"><div><b>Automatic hook detection</b><small>When off, generated hooks are hidden and only manually saved hooks are used.</small></div><input class="switch" id="setAutoHookDetection" type="checkbox" ${settings.autoHookDetection?"checked":""}></div>
+    <div class="setting-field" style="margin-top:14px"><label for="setProfileHookDisplay">Profile hook counts</label><select id="setProfileHookDisplay"><option value="manual">Only manually saved / approved hooks</option><option value="all">All hooks (manual + generated)</option></select><small>Controls the hook counts and hook picker shown beside songs in your profile and lists. It does not delete hooks or change DJ selection.</small></div>
     <div class="settings-grid" style="margin-top:14px">
       <div class="setting-field"><label for="setMix">Crossfade length</label><select id="setMix"><option value="0">Off (no crossfade)</option><option value="3">3 seconds</option><option value="6">6 seconds</option><option value="9">9 seconds</option><option value="random">Random (3 / 6 / 9 seconds)</option></select><small>Random chooses a fresh 3, 6 or 9 second crossfade for each transition.</small></div>
       <div class="setting-field"><label for="setLead">Seconds to subtract from mix length</label><input id="setLead" type="number" min="0" max="8" step="1" value="${settings.leadSubtract}"><small>Default 2. Hook starts at hook time − (mix length − this value).</small></div>
@@ -156,6 +158,7 @@ function openSettings() {
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px"><button data-close="1">Cancel</button><button id="saveSettings" class="primary-btn">Save settings</button></div>
   </div></div>`;
   $("#setMix").value = String(settings.mixLength);
+  $("#setProfileHookDisplay").value = settings.profileHookDisplay;
   $("#setDisplayDelay").value = String([0,1,2,3,4,5].includes(+settings.displayUpdateDelay)?settings.displayUpdateDelay:0);
   const hookSecondsInput=$("#setHookDuration");
   $("#hookSecondsDown").onclick=()=>{hookSecondsInput.value=String(Math.max(5,(+hookSecondsInput.value||settings.hookPlaySeconds)-1));};
@@ -166,6 +169,7 @@ function openSettings() {
   $("#saveSettings").onclick = () => {
     settings.aiEnabled = $("#setAI").checked;
     settings.autoHookDetection = $("#setAutoHookDetection").checked;
+    settings.profileHookDisplay = $("#setProfileHookDisplay").value === "all" ? "all" : "manual";
     settings.mixLength = $("#setMix").value==="random" ? "random" : ([0,3,6,9].includes(+$("#setMix").value) ? +$("#setMix").value : 6);
     settings.leadSubtract = Math.max(0,Math.min(8,+$("#setLead").value || 0));
     settings.hookPlaySeconds = Math.max(5,Math.min(300,+$("#setHookDuration").value || 24));
@@ -1111,7 +1115,8 @@ function switchView(view) {
 // ---------- Render ----------
 function trackRow(t,i,where) {
   const fav=S.favs.some(x=>x.id===t.id), current=cur()?.id===t.id;
-  const hooks=hooksOf(t);
+  const allHooks=hooksOf(t);
+  const hooks=settings.profileHookDisplay==="all" ? allHooks : allHooks.filter(h=>h.source!=="auto");
   const hookMenu=hooks.length
     ? hooks.map((h,n)=>`<button type="button" class="hook-pick-option" data-select-next-hook="${esc(t.id)}" data-hook-id="${esc(h.id)}"><span class="hook-pick-number">${n+1}</span><span><b>${esc(h.lyric||"Hook "+(n+1))}</b><small>Starts at ${fmtHook(h.t)}${h.end!=null?" · ends "+fmt(h.end):""}</small></span></button>`).join("")
     : '<div class="hook-pick-empty">No saved hooks for this song yet.</div>';
