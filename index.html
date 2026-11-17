@@ -27,6 +27,7 @@
         <span>⌕</span><input id="searchInput" placeholder="Search Audius tracks or artists…" autocomplete="off">
         <button type="submit">Search</button>
       </form>
+      <button id="lyricsPanelToggle" class="party-launch lyrics-panel-toggle" type="button" aria-expanded="false" aria-controls="lyricsStudio">♫ Lyrics tools</button>
       <button id="partyModeButton" class="party-launch">✦ Party mode</button>
     </header>
 
@@ -68,7 +69,7 @@
       <span class="transition-tag">LIVE MIX</span>
     </section>
 
-    <section id="lyricsStudio" class="panel lyrics-studio">
+    <section id="lyricsStudio" class="panel lyrics-studio" hidden>
       <div class="section-heading"><div><div class="eyebrow">VIBE FLOW · LYRICS INTELLIGENCE</div><h3>VIBE LYRICS AUTO DJ</h3></div><span class="lyrics-pill">QUEUE-AWARE ANALYSIS</span></div>
       <p class="subtle">Analyse the current track, the next track, or any queued song. Auto mode prepares lyrics and vocal cue points in the background as your queue moves.</p>
       <div class="lyrics-auto-toolbar">
