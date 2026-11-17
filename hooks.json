@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T15:20:45.452Z",
+  "updatedAt": "2026-11-17T15:21:22.968Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -129,6 +129,30 @@
       "title": "_Aisa Jaadu Dala Re [Full Song]_ _ Khakee _ Lara Dutta _ Akshaye Kumar(MP3_160K)",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "auto-4dfe1405-9ff5-4931-8769-1a5d8e678cc4",
+          "t": 8,
+          "end": 36,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:08",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794928879880
+        },
+        {
+          "id": "auto-c930ffaf-951c-4912-a068-c86fcaa77211",
+          "t": 28,
+          "end": 36,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:28",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794928879880
+        },
         {
           "id": "auto-7ac9b38a-0c3b-4088-813e-2969e5bc4c71",
           "t": 85,
