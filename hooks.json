@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T14:02:38.185Z",
+  "updatedAt": "2026-11-17T14:02:41.225Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -1730,6 +1730,28 @@
       "title": "Chhote Chhote Peg (Video) _ Yo Yo Honey Singh _ Neha Kakkar _ Navraj Hans _ Sonu Ke Titu Ki Sweety(MP3_160K)",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "audio-40-0",
+          "t": 4,
+          "end": 12,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:04",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794924159662
+        },
+        {
+          "id": "audio-300-1",
+          "t": 30,
+          "end": 38,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:30",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794924159662
+        },
         {
           "id": "auto-b1e7035b-f2d6-4b57-a56b-6a21408c6bc5",
           "t": 42,
