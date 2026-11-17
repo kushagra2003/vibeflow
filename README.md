@@ -31,3 +31,12 @@ Lyrics are third-party content. Before distributing or storing lyrics in a publi
 ## Local development
 
 Open the static site through a local static server or the Cloudflare Pages preview workflow. The lyrics lookup feature does not require a Python environment or local API proxy.
+
+
+## Intelligent audio mixing (browser-side)
+
+The queue-aware VIBE LYRICS workflow can also run a local Web Audio structure scan on the current and next tracks. It estimates BPM from a fine-grained onset envelope, builds a beat/bar/8-bar phrase grid, estimates low-energy intro/outro boundaries, and detects repeated/high-energy sections as candidate cue points. The DJ engine can align incoming hook starts and outgoing automatic transition deadlines to detected musical phrase boundaries.
+
+This processing runs in the browser and downloads/decodes the selected audio for analysis. It does not upload audio to a Python service. Browser analysis requires the audio URL to be fetchable with CORS enabled and the browser to decode its format; remote catalogue streams may not permit this. Local files in the deployed `songs/` folder are the most reliable input.
+
+**Interpretation limits:** BPM and phrase boundaries are estimates and may be wrong on live recordings, tempo changes, half-time/double-time grooves, edits and syncopated music. Energy analysis is not vocal detection or source separation. It cannot reliably identify lyrics, vocal emotion, drops or the exact musical end of a vocal phrase. The engine therefore labels these as candidate/heuristic cues, retains existing manual hooks, and falls back to existing timing when confidence or analysis is unavailable. It does not claim a guaranteed perfect mix.
