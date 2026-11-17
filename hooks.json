@@ -1,6 +1,5356 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": null,
-  "songs": []
+  "updatedAt": "2026-11-17T13:43:47.557Z",
+  "songs": [
+    {
+      "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
+      "title": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-1186de93-803d-44d9-8d04-7abde4d68f47",
+          "t": 20,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7241661148335578,
+          "generatedAt": 1794894233527
+        },
+        {
+          "id": "auto-4a7cb737-63a5-43f3-9af4-f686d2c27071",
+          "t": 48,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7093081622100528,
+          "generatedAt": 1794894233527
+        },
+        {
+          "id": "auto-fdc1c325-a782-4c91-9f50-5c7249193d81",
+          "t": 92,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6732243285661246,
+          "generatedAt": 1794894233527
+        },
+        {
+          "id": "auto-530274ff-9ec3-4664-baa1-bfe0791e159c",
+          "t": 102,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.707624465283681,
+          "generatedAt": 1794894233527
+        },
+        {
+          "id": "auto-cc0e61f4-5389-4057-ba45-c784b33dbf83",
+          "t": 138,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.709148341077552,
+          "generatedAt": 1794894233527
+        },
+        {
+          "id": "auto-b0b7a141-b5cd-49b9-a26c-a9868fb4c1d6",
+          "t": 160,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7817940180062266,
+          "generatedAt": 1794894233527
+        }
+      ]
+    },
+    {
+      "file": "_Aisa Jaadu Dala Re [Full Song]_ _ Khakee _ Lara Dutta _ Akshaye Kumar(MP3_160K).mp3",
+      "title": "_Aisa Jaadu Dala Re [Full Song]_ _ Khakee _ Lara Dutta _ Akshaye Kumar(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-7ac9b38a-0c3b-4088-813e-2969e5bc4c71",
+          "t": 85,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.817089698262001,
+          "generatedAt": 1794894262788
+        },
+        {
+          "id": "auto-b42546ea-7014-4506-be15-63cb876f6ddd",
+          "t": 99,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.739286757855243,
+          "generatedAt": 1794894262788
+        },
+        {
+          "id": "auto-a60d56b6-4ce1-4ac3-b366-2b1119084964",
+          "t": 115,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6978139661145959,
+          "generatedAt": 1794894262788
+        },
+        {
+          "id": "auto-d963d727-5f07-4c6f-afbc-53a57e106fb1",
+          "t": 123,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7340753640532766,
+          "generatedAt": 1794894262788
+        },
+        {
+          "id": "auto-7a20283a-2823-4653-881b-eb3dbf8177f9",
+          "t": 137,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7462583215083856,
+          "generatedAt": 1794894262788
+        },
+        {
+          "id": "auto-14118963-b2d9-448a-8117-5d2961160983",
+          "t": 160,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6960249961489497,
+          "generatedAt": 1794894262789
+        }
+      ]
+    },
+    {
+      "file": "_Gallan Goodiyaan_ Full VIDEO Song _ Dil Dhadakne Do _ T-Series(MP3_160K).mp3",
+      "title": "_Gallan Goodiyaan_ Full VIDEO Song _ Dil Dhadakne Do _ T-Series(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-f6f20a09-6f5d-493b-8e4c-9d2ee55fc917",
+          "t": 60,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7132390025200771,
+          "generatedAt": 1794895605986
+        },
+        {
+          "id": "auto-fc4ab28e-dcd9-4522-adb7-853d3b59a923",
+          "t": 75,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8284832542259651,
+          "generatedAt": 1794895605986
+        },
+        {
+          "id": "auto-ba4d06e6-1288-4fe0-9d1b-59609b1bef52",
+          "t": 101,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7578903925514106,
+          "generatedAt": 1794895605986
+        },
+        {
+          "id": "auto-73b2e128-bf3f-426c-b600-115716bfcd2d",
+          "t": 105,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7942576198415434,
+          "generatedAt": 1794895605986
+        },
+        {
+          "id": "auto-0f2a63f7-0977-4c47-9366-596783649b58",
+          "t": 120,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8037654118782098,
+          "generatedAt": 1794895605986
+        },
+        {
+          "id": "auto-f03daebc-da08-4674-bf3c-dd5cac275feb",
+          "t": 140,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.824867153587397,
+          "generatedAt": 1794895605986
+        }
+      ]
+    },
+    {
+      "file": "_Subha Hone Na De Full Song__ Desi Boyz _ Akshay Kumar _John Abraham _ Pritam _  Mika Singh_ Kumaar(MP3_160K).mp3",
+      "title": "_Subha Hone Na De Full Song__ Desi Boyz _ Akshay Kumar _John Abraham _ Pritam _  Mika Singh_ Kumaar(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-46340fde-c720-4536-8efd-93134a1a92b7",
+          "t": 82,
+          "end": 90,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6433098273938405,
+          "generatedAt": 1794895773910
+        },
+        {
+          "id": "auto-eb591d8a-efac-49a8-b1c3-390854ad72a0",
+          "t": 107,
+          "end": 115,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6558912167782255,
+          "generatedAt": 1794895773910
+        },
+        {
+          "id": "auto-ca954736-5ea8-4384-8f6b-61cc36586658",
+          "t": 128,
+          "end": 136,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6964680040504152,
+          "generatedAt": 1794895773910
+        },
+        {
+          "id": "auto-ed27833d-bff5-41f4-9d24-2a5e19d84b4c",
+          "t": 148,
+          "end": 156,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6760405932898071,
+          "generatedAt": 1794895773910
+        },
+        {
+          "id": "auto-a123a584-6940-4b98-81db-27025c431747",
+          "t": 156,
+          "end": 164,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.680106668458718,
+          "generatedAt": 1794895773910
+        },
+        {
+          "id": "auto-f0b71390-313b-44e2-afe3-4ceb1f629b72",
+          "t": 211,
+          "end": 219,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.643001178643682,
+          "generatedAt": 1794895773910
+        }
+      ]
+    },
+    {
+      "file": "3 Peg x nucleya __ Remix __ DJ RTK __ DJ RITIK __ Sharry Mann __ Parmish Verma __Punjabi dj Songs(MP3_160K).mp3",
+      "title": "3 Peg x nucleya __ Remix __ DJ RTK __ DJ RITIK __ Sharry Mann __ Parmish Verma __Punjabi dj Songs(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-5fdd063e-ee5a-46ef-b9c8-59fc8e1641a1",
+          "t": 61,
+          "end": 78,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6462793691173188,
+          "generatedAt": 1794895287842,
+          "endSource": "auto"
+        },
+        {
+          "id": "auto-4a9e63df-f02f-4164-9109-992dcfe5a8c8",
+          "t": 70,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7410237486109377,
+          "generatedAt": 1794895287842
+        },
+        {
+          "id": "auto-25985a3b-d028-4304-ab59-299823e92008",
+          "t": 73,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7095145608531098,
+          "generatedAt": 1794895287842
+        },
+        {
+          "id": "auto-35ea654f-43ea-49ea-bcdc-92923e9f2127",
+          "t": 80.5,
+          "end": 100,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.6750737783367189,
+          "generatedAt": 1794895287842,
+          "verifiedAt": 1794902252376,
+          "endSource": "manual",
+          "endApproved": true
+        },
+        {
+          "id": "auto-4cd139d3-a689-48ca-9fe7-a481a966ffcf",
+          "t": 104,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7991677936240087,
+          "generatedAt": 1794895287842
+        },
+        {
+          "id": "auto-d432ad3b-7561-4c64-b98c-5ba4b282bd11",
+          "t": 113,
+          "end": 146,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7369383660624482,
+          "generatedAt": 1794895287842,
+          "endSource": "manual",
+          "endApproved": true
+        }
+      ]
+    },
+    {
+      "file": "80 Lakh _ Kala Dighal_ Sweta Chauhan _ Shiva Choudhary_ D Naveen _ New Haryanvi Songs Haryanavi 2026(MP3_160K).mp3",
+      "title": "80 Lakh _ Kala Dighal_ Sweta Chauhan _ Shiva Choudhary_ D Naveen _ New Haryanvi Songs Haryanavi 2026(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-5a0a5641-1dce-46e9-933b-3cc6feea6783",
+          "t": 55,
+          "end": 67,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6686819316142446,
+          "generatedAt": 1794895124152
+        },
+        {
+          "id": "auto-3ea08d2b-86b6-4415-8793-ff237bf5cb9d",
+          "t": 71,
+          "end": 79,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8510899552911401,
+          "generatedAt": 1794895124152
+        },
+        {
+          "id": "auto-b855426e-ba9d-4c17-92b9-32ce18676442",
+          "t": 80,
+          "end": 88,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8294992511817851,
+          "generatedAt": 1794895124152
+        },
+        {
+          "id": "auto-53c4169e-f77b-4116-96a4-7eedeee04421",
+          "t": 94,
+          "end": 102,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7289644496827614,
+          "generatedAt": 1794895124152
+        },
+        {
+          "id": "auto-b561dfe0-b9a3-40b7-87b2-75f22ec34dfd",
+          "t": 108,
+          "end": 132,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.762801882056678,
+          "generatedAt": 1794895124152
+        },
+        {
+          "id": "auto-e7a6e42e-92dc-4b08-90f7-71415a428514",
+          "t": 116,
+          "end": 124,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8504112337748096,
+          "generatedAt": 1794895124152
+        }
+      ]
+    },
+    {
+      "file": "Aa Re Pritam Pyaare - Lyrical Video _ Rowdy Rathore _ Akshay Kumar _ Mamta Sharma _ Sajid Wajid(MP3_160K).mp3",
+      "title": "Lyrical Video _ Rowdy Rathore _ Akshay Kumar _ Mamta Sharma _ Sajid Wajid(MP3_160K)",
+      "artist": "Aa Re Pritam Pyaare",
+      "hooks": [
+        {
+          "id": "auto-45e0018b-9959-403f-8106-e9d64ddabd1c",
+          "t": 98,
+          "end": 106,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7203614575735892,
+          "generatedAt": 1794895685240,
+          "endSource": "auto"
+        },
+        {
+          "id": "auto-966846dd-7409-4601-98f8-419c0f9b0311",
+          "t": 120,
+          "end": 134.81,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7063778838332706,
+          "generatedAt": 1794895685240,
+          "endSource": "manual",
+          "endApproved": true,
+          "verifiedAt": 1794899816621
+        },
+        {
+          "id": "auto-b9838e68-7126-48cc-881d-d71b433331cb",
+          "t": 134,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.653079807755683,
+          "generatedAt": 1794895685240
+        },
+        {
+          "id": "auto-15a7e1cb-c2ff-4bb6-b502-03af37ea6d7c",
+          "t": 149,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6729471095064309,
+          "generatedAt": 1794895685240
+        },
+        {
+          "id": "auto-61731105-4c97-415a-ba45-a2dadabe2686",
+          "t": 171,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6590543387184933,
+          "generatedAt": 1794895685240
+        },
+        {
+          "id": "auto-8d188be8-5132-4c9b-a539-18c442f73483",
+          "t": 186,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6525761570388514,
+          "generatedAt": 1794895685240
+        }
+      ]
+    },
+    {
+      "file": "Amplifier _ Imran Khan _ Reggaeton Mix _ DJ Ravish(MP3_160K).mp3",
+      "title": "Amplifier _ Imran Khan _ Reggaeton Mix _ DJ Ravish(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-2c768d3c-9804-40f3-8c7f-9736c0502e32",
+          "t": 36,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6014967171912139,
+          "generatedAt": 1794895108564
+        },
+        {
+          "id": "auto-9d3ee4d4-60b2-44ac-b767-5a5f7d15d5bb",
+          "t": 56,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6064869224540579,
+          "generatedAt": 1794895108564
+        },
+        {
+          "id": "auto-62be3de8-07c5-44df-9567-1aa70a2879d2",
+          "t": 74,
+          "end": 99,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6454908776519552,
+          "generatedAt": 1794895108564,
+          "endSource": "auto"
+        },
+        {
+          "id": "auto-269447e9-bb84-47d7-854e-aa9490cd459e",
+          "t": 102,
+          "end": 152.02,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7508843747682642,
+          "generatedAt": 1794895108564,
+          "verifiedAt": 1794901832625,
+          "endSource": "manual",
+          "endApproved": true
+        },
+        {
+          "id": "auto-03d9bee4-c507-497a-8b58-633b60bb969f",
+          "t": 143,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7989767631689997,
+          "generatedAt": 1794895108564
+        },
+        {
+          "id": "auto-86ffe59e-792d-4438-949c-1a9967b4a519",
+          "t": 154,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6932627685693167,
+          "generatedAt": 1794895108564
+        }
+      ]
+    },
+    {
+      "file": "Asla Tera Yaar Bhi Rakhe (Official Video) R Maan _ Komal _ New Haryanvi Songs Haryanavi 2024 _ Been(MP3_160K).mp3",
+      "title": "Asla Tera Yaar Bhi Rakhe (Official Video) R Maan _ Komal _ New Haryanvi Songs Haryanavi 2024 _ Been(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "audio-40-0",
+          "t": 4,
+          "end": 44,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:04",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794921011478
+        },
+        {
+          "id": "auto-65461a6c-5bfc-4e87-941e-ded8d64c55e7",
+          "t": 16,
+          "end": 106,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6065503554156614,
+          "generatedAt": 1794894470543,
+          "endSource": "auto"
+        },
+        {
+          "id": "audio-220-1",
+          "t": 22,
+          "end": 44,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:22",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794921011478
+        },
+        {
+          "id": "auto-cc502c8b-5cc8-457a-a970-929f09ad46e4",
+          "t": 67,
+          "end": 131.04,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "energy-peak",
+          "confidence": 0.604638470675163,
+          "generatedAt": 1794894470543,
+          "verifiedAt": 1794901923483,
+          "endSource": "manual",
+          "endApproved": true
+        },
+        {
+          "id": "auto-7f099223-1a68-4a11-994b-b260e22cafa4",
+          "t": 88,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6038897600590315,
+          "generatedAt": 1794894470543
+        },
+        {
+          "id": "auto-64e5e265-3757-445b-b003-bf24150d77ea",
+          "t": 98,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6096111051426998,
+          "generatedAt": 1794894470543
+        },
+        {
+          "id": "auto-c5983f9c-01f7-4be4-8cc6-bcaa99ab5bd8",
+          "t": 120,
+          "end": 141,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6045854967538332,
+          "generatedAt": 1794894470543,
+          "endSource": "auto"
+        },
+        {
+          "id": "auto-984b77bb-0b8b-431a-90c4-47977ddca44f",
+          "t": 133,
+          "end": 174,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6343789725879134,
+          "generatedAt": 1794894470543,
+          "endSource": "auto"
+        }
+      ]
+    },
+    {
+      "file": "Baby Doll Full Video Song Ragini MMS 2 _ Sunny Leone _ Meet Bros Anjjan Feat. Kanika Kapoor(MP3_160K).mp3",
+      "title": "Baby Doll Full Video Song Ragini MMS 2 _ Sunny Leone _ Meet Bros Anjjan Feat. Kanika Kapoor(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-e5c6c61c-0c4b-4116-a6cb-291a8f86472b",
+          "t": 50,
+          "end": 74,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.6810718432830095,
+          "generatedAt": 1794894088776,
+          "verifiedAt": 1794894157779,
+          "endSource": "manual",
+          "endApproved": true
+        },
+        {
+          "id": "auto-3d756830-e998-4a72-bc91-8b691f716863",
+          "t": 142,
+          "end": 167,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7035035592084835,
+          "generatedAt": 1794894088776,
+          "endSource": "auto"
+        },
+        {
+          "id": "auto-1af63e39-47c3-49c9-89ff-2248b6e836ec",
+          "t": 159,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7517258086721273,
+          "generatedAt": 1794894088776
+        }
+      ]
+    },
+    {
+      "file": "Bairi (Official Music Video) Virat_ Miss Parul _ Pradeep Solanki_ Heena _ New Rajasthani Song 2026(MP3_160K).mp3",
+      "title": "Bairi (Official Music Video) Virat_ Miss Parul _ Pradeep Solanki_ Heena _ New Rajasthani Song 2026(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-60531dda-5382-46ba-86c8-612f256d0e0a",
+          "t": 40,
+          "end": 48,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7997542939232577,
+          "generatedAt": 1794894450134
+        },
+        {
+          "id": "auto-afe3c4c3-8d49-4d42-8aa4-a4e4969e2f2d",
+          "t": 75,
+          "end": 83,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8185474044319796,
+          "generatedAt": 1794894450134
+        },
+        {
+          "id": "auto-a74abb0c-dbac-40dc-a381-a863feb34fb6",
+          "t": 113,
+          "end": 129,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7556074438913656,
+          "generatedAt": 1794894450134
+        },
+        {
+          "id": "auto-8d8f54d2-fa19-4e8c-8373-32b0a4aca2fb",
+          "t": 121,
+          "end": 129,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8216201335493313,
+          "generatedAt": 1794894450134
+        },
+        {
+          "id": "auto-c527d26b-45e1-4c7c-b23f-82895925fcad",
+          "t": 134,
+          "end": 142,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7888191437686836,
+          "generatedAt": 1794894450134
+        },
+        {
+          "id": "auto-a7029f76-6ee9-479d-b28d-d75f7bf76991",
+          "t": 151,
+          "end": 159,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7592203725302524,
+          "generatedAt": 1794894450134
+        }
+      ]
+    },
+    {
+      "file": "Besharmi Ki Height (Remix) _ Full Video Song _ Main Tera Hero _ Varun Dhawan_ Ileana D_Cruz(MP3_160K).mp3",
+      "title": "Besharmi Ki Height (Remix) _ Full Video Song _ Main Tera Hero _ Varun Dhawan_ Ileana D_Cruz(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-bdedbf56-840b-4c30-b77d-cc890614cbe9",
+          "t": 79,
+          "end": 95,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6894170439100108,
+          "generatedAt": 1794895754977,
+          "endSource": "auto"
+        },
+        {
+          "id": "auto-a7820e06-c7be-4194-96a8-7ca77bd4b5c7",
+          "t": 146,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.701797406931764,
+          "generatedAt": 1794895754977
+        },
+        {
+          "id": "auto-6ee81e5f-4942-4f9c-a6ad-b8220c31f121",
+          "t": 176.5,
+          "end": 230,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7580137683616104,
+          "generatedAt": 1794895754977,
+          "verifiedAt": 1794910537410,
+          "endSource": "manual",
+          "endApproved": true
+        },
+        {
+          "id": "auto-921952cb-ac74-44be-908f-ac90d927c3f8",
+          "t": 181,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7149419356745974,
+          "generatedAt": 1794895754977
+        },
+        {
+          "id": "auto-4798b6a8-ba45-4dbd-81db-2e49d1497996",
+          "t": 194,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6971966389511292,
+          "generatedAt": 1794895754977
+        },
+        {
+          "id": "auto-7560676e-c54a-4510-a8bf-f499237a4c31",
+          "t": 196,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6875002943557889,
+          "generatedAt": 1794895754977
+        }
+      ]
+    },
+    {
+      "file": "Blame The Night - Arijit Singh _ Holiday _ Akshay Kumar_ Sonakshi Sinha _ Aditi Singh Sharma(MP3_160K).mp3",
+      "title": "Arijit Singh _ Holiday _ Akshay Kumar_ Sonakshi Sinha _ Aditi Singh Sharma(MP3_160K)",
+      "artist": "Blame The Night",
+      "hooks": [
+        {
+          "id": "auto-6968049a-c9e3-4390-8c28-0d34cfe3c016",
+          "t": 104,
+          "end": 120,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.713903755094065,
+          "generatedAt": 1794893887222,
+          "endSource": "manual",
+          "endApproved": true
+        },
+        {
+          "id": "auto-98373cfc-bdf1-4cc1-91dc-6421dce850cd",
+          "t": 113.5,
+          "end": 150.99,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7156841548500719,
+          "generatedAt": 1794893887222,
+          "endSource": "manual",
+          "endApproved": true,
+          "verifiedAt": 1794900045572
+        },
+        {
+          "id": "auto-985671b6-fc0e-4dfc-a0dc-ab003fe39dd0",
+          "t": 139,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7338999181335696,
+          "generatedAt": 1794893887222
+        },
+        {
+          "id": "auto-e73e5c90-18fc-4581-8397-3192c62557ef",
+          "t": 140,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7089759522685974,
+          "generatedAt": 1794893887223
+        },
+        {
+          "id": "auto-21b25093-95ec-4092-bb03-6a0b0506ab96",
+          "t": 189,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7044518517721505,
+          "generatedAt": 1794893887223
+        },
+        {
+          "id": "auto-7cb65e35-2105-4cc2-afb0-7fc5aa9abba4",
+          "t": 203,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7602599778316727,
+          "generatedAt": 1794893887223
+        }
+      ]
+    },
+    {
+      "file": "Bom Diggy (DJ Vishal Remix) _ Zack Knight _ Jasmin Walia(MP3_160K).mp3",
+      "title": "Bom Diggy (DJ Vishal Remix) _ Zack Knight _ Jasmin Walia(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-4f165007-2486-4f6f-b51a-d912008c20ed",
+          "t": 67,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7087522072329966,
+          "generatedAt": 1794894887066
+        },
+        {
+          "id": "auto-68638421-e469-4c88-a1b7-28b44432886b",
+          "t": 99,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6937750302652378,
+          "generatedAt": 1794894887066
+        },
+        {
+          "id": "auto-a223d0fe-3299-4a50-821b-ea7988b9b5be",
+          "t": 107,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7585646644362816,
+          "generatedAt": 1794894887066
+        },
+        {
+          "id": "auto-41b6703d-f9f7-43f1-a803-89364c801110",
+          "t": 108,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7312121164771631,
+          "generatedAt": 1794894887066
+        },
+        {
+          "id": "auto-b57d5c8b-a53b-4be6-ae82-2c069e7550f6",
+          "t": 136,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7087332315467284,
+          "generatedAt": 1794894887066
+        },
+        {
+          "id": "auto-2f5d1c2a-07a3-45fc-8d32-c4fc18cd5023",
+          "t": 147,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7415871159037632,
+          "generatedAt": 1794894887066
+        }
+      ]
+    },
+    {
+      "file": "BREAK UP PARTY - Yo Yo Honey Singh Feat. Leo ( Official Video ) _ Punjabi Songs(MP3_160K).mp3",
+      "title": "Yo Yo Honey Singh Feat. Leo ( Official Video ) _ Punjabi Songs(MP3_160K)",
+      "artist": "BREAK UP PARTY",
+      "hooks": [
+        {
+          "id": "auto-e38e30cf-fd62-40eb-9a79-6f8429d7e54e",
+          "t": 68,
+          "end": 84,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.761079440648548,
+          "generatedAt": 1794894512633
+        },
+        {
+          "id": "auto-471b48a3-6249-4ab0-ac42-a8e0d21b910c",
+          "t": 76,
+          "end": 84,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8041274273352876,
+          "generatedAt": 1794894512633
+        },
+        {
+          "id": "auto-74c9768b-2fcd-44b2-9c93-5423305736a9",
+          "t": 132,
+          "end": 140,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7322003427088691,
+          "generatedAt": 1794894512633
+        },
+        {
+          "id": "auto-8ead195f-cfdb-482d-84b9-74236d59e996",
+          "t": 145,
+          "end": 161,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8119959623080327,
+          "generatedAt": 1794894512633
+        },
+        {
+          "id": "auto-533e22e7-e874-46f7-8c72-2d17f6247f89",
+          "t": 153,
+          "end": 161,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8322382566730823,
+          "generatedAt": 1794894512633
+        },
+        {
+          "id": "auto-4039bc81-1fbb-4e61-8170-2b8ca1844cf8",
+          "t": 175,
+          "end": 183,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7181423793159091,
+          "generatedAt": 1794894512633
+        }
+      ]
+    },
+    {
+      "file": "Buzz - Aastha Gill feat Badshah Priyank Sharma.mp3",
+      "title": "Aastha Gill feat Badshah Priyank Sharma",
+      "artist": "Buzz",
+      "hooks": [
+        {
+          "id": "auto-cefc7c10-e260-45e8-922b-82798782c732",
+          "t": 36,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7506295140624655,
+          "generatedAt": 1794894538705
+        },
+        {
+          "id": "auto-f953ea2f-ba4f-4223-866c-2ea93afa1cba",
+          "t": 48,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7770107499924839,
+          "generatedAt": 1794894538705
+        },
+        {
+          "id": "auto-ab309625-7e79-4677-b905-eb891575d0a4",
+          "t": 66,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8424810679078711,
+          "generatedAt": 1794894538705
+        },
+        {
+          "id": "auto-4e2513bb-83e9-4fd2-930d-588ebbc12181",
+          "t": 74,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.829745916245702,
+          "generatedAt": 1794894538705
+        },
+        {
+          "id": "auto-2be6639f-00b1-4b05-86ba-9e4e2c617a85",
+          "t": 89,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8282904232250727,
+          "generatedAt": 1794894538705
+        },
+        {
+          "id": "auto-b88523a6-d070-43a9-921e-fff560590fd7",
+          "t": 112,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7476188349829168,
+          "generatedAt": 1794894538705
+        }
+      ]
+    },
+    {
+      "file": "CALIFORNIA LOVE (Official Video) Cheema Y _ Gur Sidhu _ Punjabi Song 2023(MP3_160K).mp3",
+      "title": "CALIFORNIA LOVE (Official Video) Cheema Y _ Gur Sidhu _ Punjabi Song 2023(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-fb42b31a-ee00-47ed-9e4e-67cc11232a16",
+          "t": 50,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6727516779390065,
+          "generatedAt": 1794894671566
+        },
+        {
+          "id": "auto-a3e7cc73-3c80-4c0e-9d61-c99d9c90b985",
+          "t": 86,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6400002691585939,
+          "generatedAt": 1794894671566
+        },
+        {
+          "id": "auto-61541233-acf6-4b8b-9f07-6979c67d21df",
+          "t": 94,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.746157170453778,
+          "generatedAt": 1794894671566
+        },
+        {
+          "id": "auto-c4ea3b4b-ef94-4f15-9eb5-0cdfbd8befce",
+          "t": 111,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7029233768488907,
+          "generatedAt": 1794894671566
+        },
+        {
+          "id": "auto-41947112-06ee-4d7f-9812-b6b52490d795",
+          "t": 115,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7611966291543937,
+          "generatedAt": 1794894671566
+        },
+        {
+          "id": "auto-291149b0-42c4-42ee-9c18-f5b797d07ce5",
+          "t": 123,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7853375207917849,
+          "generatedAt": 1794894671566
+        }
+      ]
+    },
+    {
+      "file": "Caller Tune _ Humshakals _ Saif Ali Khan _Tamannaah_ Bipasha Basu_ Riteish Deshmukh _Neeraj Shridhar(MP3_160K).mp3",
+      "title": "Caller Tune _ Humshakals _ Saif Ali Khan _Tamannaah_ Bipasha Basu_ Riteish Deshmukh _Neeraj Shridhar(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-7f5b71a9-0503-472c-86b4-32ee73ce8a0c",
+          "t": 123,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.68422587240264,
+          "generatedAt": 1794894377229
+        },
+        {
+          "id": "auto-49c29ed8-a59d-4663-86da-d77ef05529d3",
+          "t": 131,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7305600689922165,
+          "generatedAt": 1794894377229
+        },
+        {
+          "id": "auto-5521e2f5-54d2-46e2-bd47-169c10b09137",
+          "t": 158,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6648070946022799,
+          "generatedAt": 1794894377229
+        },
+        {
+          "id": "auto-ccbe7d14-b79b-42a3-a6d2-58753f9cb854",
+          "t": 166,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.764409427731988,
+          "generatedAt": 1794894377229
+        },
+        {
+          "id": "auto-38c7bbff-6e0e-4fcc-97d5-6481e5da6c20",
+          "t": 174,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7959626275824667,
+          "generatedAt": 1794894377229
+        }
+      ]
+    },
+    {
+      "file": "Casa Thumpka x Dope Shope (Neel Chhabra Mashup) _ Yo Yo Honey Singh _ 2026 to 2012 _ Viral(MP3_160K).mp3",
+      "title": "Casa Thumpka x Dope Shope (Neel Chhabra Mashup) _ Yo Yo Honey Singh _ 2026 to 2012 _ Viral(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-c2237730-d90f-4843-9f62-955ed019a649",
+          "t": 135,
+          "end": 183,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.75883130192318,
+          "generatedAt": 1794894293341,
+          "endSource": "manual",
+          "endApproved": true,
+          "verifiedAt": 1794914506737
+        },
+        {
+          "id": "auto-a699fb54-1949-4153-a578-46adf6afd800",
+          "t": 158,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7620061894081742,
+          "generatedAt": 1794894293341
+        },
+        {
+          "id": "auto-f7edb02b-a848-4c08-b8b3-8dee80e8fbdd",
+          "t": 169,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7567186898893055,
+          "generatedAt": 1794894293341
+        },
+        {
+          "id": "auto-38bc8c16-6c33-42f0-b8db-b95c9e8594fc",
+          "t": 177,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8071250876863351,
+          "generatedAt": 1794894293341
+        },
+        {
+          "id": "auto-1fd9135e-53a4-4c01-8ad1-4b884ab37d5d",
+          "t": 185,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7504048038923303,
+          "generatedAt": 1794894293341
+        },
+        {
+          "id": "auto-3d110a5f-4f74-4342-b6a1-76229503592f",
+          "t": 193,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7744125916001362,
+          "generatedAt": 1794894293341
+        }
+      ]
+    },
+    {
+      "file": "Chalti Hai Kya 9 Se 12 Full Song _ Judwaa 2 _ Varun _ Jacqueline _ Taapsee _ David Dhawan _Anu Malik(MP3_160K).mp3",
+      "title": "Chalti Hai Kya 9 Se 12 Full Song _ Judwaa 2 _ Varun _ Jacqueline _ Taapsee _ David Dhawan _Anu Malik(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-7df6c231-5b31-4895-9df1-0e9f260aa738",
+          "t": 114,
+          "end": 122,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6902340754214602,
+          "generatedAt": 1794902304434
+        },
+        {
+          "id": "auto-a92cfafb-cad7-4808-b8f1-0c5c55a07e32",
+          "t": 154,
+          "end": 168,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7459207133115818,
+          "generatedAt": 1794902304434
+        },
+        {
+          "id": "auto-87b3b03c-8bb7-4033-8fd1-346edfb82808",
+          "t": 170,
+          "end": 178,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7554409673665409,
+          "generatedAt": 1794902304434
+        },
+        {
+          "id": "auto-60c345ba-2261-407a-a142-dff74c199353",
+          "t": 171,
+          "end": 183,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7442523954356801,
+          "generatedAt": 1794902304434
+        },
+        {
+          "id": "auto-2b931dc8-a862-413a-a386-f5b8048cfeac",
+          "t": 179,
+          "end": 195,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7008607517004485,
+          "generatedAt": 1794902304434
+        },
+        {
+          "id": "auto-aea78d76-7e2d-4bcb-9382-21dd16d9e6e4",
+          "t": 196,
+          "end": 208,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6623640281856715,
+          "generatedAt": 1794902304434
+        }
+      ]
+    },
+    {
+      "file": "Chhote Chhote Peg (Video) _ Yo Yo Honey Singh _ Neha Kakkar _ Navraj Hans _ Sonu Ke Titu Ki Sweety(MP3_160K).mp3",
+      "title": "Chhote Chhote Peg (Video) _ Yo Yo Honey Singh _ Neha Kakkar _ Navraj Hans _ Sonu Ke Titu Ki Sweety(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-b1e7035b-f2d6-4b57-a56b-6a21408c6bc5",
+          "t": 42,
+          "end": 50,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "energy-peak",
+          "confidence": 0.6073833104150342,
+          "generatedAt": 1794893988700,
+          "verifiedAt": 1794894097619
+        },
+        {
+          "id": "auto-0a0525b3-7132-425f-84b7-0589a7aac3e0",
+          "t": 59,
+          "end": 67,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6962370414489213,
+          "generatedAt": 1794893988700
+        },
+        {
+          "id": "auto-a9431991-0f18-4e48-9a97-4ffe9b28cd44",
+          "t": 68,
+          "end": 76,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6291837609941501,
+          "generatedAt": 1794893988700
+        },
+        {
+          "id": "auto-a5c50c72-5f00-4149-ab51-119754bcab24",
+          "t": 101,
+          "end": 109,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.6985613268808263,
+          "generatedAt": 1794893988700,
+          "verifiedAt": 1794894116797
+        },
+        {
+          "id": "auto-17604ede-e1c2-46de-a0ff-10ea7ed453ec",
+          "t": 125,
+          "end": 133,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6394603148668984,
+          "generatedAt": 1794893988700
+        },
+        {
+          "id": "auto-143b0436-5286-4562-b257-1a0119b5a1fa",
+          "t": 139,
+          "end": 147,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7216021285452294,
+          "generatedAt": 1794893988700
+        }
+      ]
+    },
+    {
+      "file": "Dil Dooba Lyrical Video Song _ Khakee _ Sonu Nigam_ Shreya Ghoshal _ Aishwarya Rai_ Akshaye Kumar(MP3_160K).mp3",
+      "title": "Dil Dooba Lyrical Video Song _ Khakee _ Sonu Nigam_ Shreya Ghoshal _ Aishwarya Rai_ Akshaye Kumar(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-590291fe-992d-4e85-958b-80bbc5689c0a",
+          "t": 72,
+          "end": 96,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6784711086493441,
+          "generatedAt": 1794894520537,
+          "endSource": "auto"
+        },
+        {
+          "id": "auto-4b24b01a-8d0e-48b5-95fc-a6d511aba213",
+          "t": 80,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8173991440626787,
+          "generatedAt": 1794894520537
+        },
+        {
+          "id": "auto-735ea4bc-2d33-40c3-983f-4de1b8938941",
+          "t": 88,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8453731750647181,
+          "generatedAt": 1794894520537
+        },
+        {
+          "id": "auto-2cdb2be8-9e98-4d53-90ae-40e690733ff9",
+          "t": 96,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8317641836770249,
+          "generatedAt": 1794894520537
+        },
+        {
+          "id": "auto-1b1b61c2-4371-48cc-a0da-41db445ba36a",
+          "t": 120,
+          "end": 174,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.6489053372254041,
+          "generatedAt": 1794894520537,
+          "endSource": "manual",
+          "endApproved": true,
+          "verifiedAt": 1794901658612
+        }
+      ]
+    },
+    {
+      "file": "DJ CHETAS - BOYFRIEND (REMIX) _ KARAN AUJLA _ SUNANDA _ IKKY(MP3_160K).mp3",
+      "title": "BOYFRIEND (REMIX) _ KARAN AUJLA _ SUNANDA _ IKKY(MP3_160K)",
+      "artist": "DJ CHETAS",
+      "hooks": [
+        {
+          "id": "auto-fffb4e37-c482-48c8-b82f-b8a0697e48a0",
+          "t": 127,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6976780585174499,
+          "generatedAt": 1794894683703
+        },
+        {
+          "id": "auto-996e5ec2-c17b-4bd6-9868-949162d42edf",
+          "t": 135,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.812334055289204,
+          "generatedAt": 1794894683703
+        },
+        {
+          "id": "auto-aa638743-3a71-4a86-8174-f6a14991c41f",
+          "t": 143,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8581122785317823,
+          "generatedAt": 1794894683703
+        },
+        {
+          "id": "auto-9ae8cace-7cd6-4fbc-b465-407aa0724b59",
+          "t": 147,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8584892683958846,
+          "generatedAt": 1794894683703
+        },
+        {
+          "id": "auto-609213bf-7792-4262-8d3a-b840911a282e",
+          "t": 155,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6900491724613502,
+          "generatedAt": 1794894683703
+        },
+        {
+          "id": "auto-d5a002f3-97d4-48e3-b71f-5c9c16df3cc6",
+          "t": 167,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8010202510522353,
+          "generatedAt": 1794894683703
+        }
+      ]
+    },
+    {
+      "file": "DJ Snake - Magenta Riddim(MP3_160K).mp3",
+      "title": "Magenta Riddim(MP3_160K)",
+      "artist": "DJ Snake",
+      "hooks": [
+        {
+          "id": "auto-50279ea9-7596-429d-bf1c-5fbdfe5d810b",
+          "t": 108,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7285982879341018,
+          "generatedAt": 1794895261772
+        },
+        {
+          "id": "auto-c70d7974-d4f1-49aa-bccb-9a2f25d666c9",
+          "t": 114,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.726821885888696,
+          "generatedAt": 1794895261772
+        },
+        {
+          "id": "auto-1f6e04cd-34a0-4680-b434-7e4d557c2dbc",
+          "t": 144,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6861047961629583,
+          "generatedAt": 1794895261772
+        },
+        {
+          "id": "auto-45e6fb41-ea80-44ab-8490-5135d6724ad8",
+          "t": 152,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7830863933944627,
+          "generatedAt": 1794895261772
+        },
+        {
+          "id": "auto-53738f0e-5660-429d-99b2-89133f49d67b",
+          "t": 164,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7402094467008082,
+          "generatedAt": 1794895261772
+        },
+        {
+          "id": "auto-b3aea83d-6257-4d9c-9042-c90720c0ca59",
+          "t": 171,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7532385239183724,
+          "generatedAt": 1794895261773
+        }
+      ]
+    },
+    {
+      "file": "DJ Waley Babu - Remix _ Neha Marda _ Badshah ft. Aastha(MP3_160K).mp3",
+      "title": "Remix _ Neha Marda _ Badshah ft. Aastha(MP3_160K)",
+      "artist": "DJ Waley Babu",
+      "hooks": [
+        {
+          "id": "auto-65e1c711-61dc-4e8b-917e-fada9d22ba02",
+          "t": 32,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6046303346165849,
+          "generatedAt": 1794895446199
+        },
+        {
+          "id": "auto-57fd2e0e-cdb2-42cd-8a83-cfc3a7a81b99",
+          "t": 56,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.676865577165302,
+          "generatedAt": 1794895446199
+        },
+        {
+          "id": "auto-e4f421a9-a044-4772-9ab6-0e341dee225d",
+          "t": 60,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7156137609420095,
+          "generatedAt": 1794895446199
+        },
+        {
+          "id": "auto-c24c3a4e-7f16-4b34-8ceb-170712a5fecb",
+          "t": 71,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6410115678608275,
+          "generatedAt": 1794895446199
+        },
+        {
+          "id": "auto-5336845e-9745-48c5-8f7a-fc0737b73ebe",
+          "t": 79,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6449984461094197,
+          "generatedAt": 1794895446199
+        },
+        {
+          "id": "auto-00146814-042d-447b-96a2-7d753198df17",
+          "t": 91,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6683532954163229,
+          "generatedAt": 1794895446199
+        }
+      ]
+    },
+    {
+      "file": "FAMA(MP3_160K).mp3",
+      "title": "FAMA(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "audio-100-0",
+          "t": 10,
+          "end": 21,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:10",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794921074608
+        },
+        {
+          "id": "auto-8a95320a-731d-4491-b6a6-863491803a05",
+          "t": 16,
+          "end": 74.11,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.8031949858040438,
+          "generatedAt": 1794895525764,
+          "verifiedAt": 1794915804405,
+          "endSource": "manual",
+          "endApproved": true
+        },
+        {
+          "id": "audio-260-1",
+          "t": 26,
+          "end": 34,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:26",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794921074608
+        },
+        {
+          "id": "auto-4bec5663-084c-47a8-aa4e-490e8c440d97",
+          "t": 63,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.673621006431605,
+          "generatedAt": 1794895525764
+        },
+        {
+          "id": "auto-3958b124-dcf1-4fc0-843c-c426bc668b11",
+          "t": 80,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7555310002510527,
+          "generatedAt": 1794895525764
+        },
+        {
+          "id": "auto-d4b41131-5517-4968-aaab-f7b6722dc580",
+          "t": 84,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7721231564875446,
+          "generatedAt": 1794895525764
+        },
+        {
+          "id": "auto-aeffab54-8b45-473c-bff3-15ff8232997a",
+          "t": 114,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7910256297654397,
+          "generatedAt": 1794895525764
+        },
+        {
+          "id": "auto-b76aeacc-f091-4694-a734-0b7e75ce84e5",
+          "t": 126,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7706807662054239,
+          "generatedAt": 1794895525764
+        }
+      ]
+    },
+    {
+      "file": "Financer - Bintu Pabra _ Pranjal Dahiya _ Shiva Choudhary _ Gunde Bhi Financer Bhi(MP3_160K).mp3",
+      "title": "Bintu Pabra _ Pranjal Dahiya _ Shiva Choudhary _ Gunde Bhi Financer Bhi(MP3_160K)",
+      "artist": "Financer",
+      "hooks": [
+        {
+          "id": "auto-a9fabb43-4952-40bb-b7b6-1c81ba92c746",
+          "t": 20,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6,
+          "generatedAt": 1794895181105
+        },
+        {
+          "id": "auto-ab2cee92-4d15-4e11-b2a2-cd45a6bb77a0",
+          "t": 37,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6864331389906271,
+          "generatedAt": 1794895181105
+        },
+        {
+          "id": "auto-d052a202-c339-4a37-82eb-08ecff1a4f2e",
+          "t": 50,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6090329906382767,
+          "generatedAt": 1794895181105
+        },
+        {
+          "id": "auto-cd741f4f-0b98-43db-861e-7ba83163be8d",
+          "t": 75,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6524904398388429,
+          "generatedAt": 1794895181105
+        },
+        {
+          "id": "auto-5be3c5b5-bdd9-41dc-a4f1-141285c001b3",
+          "t": 107,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6792574444979707,
+          "generatedAt": 1794895181105
+        },
+        {
+          "id": "auto-5086ea91-35b3-486e-9beb-dd7fa5cfe949",
+          "t": 135,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6695024514438792,
+          "generatedAt": 1794895181105
+        }
+      ]
+    },
+    {
+      "file": "Full Song_ O SAKI SAKI _ Batla House _ Nora Fatehi_ Tanishk B_Neha K_Tulsi K_ B Praak_Vishal-Shekhar(MP3_160K).mp3",
+      "title": "Full Song_ O SAKI SAKI _ Batla House _ Nora Fatehi_ Tanishk B_Neha K_Tulsi K_ B Praak_Vishal-Shekhar(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "audio-80-0",
+          "t": 8,
+          "end": 16,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:08",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794921005100
+        },
+        {
+          "id": "audio-300-1",
+          "t": 30,
+          "end": 38,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:30",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794921005100
+        },
+        {
+          "id": "auto-29206cb2-5cac-46ef-9327-426183f2e472",
+          "t": 80,
+          "end": 88,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.6871929012678988,
+          "generatedAt": 1794894145042,
+          "verifiedAt": 1794894214376
+        },
+        {
+          "id": "auto-6d2e4fbe-cd4a-4736-a33f-3fc7128c52b0",
+          "t": 89,
+          "end": 97,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.6883822091498443,
+          "generatedAt": 1794894145042,
+          "verifiedAt": 1794894216894
+        },
+        {
+          "id": "auto-40b5976e-5f6c-4143-928e-fbcfefbf3ea4",
+          "t": 115.5,
+          "end": 122,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7558956875684927,
+          "generatedAt": 1794894145042,
+          "verifiedAt": 1794894222196
+        },
+        {
+          "id": "auto-59d92b14-df40-46e6-8f14-653597e0be6b",
+          "t": 122,
+          "end": 130,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6911891522366842,
+          "generatedAt": 1794894145042
+        },
+        {
+          "id": "auto-e57d38ad-aa08-4221-93c2-2979df2cc759",
+          "t": 133,
+          "end": 141,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7102339562294223,
+          "generatedAt": 1794894145042
+        }
+      ]
+    },
+    {
+      "file": "Gaadi Paache Gaadi (Official Video) Amanraj Gill_ Pranjal Dahiya _ New Haryanvi Songs Haryanavi 2022(MP3_160K).mp3",
+      "title": "Gaadi Paache Gaadi (Official Video) Amanraj Gill_ Pranjal Dahiya _ New Haryanvi Songs Haryanavi 2022(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "audio-160-0",
+          "t": 16,
+          "end": 24.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:16",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794921007968
+        },
+        {
+          "id": "audio-360-1",
+          "t": 36,
+          "end": 44,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:36",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794921007968
+        },
+        {
+          "id": "auto-843831a3-28f3-4970-88b6-3eb085830fc9",
+          "t": 76,
+          "end": 84,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7079623338866967,
+          "generatedAt": 1794901823789
+        },
+        {
+          "id": "auto-a3444be8-b96d-43f6-9b74-3f4f5be83214",
+          "t": 88,
+          "end": 96,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7963978732448873,
+          "generatedAt": 1794901823789
+        },
+        {
+          "id": "auto-a20cab80-5db6-46c2-888e-a51661b62b65",
+          "t": 96,
+          "end": 104.5,
+          "endSource": "manual",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7425503631848085,
+          "generatedAt": 1794901823789,
+          "endApproved": true
+        },
+        {
+          "id": "auto-46c3c679-ab9d-469d-b03a-abbc0feba988",
+          "t": 113,
+          "end": 119,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7371344933841066,
+          "generatedAt": 1794901823789
+        },
+        {
+          "id": "auto-d8a8771b-20d8-433b-8937-430359c23c72",
+          "t": 135,
+          "end": 191,
+          "endSource": "manual",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.6998031174631647,
+          "generatedAt": 1794901823789,
+          "verifiedAt": 1794915502045,
+          "endApproved": true
+        },
+        {
+          "id": "auto-0610c943-48c3-4c17-8b57-5e1ec20f070b",
+          "t": 150,
+          "end": 158,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.631609146558965,
+          "generatedAt": 1794901823789
+        }
+      ]
+    },
+    {
+      "file": "ganganam_sytle_jeene_ke_hai_chaardin.mp3",
+      "title": "ganganam_sytle_jeene_ke_hai_chaardin",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-c5d30305-7d18-4eb3-9d8c-7fcce79d7c60",
+          "t": 93,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6453858412588471,
+          "generatedAt": 1794894710786
+        },
+        {
+          "id": "auto-d3ecdf0e-eef1-4939-b20c-c4551e87d670",
+          "t": 119,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6582045589847041,
+          "generatedAt": 1794894710786
+        },
+        {
+          "id": "auto-40d74b72-3b09-42ce-8d98-aaf09c1f6882",
+          "t": 128,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6358413281227961,
+          "generatedAt": 1794894710786
+        },
+        {
+          "id": "auto-aa6aa989-77b8-488e-b265-56121e54f961",
+          "t": 161,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6467927426121722,
+          "generatedAt": 1794894710786
+        },
+        {
+          "id": "auto-f4fabce9-eddd-4080-9087-f45e6800a79e",
+          "t": 166.5,
+          "end": 205,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7017285470994898,
+          "generatedAt": 1794894710786,
+          "verifiedAt": 1794909690819,
+          "endSource": "manual",
+          "endApproved": true
+        },
+        {
+          "id": "auto-7722d822-3cc4-422d-88aa-ebb04f9423c0",
+          "t": 174,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6751558320816897,
+          "generatedAt": 1794894710786
+        }
+      ]
+    },
+    {
+      "file": "Garmi (Remix) _ DJ Jugal Dubai _ Street Dancer _ Nora Fatehi _ Varun Dhawan _ Badshah _ Neha Kakkar(MP3_160K).mp3",
+      "title": "Garmi (Remix) _ DJ Jugal Dubai _ Street Dancer _ Nora Fatehi _ Varun Dhawan _ Badshah _ Neha Kakkar(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-db2ec438-ac62-4aea-b59b-eb4aeb26f00e",
+          "t": 88,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7035629208488621,
+          "generatedAt": 1794894362271
+        },
+        {
+          "id": "auto-b5b9a5aa-94a2-4e56-a042-7652e78d167d",
+          "t": 98,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7299725822657447,
+          "generatedAt": 1794894362271
+        },
+        {
+          "id": "auto-18443c46-ae8e-4de5-a6cc-4cac738761f2",
+          "t": 134,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7094370300702465,
+          "generatedAt": 1794894362271
+        },
+        {
+          "id": "auto-b902c670-a877-42cb-b003-02365b38f9d5",
+          "t": 143,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6782379440435613,
+          "generatedAt": 1794894362271
+        },
+        {
+          "id": "auto-1d074c1b-fb71-4e8d-bd63-05a958825792",
+          "t": 153,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6539004522780736,
+          "generatedAt": 1794894362271
+        },
+        {
+          "id": "auto-4c1bcde6-1050-4d03-8ebb-ea9dfa744c9d",
+          "t": 163,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6889638283392446,
+          "generatedAt": 1794894362271
+        }
+      ]
+    },
+    {
+      "file": "Haryane Ka Jaat – Raju Punjabi _ Parmeet Singh (Official Haryanvi Song 2023)(MP3_160K).mp3",
+      "title": "Haryane Ka Jaat – Raju Punjabi _ Parmeet Singh (Official Haryanvi Song 2023)(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-e7ec8012-8d77-487b-86c0-98e32d81de5c",
+          "t": 61,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7796535410935364,
+          "generatedAt": 1794895658291
+        },
+        {
+          "id": "auto-c782f6bc-d466-42e8-a589-55ee23be9cf2",
+          "t": 74,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7968167277199769,
+          "generatedAt": 1794895658291
+        },
+        {
+          "id": "auto-a71f5a5c-55ed-41c3-9ec3-d1a7daafc12c",
+          "t": 94,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7291482086921216,
+          "generatedAt": 1794895658291
+        },
+        {
+          "id": "auto-2e7efedb-05e5-4cb9-81cb-15d472170231",
+          "t": 105,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8149468748653139,
+          "generatedAt": 1794895658291
+        },
+        {
+          "id": "auto-8d6fce01-18e5-4bbd-922a-af366bd9dc6e",
+          "t": 108,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8576919327602547,
+          "generatedAt": 1794895658291
+        },
+        {
+          "id": "auto-15d5052d-aa13-4c8a-9d3e-56c150fb5432",
+          "t": 119,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7156623586339633,
+          "generatedAt": 1794895658291
+        }
+      ]
+    },
+    {
+      "file": "Hookah Bar Remix By Abrar Band of Power.mp3",
+      "title": "Hookah Bar Remix By Abrar Band of Power",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "audio-40-0",
+          "t": 4,
+          "end": 29,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:04",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794921005074
+        },
+        {
+          "id": "audio-200-1",
+          "t": 20,
+          "end": 29,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:20",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794921005074
+        },
+        {
+          "id": "auto-905bb7e7-0c6a-4ae6-b6d7-ea4d880a9a5b",
+          "t": 52,
+          "end": 64,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6325447951610692,
+          "generatedAt": 1794895800281,
+          "endSource": "auto"
+        },
+        {
+          "id": "auto-6cfc7f90-8e16-4d1d-bcee-0666010c6e7f",
+          "t": 56.5,
+          "end": 108.8,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "energy-peak",
+          "confidence": 0.6037746541297617,
+          "generatedAt": 1794895800281,
+          "endSource": "manual",
+          "verifiedAt": 1794896645246,
+          "endApproved": true
+        },
+        {
+          "id": "auto-224b9ebc-bb3a-44a8-87da-61b3409426c6",
+          "t": 84,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6045024900299669,
+          "generatedAt": 1794895800281
+        },
+        {
+          "id": "auto-48c2b313-3e43-4582-a686-a309f0d128c0",
+          "t": 104,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6819933128998278,
+          "generatedAt": 1794895800281
+        },
+        {
+          "id": "auto-c6454b60-b057-4e0a-a5ab-25c209ba5c1a",
+          "t": 121.5,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6419652169502277,
+          "generatedAt": 1794895800281
+        },
+        {
+          "id": "auto-fcb62109-7252-43c8-926e-5ad8a1cba10d",
+          "t": 130,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6655075850732982,
+          "generatedAt": 1794895800281
+        }
+      ]
+    },
+    {
+      "file": "Hopeless (Official Video) Amanraj Gill _ Prem Lata _ New Haryanvi Song 2025(MP3_160K).mp3",
+      "title": "Hopeless (Official Video) Amanraj Gill _ Prem Lata _ New Haryanvi Song 2025(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-e51f3841-7003-443d-bf89-54a6456fb5bf",
+          "t": 50,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.680937123784189,
+          "generatedAt": 1794894554370
+        },
+        {
+          "id": "auto-20f3b519-fe96-40ba-b936-dd99b2580748",
+          "t": 72,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6728358152455479,
+          "generatedAt": 1794894554370
+        },
+        {
+          "id": "auto-663a3725-aeba-42a8-8ce6-10a542004e47",
+          "t": 84,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7067291798898435,
+          "generatedAt": 1794894554370
+        },
+        {
+          "id": "auto-3d8bb66d-efbd-4211-9360-8d3ecc046095",
+          "t": 95,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6564626661470692,
+          "generatedAt": 1794894554370
+        },
+        {
+          "id": "auto-b3b19ef5-7f17-4a0a-80ef-463b76eba24c",
+          "t": 137,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6831326012019678,
+          "generatedAt": 1794894554370
+        },
+        {
+          "id": "auto-2deeebb2-280d-4055-9d03-40d37c799574",
+          "t": 152,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6706957909444627,
+          "generatedAt": 1794894554370
+        }
+      ]
+    },
+    {
+      "file": "Hungama Ho Gaya with lyrics _ Kangana Ranaut _ Asha Bhosle _ Arijit Singh _ Old Hindi Dance Song(MP3_160K).mp3",
+      "title": "Hungama Ho Gaya with lyrics _ Kangana Ranaut _ Asha Bhosle _ Arijit Singh _ Old Hindi Dance Song(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "audio-140-0",
+          "t": 14,
+          "end": 36,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:14",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794921976144
+        },
+        {
+          "id": "audio-480-1",
+          "t": 48,
+          "end": 57,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:48",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794921976144
+        },
+        {
+          "id": "auto-895c7d9d-0970-40ae-8eb5-ac01e1699fe5",
+          "t": 73,
+          "end": 79,
+          "endSource": "manual",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7478260003414379,
+          "generatedAt": 1794901860853,
+          "endApproved": true
+        },
+        {
+          "id": "auto-22c5b6af-a595-4a23-a2d4-6139aa0a6e25",
+          "t": 78,
+          "end": 90,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6756585538227353,
+          "generatedAt": 1794901860853
+        },
+        {
+          "id": "auto-1874b0a9-21b8-4ab3-8e45-53a6f4d55401",
+          "t": 188,
+          "end": 204,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6853525190073242,
+          "generatedAt": 1794901860853
+        },
+        {
+          "id": "auto-8226a930-3a09-4386-af9e-70545c7a38c6",
+          "t": 196,
+          "end": 204,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.728691151726867,
+          "generatedAt": 1794901860853
+        },
+        {
+          "id": "auto-5b7aefa8-750e-40dd-9611-e3733c26cb71",
+          "t": 205,
+          "end": 213,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7851351553429947,
+          "generatedAt": 1794901860853
+        },
+        {
+          "id": "auto-05263390-6842-4e33-94c2-49adb38c32eb",
+          "t": 214,
+          "end": 238,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.778474131482921,
+          "generatedAt": 1794901860853
+        }
+      ]
+    },
+    {
+      "file": "Illuminati x Malhari.mp3",
+      "title": "Illuminati x Malhari",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "audio-120-0",
+          "t": 12,
+          "end": 20,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:12",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794921934659
+        },
+        {
+          "id": "audio-300-1",
+          "t": 30,
+          "end": 38,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:30",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794921934659
+        },
+        {
+          "id": "auto-18a32ac9-ed0d-422c-9834-c3efad36f9f9",
+          "t": 54,
+          "end": 95.5,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6077828045639422,
+          "generatedAt": 1794893900536,
+          "endSource": "auto"
+        },
+        {
+          "id": "auto-c76330af-5d45-4783-9630-f4a243a6bb49",
+          "t": 68,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6106892141356316,
+          "generatedAt": 1794893900536
+        },
+        {
+          "id": "auto-1d638fc9-d35b-4448-a35a-345d245fa3d2",
+          "t": 103,
+          "end": 123,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6587993476249219,
+          "generatedAt": 1794893900536,
+          "endSource": "auto"
+        },
+        {
+          "id": "auto-ee12905c-27c7-4e22-ab8c-88c484cd5278",
+          "t": 115,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7139244467170157,
+          "generatedAt": 1794893900536
+        },
+        {
+          "id": "auto-fb3602e6-074b-45b9-b7bd-5b6576e6c917",
+          "t": 125,
+          "end": 155.9,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.6915604627027859,
+          "generatedAt": 1794893900536,
+          "verifiedAt": 1794894032701,
+          "endSource": "manual",
+          "endApproved": true
+        },
+        {
+          "id": "auto-0fce2357-d511-4ff8-a82c-5899e44ec40d",
+          "t": 143,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6720845816210865,
+          "generatedAt": 1794893900536
+        }
+      ]
+    },
+    {
+      "file": "Intro – Cheema Y _ Full Song _ Punjabi Song _ HD Audio(MP3_160K).mp3",
+      "title": "Intro – Cheema Y _ Full Song _ Punjabi Song _ HD Audio(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-63e1ae78-478d-482f-8e2f-f86f5f9cbd7d",
+          "t": 62,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6186586474839898,
+          "generatedAt": 1794894837406
+        },
+        {
+          "id": "auto-831a62d7-bb0b-4039-8a9a-6d76908775c3",
+          "t": 79,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6824431186863824,
+          "generatedAt": 1794894837406
+        },
+        {
+          "id": "auto-4dcf89da-97e0-4c0e-a201-f2d90643c74e",
+          "t": 84,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7734996896549492,
+          "generatedAt": 1794894837406
+        },
+        {
+          "id": "auto-9c90a617-8678-4406-a33d-6bb01152dcbb",
+          "t": 87,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7742179718112381,
+          "generatedAt": 1794894837406
+        },
+        {
+          "id": "auto-6e0fe383-2f1f-4e67-9edf-29c02275780e",
+          "t": 96,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7125751532684508,
+          "generatedAt": 1794894837406
+        },
+        {
+          "id": "auto-1497b9a9-6f8c-4150-bb3d-206ee38164fc",
+          "t": 131,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7730299960404481,
+          "generatedAt": 1794894837406
+        }
+      ]
+    },
+    {
+      "file": "Ishq Tera Tadpave (Oh Ho Ho Ho) - DJ Abhishek _ DJ Vinisha Remix _ Sukhbir(MP3_160K).mp3",
+      "title": "DJ Abhishek _ DJ Vinisha Remix _ Sukhbir(MP3_160K)",
+      "artist": "Ishq Tera Tadpave (Oh Ho Ho Ho)",
+      "hooks": [
+        {
+          "id": "auto-b2339531-86cf-4489-bc5a-3bfedc92ee07",
+          "t": 113,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6526193918008187,
+          "generatedAt": 1794895235081
+        },
+        {
+          "id": "auto-ba0f3e64-4f62-47f9-94d0-872e21b66813",
+          "t": 135,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7071194040560588,
+          "generatedAt": 1794895235081
+        },
+        {
+          "id": "auto-e4ffe2cd-3995-479c-a91d-ca12830b2d51",
+          "t": 149,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6626632485516482,
+          "generatedAt": 1794895235081
+        },
+        {
+          "id": "auto-8107f952-136e-4f1f-8367-bfd0f3d48510",
+          "t": 175,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6483909731601102,
+          "generatedAt": 1794895235081
+        },
+        {
+          "id": "auto-c86cc428-4b75-46c9-84a2-c00e783bab28",
+          "t": 185,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7028101489107924,
+          "generatedAt": 1794895235081
+        },
+        {
+          "id": "auto-9d269d6b-c6c6-46e7-af73-1507526fcaa7",
+          "t": 193,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7963111902673518,
+          "generatedAt": 1794895235081
+        }
+      ]
+    },
+    {
+      "file": "ITS THE TIME TO DISCO (REMIX) - DJ RD _ KAL HO NA HO _ Shah Rukh Khan_ Saif Ali_ Preity(MP3_160K).mp3",
+      "title": "DJ RD _ KAL HO NA HO _ Shah Rukh Khan_ Saif Ali_ Preity(MP3_160K)",
+      "artist": "ITS THE TIME TO DISCO (REMIX)",
+      "hooks": [
+        {
+          "id": "auto-c7371662-9619-4b6c-bf06-631273cb935e",
+          "t": 86,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7412342603119033,
+          "generatedAt": 1794894818139
+        },
+        {
+          "id": "auto-d70e8d54-a3e9-44f9-828a-14c8b9951b94",
+          "t": 106,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7659168283624471,
+          "generatedAt": 1794894818139
+        },
+        {
+          "id": "auto-02755407-0f31-422f-9af9-56450b674388",
+          "t": 127,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7467256514906001,
+          "generatedAt": 1794894818139
+        },
+        {
+          "id": "auto-a6a6342e-8ad4-4fbf-b0ba-47321f5fc784",
+          "t": 135,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8038849922819856,
+          "generatedAt": 1794894818139
+        },
+        {
+          "id": "auto-1b058e2d-613c-4355-85c4-c93c96fabec4",
+          "t": 136,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8401437544615402,
+          "generatedAt": 1794894818139
+        },
+        {
+          "id": "auto-7ac6188a-2b4d-4ca8-9150-6e74e2aa65d0",
+          "t": 144,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8052471684662429,
+          "generatedAt": 1794894818139
+        }
+      ]
+    },
+    {
+      "file": "J STAR _ HULARA _ Full Official Music Video _ Blockbuster Punjabi Song 2014(MP3_160K).mp3",
+      "title": "J STAR _ HULARA _ Full Official Music Video _ Blockbuster Punjabi Song 2014(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-267fc424-39df-4586-8944-435eb8c684e0",
+          "t": 101,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7009156637353984,
+          "generatedAt": 1794895708814
+        },
+        {
+          "id": "auto-a933d65d-c63e-4f6b-bf15-cb672c5cb102",
+          "t": 125,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7276015393345014,
+          "generatedAt": 1794895708814
+        },
+        {
+          "id": "auto-59c3d799-0a30-41b6-ae9c-2308f7b22134",
+          "t": 133,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7725461872568151,
+          "generatedAt": 1794895708814
+        },
+        {
+          "id": "auto-eaa9740c-bffd-41ab-8d6a-9d6eba93edc6",
+          "t": 146,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7217895514555187,
+          "generatedAt": 1794895708814
+        },
+        {
+          "id": "auto-f0215b1a-0eab-4e37-95b2-ee44b92baeff",
+          "t": 166,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7315923398793767,
+          "generatedAt": 1794895708814
+        },
+        {
+          "id": "auto-82d7c1a7-adb8-4328-9753-c6f6c4a5c27a",
+          "t": 174,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.807674904681684,
+          "generatedAt": 1794895708814
+        }
+      ]
+    },
+    {
+      "file": "Jumme Ki Raat Full Video Song _ Salman Khan_ Jacqueline Fernandez _ Mika Singh _ Himesh Reshammiya(MP3_160K).mp3",
+      "title": "Jumme Ki Raat Full Video Song _ Salman Khan_ Jacqueline Fernandez _ Mika Singh _ Himesh Reshammiya(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-b8deaa19-3b4e-4fd3-942c-909374a3ce76",
+          "t": 45,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7307132597266132,
+          "generatedAt": 1794894940056
+        },
+        {
+          "id": "auto-5b80cda0-d588-4c68-b79a-0b1b18ca33e5",
+          "t": 94,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7209585216601702,
+          "generatedAt": 1794894940056
+        },
+        {
+          "id": "auto-3259cb5a-7234-4d20-ac67-c6fa86285f75",
+          "t": 133,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.704767921519832,
+          "generatedAt": 1794894940056
+        },
+        {
+          "id": "auto-a2d9ce2f-850e-410e-b36f-b74941f1ac22",
+          "t": 141,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7964409156336882,
+          "generatedAt": 1794894940056
+        },
+        {
+          "id": "auto-903e3f00-5aa3-4ba9-a95a-b6d811cff7ec",
+          "t": 151,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6593200149225535,
+          "generatedAt": 1794894940056
+        },
+        {
+          "id": "auto-c229b5fc-e041-4741-bb82-172163d91e81",
+          "t": 202,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7020530878737714,
+          "generatedAt": 1794894940056
+        }
+      ]
+    },
+    {
+      "file": "Kalyani X Aasa Kooda X Majboor.mp3",
+      "title": "Kalyani X Aasa Kooda X Majboor",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-fbc01444-1912-44f5-9b59-0e4bb9077914",
+          "t": 56,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.625707171229069,
+          "generatedAt": 1794894563389
+        },
+        {
+          "id": "auto-b7acce67-4616-4bc5-81e9-56416dd8d872",
+          "t": 68,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.606347681531508,
+          "generatedAt": 1794894563389
+        },
+        {
+          "id": "auto-d1decff8-dbb8-471c-a878-d4d3cea0dd46",
+          "t": 84,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6050369555216257,
+          "generatedAt": 1794894563389
+        },
+        {
+          "id": "auto-d391ba00-dfce-4631-ab88-04cc27404005",
+          "t": 108,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6066886706827187,
+          "generatedAt": 1794894563389
+        },
+        {
+          "id": "auto-df5c9e27-863f-42de-abf3-b6c09872cd2c",
+          "t": 134,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6138325352727736,
+          "generatedAt": 1794894563389
+        },
+        {
+          "id": "auto-cd146b8d-80a8-41b5-8511-a544b74950a3",
+          "t": 148,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6103439150171928,
+          "generatedAt": 1794894563389
+        }
+      ]
+    },
+    {
+      "file": "Kar Gayi Chull - Kapoor _ Sons _ Sidharth Malhotra_ Alia Bhatt _ Badshah _ Amaal Mallik _ Fazilpuria(MP3_160K).mp3",
+      "title": "Kapoor _ Sons _ Sidharth Malhotra_ Alia Bhatt _ Badshah _ Amaal Mallik _ Fazilpuria(MP3_160K)",
+      "artist": "Kar Gayi Chull",
+      "hooks": [
+        {
+          "id": "auto-aaddcd8f-63dd-4548-af66-a14343980c5d",
+          "t": 50,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6414747642244056,
+          "generatedAt": 1794895552440
+        },
+        {
+          "id": "auto-64c19923-ae69-4a69-aedf-4f2215e3fa74",
+          "t": 77,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7625870652568735,
+          "generatedAt": 1794895552440
+        },
+        {
+          "id": "auto-a645a4e5-ea6b-4818-963e-af0d3b070840",
+          "t": 88,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7086375908566299,
+          "generatedAt": 1794895552440
+        },
+        {
+          "id": "auto-06631b8d-c2db-4442-b679-367e37137a5c",
+          "t": 96,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7030649937726312,
+          "generatedAt": 1794895552440
+        },
+        {
+          "id": "auto-50800454-1bb7-487b-96dc-0cfd1fd53932",
+          "t": 104,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7520115828687461,
+          "generatedAt": 1794895552440
+        },
+        {
+          "id": "auto-57316775-e742-420c-ac94-8490a1728778",
+          "t": 108,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7091530756562003,
+          "generatedAt": 1794895552440
+        }
+      ]
+    },
+    {
+      "file": "Latest 2016 Moka Soka _ Ajay Hooda _ New Song _ Raju _ Anu Kadyan _ Mor Music(MP3_160K).mp3",
+      "title": "Latest 2016 Moka Soka _ Ajay Hooda _ New Song _ Raju _ Anu Kadyan _ Mor Music(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-778bb884-f2ed-4b13-b2c2-ae8034a2f8c5",
+          "t": 72,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7088042846253383,
+          "generatedAt": 1794894600179
+        },
+        {
+          "id": "auto-c4f19727-6437-459a-ad36-03de6ae31249",
+          "t": 73,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7726799867544878,
+          "generatedAt": 1794894600179
+        },
+        {
+          "id": "auto-c68ca99a-4f09-48d4-9b55-64fab044513d",
+          "t": 81,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8019708426905354,
+          "generatedAt": 1794894600179
+        },
+        {
+          "id": "auto-e03c73b0-94e7-410a-9774-1d47f18fb884",
+          "t": 96,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7399728143368673,
+          "generatedAt": 1794894600179
+        },
+        {
+          "id": "auto-2e467c61-b67d-4b39-8395-e1df9c6c792e",
+          "t": 104,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8233304574446452,
+          "generatedAt": 1794894600179
+        },
+        {
+          "id": "auto-904ef754-f17e-48b9-b559-d1770cab6d44",
+          "t": 146,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7270941390705703,
+          "generatedAt": 1794894600179
+        }
+      ]
+    },
+    {
+      "file": "Leke Pehla Pehla Pyaar - Brazilian Funk Mix _ Knockwell _ C.I.D. _ Bollywood Romantic Song(MP3_160K).mp3",
+      "title": "Brazilian Funk Mix _ Knockwell _ C.I.D. _ Bollywood Romantic Song(MP3_160K)",
+      "artist": "Leke Pehla Pehla Pyaar",
+      "hooks": [
+        {
+          "id": "auto-0d4d9e75-8217-4d7e-b7e1-94eb4444b5d3",
+          "t": 16,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.618774737573901,
+          "generatedAt": 1794895165997
+        },
+        {
+          "id": "auto-030f238e-921c-43a7-a602-da520df43a80",
+          "t": 26,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6200969641018292,
+          "generatedAt": 1794895165997
+        },
+        {
+          "id": "auto-a8e2a16d-48bd-46dc-bc74-5a3a905384d8",
+          "t": 41,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7408896989095706,
+          "generatedAt": 1794895165997
+        },
+        {
+          "id": "auto-f7bfe9b4-f216-4c69-9035-93f74c221eb1",
+          "t": 55,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6703565471977183,
+          "generatedAt": 1794895165997
+        },
+        {
+          "id": "auto-8a0669f8-5020-4a3b-a5d3-3dbd75a96696",
+          "t": 78,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7823244933052879,
+          "generatedAt": 1794895165997
+        },
+        {
+          "id": "auto-1855173b-d20a-42d7-9846-0f9b8ffd77f2",
+          "t": 86,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7102493619981155,
+          "generatedAt": 1794895165997
+        }
+      ]
+    },
+    {
+      "file": "Let_s Nacho - Kapoor _ Sons _ Sidharth _ Alia _ Fawad _ Badshah _ Benny Dayal _ Nucleya(MP3_160K).mp3",
+      "title": "Kapoor _ Sons _ Sidharth _ Alia _ Fawad _ Badshah _ Benny Dayal _ Nucleya(MP3_160K)",
+      "artist": "Let_s Nacho",
+      "hooks": [
+        {
+          "id": "auto-cd208274-4ca7-4cb0-b4ec-f008a80a2f88",
+          "t": 18,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.600492761498679,
+          "generatedAt": 1794894823499
+        },
+        {
+          "id": "auto-b8a3e577-859b-4cea-9e05-3e8810c640c4",
+          "t": 62,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6323473261745902,
+          "generatedAt": 1794894823499
+        },
+        {
+          "id": "auto-a56f1b41-ae08-4e99-bc15-3bed055510c4",
+          "t": 75,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.684502872615839,
+          "generatedAt": 1794894823499
+        },
+        {
+          "id": "auto-a0f5b93d-b5e8-4471-8bfe-547abc559ea2",
+          "t": 94,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7384641269313584,
+          "generatedAt": 1794894823499
+        },
+        {
+          "id": "auto-ff8cfdcc-3be9-4f4c-aab4-912d5ded4abe",
+          "t": 106,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7366185440536335,
+          "generatedAt": 1794894823499
+        }
+      ]
+    },
+    {
+      "file": "Lyrical_ Chittiyaan Kalaiyaan(REMIX)_ Roy _Jacqueline F _ Meet Bros Anjjan_ Kanika Kapoor_Kuwar Virk(MP3_160K).mp3",
+      "title": "Lyrical_ Chittiyaan Kalaiyaan(REMIX)_ Roy _Jacqueline F _ Meet Bros Anjjan_ Kanika Kapoor_Kuwar Virk(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-8bac5a50-6588-4283-8683-452af6cd7aad",
+          "t": 66,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6603851244079935,
+          "generatedAt": 1794895367355
+        },
+        {
+          "id": "auto-68f50874-1e7c-4745-81e2-a6ae37ada5d8",
+          "t": 76,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7539008566784312,
+          "generatedAt": 1794895367355
+        },
+        {
+          "id": "auto-17949b86-b0c1-4154-b22d-c9401b8ad0e0",
+          "t": 86,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6531443762185294,
+          "generatedAt": 1794895367355
+        },
+        {
+          "id": "auto-9b030418-6ad5-4618-89ea-75e2a80ceef2",
+          "t": 135,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6873359528221222,
+          "generatedAt": 1794895367355
+        },
+        {
+          "id": "auto-6c1115f1-dcf6-494c-a8a2-b5de657abf92",
+          "t": 143,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8363188887794548,
+          "generatedAt": 1794895367355
+        },
+        {
+          "id": "auto-4ef93947-4fcb-44b8-94e1-3a7045c05931",
+          "t": 158,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.645195962349483,
+          "generatedAt": 1794895367355
+        }
+      ]
+    },
+    {
+      "file": "Lyrical_ Khwab Dekhe (Sexy Lady) - Race _ Saif Ali Khan_ Katrina Kaif _Monali Thakur_ Neeraj_ Pritam(MP3_160K).mp3",
+      "title": "Race _ Saif Ali Khan_ Katrina Kaif _Monali Thakur_ Neeraj_ Pritam(MP3_160K)",
+      "artist": "Lyrical_ Khwab Dekhe (Sexy Lady)",
+      "hooks": [
+        {
+          "id": "auto-6dc4118f-815a-40f1-b1a4-043155f12fad",
+          "t": 167,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7627395236868845,
+          "generatedAt": 1794895341299
+        },
+        {
+          "id": "auto-ccf34ee6-5c0f-4082-9926-dae7581cd0df",
+          "t": 186,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7360109971043828,
+          "generatedAt": 1794895341299
+        },
+        {
+          "id": "auto-d7026ed4-44b5-48e5-80b6-d547fe45c6ff",
+          "t": 197,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.783378162814315,
+          "generatedAt": 1794895341299
+        },
+        {
+          "id": "auto-6d0edd00-0f82-47c5-9ec9-7133b1c0f09f",
+          "t": 214,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7292383307636603,
+          "generatedAt": 1794895341299
+        },
+        {
+          "id": "auto-1d19f89c-a1a5-446b-80e9-8c600767dbd0",
+          "t": 230,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7321578097718899,
+          "generatedAt": 1794895341299
+        }
+      ]
+    },
+    {
+      "file": "Main Tera Boyfriend Song _ Raabta _ Arijit S _ Neha K Meet Bros _ Sushant Singh Rajput Kriti Sanon(MP3_160K).mp3",
+      "title": "Main Tera Boyfriend Song _ Raabta _ Arijit S _ Neha K Meet Bros _ Sushant Singh Rajput Kriti Sanon(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-0e84dc72-482b-473f-908c-af9c6908115b",
+          "t": 20,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6082617613209819,
+          "generatedAt": 1794895472970
+        },
+        {
+          "id": "auto-ec7d9569-3a2a-42b4-9b85-8514000954f0",
+          "t": 35,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6521395938426521,
+          "generatedAt": 1794895472970
+        },
+        {
+          "id": "auto-08578f20-7e11-4aef-b779-1b934f8ebe92",
+          "t": 59,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6267130469961919,
+          "generatedAt": 1794895472970
+        },
+        {
+          "id": "auto-1e2f9070-a6b8-4c18-b96c-c9959c7ab9f7",
+          "t": 100,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6102937795387856,
+          "generatedAt": 1794895472970
+        },
+        {
+          "id": "auto-77c6b0c0-60d0-490a-a4ca-3a52c34a2d1e",
+          "t": 137,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6551176462348816,
+          "generatedAt": 1794895472970
+        },
+        {
+          "id": "auto-869cc446-69cb-4fcf-a54c-2938afc52235",
+          "t": 150,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6878986695557083,
+          "generatedAt": 1794895472970
+        }
+      ]
+    },
+    {
+      "file": "Manali Trance _ Psychedelic Remix _ DJ VISHTECH _ Yo Yo Honey Singh _ Neha Kakkar _ Lisa Haydon(MP3_160K).mp3",
+      "title": "Manali Trance _ Psychedelic Remix _ DJ VISHTECH _ Yo Yo Honey Singh _ Neha Kakkar _ Lisa Haydon(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-db109e7d-85f9-425a-9746-a9f844363691",
+          "t": 32,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7172989687484007,
+          "generatedAt": 1794894966222
+        },
+        {
+          "id": "auto-26e17bf6-b3b8-4054-8ebb-deb89d5ea792",
+          "t": 75,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7365975100839748,
+          "generatedAt": 1794894966222
+        },
+        {
+          "id": "auto-3bcc1655-aa98-42e2-982e-40ae570024f4",
+          "t": 96,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8207078596374421,
+          "generatedAt": 1794894966222
+        },
+        {
+          "id": "auto-40dba3af-f4d2-4449-bd6c-b4de23102df2",
+          "t": 140,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7065027527596344,
+          "generatedAt": 1794894966222
+        },
+        {
+          "id": "auto-12745bbb-eef9-46f4-8fac-764c8bf8fc9d",
+          "t": 148,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7949028678884635,
+          "generatedAt": 1794894966222
+        },
+        {
+          "id": "auto-286a4147-77f7-4353-b857-b8a90abc3c0e",
+          "t": 168,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7441765499988009,
+          "generatedAt": 1794894966222
+        }
+      ]
+    },
+    {
+      "file": "Mithi Boli __ Anjali Raghav __ Raju Punjabi __ TONNY TANKRI __ Durge Movies Haryanvi(MP3_160K).mp3",
+      "title": "Mithi Boli __ Anjali Raghav __ Raju Punjabi __ TONNY TANKRI __ Durge Movies Haryanvi(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-19373921-71d8-4eea-b586-abe204c9a526",
+          "t": 47,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7261150522195677,
+          "generatedAt": 1794895631864
+        },
+        {
+          "id": "auto-97aef0ff-e656-4329-9364-8b708507630d",
+          "t": 73,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7845046013700334,
+          "generatedAt": 1794895631864
+        },
+        {
+          "id": "auto-bb4a37b0-10d6-4099-bca7-bb72e62baf7c",
+          "t": 89,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8519265868363287,
+          "generatedAt": 1794895631864
+        },
+        {
+          "id": "auto-79938e08-20b0-48b0-8153-1e76ee195379",
+          "t": 98,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7807442920258767,
+          "generatedAt": 1794895631864
+        },
+        {
+          "id": "auto-ac3e97f3-87d3-4178-be1b-f5efc6562c12",
+          "t": 111,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7818427530206093,
+          "generatedAt": 1794895631864
+        }
+      ]
+    },
+    {
+      "file": "Nashe Si Chadh Gayi Song _ Befikre _ Ranveer Singh_ Vaani Kapoor _ Arijit Singh _ Vishal and Shekhar(MP3_160K).mp3",
+      "title": "Nashe Si Chadh Gayi Song _ Befikre _ Ranveer Singh_ Vaani Kapoor _ Arijit Singh _ Vishal and Shekhar(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-a08f5d7c-09f0-4b67-b29f-bedb64ad91ee",
+          "t": 44,
+          "end": 52,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6075095292012818,
+          "generatedAt": 1794895499284
+        },
+        {
+          "id": "auto-ac3f6899-9abf-4432-8e10-028127c52c2c",
+          "t": 54,
+          "end": 62,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6015140442156466,
+          "generatedAt": 1794895499284
+        },
+        {
+          "id": "auto-4cbb8988-47ea-43fb-8429-af4f6609451e",
+          "t": 70,
+          "end": 78,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6087886633825301,
+          "generatedAt": 1794895499284
+        },
+        {
+          "id": "auto-9fc17aa5-caf7-477f-972f-2c2eb2e2f668",
+          "t": 100,
+          "end": 108,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6117328952488832,
+          "generatedAt": 1794895499284
+        }
+      ]
+    },
+    {
+      "file": "Otilia - Bilionera (official video)(MP3_160K).mp3",
+      "title": "Bilionera (official video)(MP3_160K)",
+      "artist": "Otilia",
+      "hooks": [
+        {
+          "id": "auto-6e182639-975d-44a4-b8a7-df65c2582429",
+          "t": 26,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6005737482580682,
+          "generatedAt": 1794895419931
+        },
+        {
+          "id": "auto-54b476f2-d7c0-4013-ad03-dc98f85e9517",
+          "t": 45,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.673828552784317,
+          "generatedAt": 1794895419931
+        },
+        {
+          "id": "auto-df86b5c4-49bd-444e-b6ff-3efe9cf4015b",
+          "t": 70,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6263803364268516,
+          "generatedAt": 1794895419931
+        },
+        {
+          "id": "auto-5d1f4775-e9ae-409d-806f-6820c47764e3",
+          "t": 90,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6102528688748567,
+          "generatedAt": 1794895419931
+        },
+        {
+          "id": "auto-1d8f4aed-b9ea-4863-86fc-9b2f2f54922c",
+          "t": 136,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7336365468551121,
+          "generatedAt": 1794895419931
+        },
+        {
+          "id": "auto-9d0679f8-e4cb-4d20-8362-1a19cf1b0891",
+          "t": 147,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7956064483091911,
+          "generatedAt": 1794895419931
+        }
+      ]
+    },
+    {
+      "file": "Pappu Can_t Dance (REMIX) DJ PURVISH _ 2023_ Jaane Tu Ya Jaane Na _ Imran Khan _ A.R. Rahman(MP3_160K).mp3",
+      "title": "Pappu Can_t Dance (REMIX) DJ PURVISH _ 2023_ Jaane Tu Ya Jaane Na _ Imran Khan _ A.R. Rahman(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-7d8dadbf-c410-4fa0-8c88-d7c5085f851f",
+          "t": 58,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6962260498535597,
+          "generatedAt": 1794894798523
+        },
+        {
+          "id": "auto-b4d7f5d6-bae4-42e9-934b-3dfe90ce8257",
+          "t": 73,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7264548987793868,
+          "generatedAt": 1794894798523
+        },
+        {
+          "id": "auto-48098519-80e1-4550-9a1b-f5444d0a8f65",
+          "t": 111,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6554663376857233,
+          "generatedAt": 1794894798523
+        },
+        {
+          "id": "auto-e3e88b4b-dcd4-4a65-abf5-31d27f4aeefc",
+          "t": 123,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8323941484298453,
+          "generatedAt": 1794894798523
+        },
+        {
+          "id": "auto-1feab012-8cb3-4349-a543-cc0ea9b93be7",
+          "t": 131,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8494624233241481,
+          "generatedAt": 1794894798523
+        },
+        {
+          "id": "auto-42b8a236-e73e-40dd-a4dc-c864a70a4b0d",
+          "t": 140,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8236307070035553,
+          "generatedAt": 1794894798523
+        }
+      ]
+    },
+    {
+      "file": "PARTY ALL NIGHT __ REMIX __ DJ AK __ DJ AKASH TEJAS __ HONEY SINGH __ AKSHAY KUMAR __ SONAKSHI SINHA(MP3_160K).mp3",
+      "title": "PARTY ALL NIGHT __ REMIX __ DJ AK __ DJ AKASH TEJAS __ HONEY SINGH __ AKSHAY KUMAR __ SONAKSHI SINHA(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-40959f6f-cc30-4e72-ac97-02a14e45bf29",
+          "t": 87,
+          "end": 95,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7113986427685836,
+          "generatedAt": 1794894651805
+        },
+        {
+          "id": "auto-6792e49b-5571-4043-8ce0-04d2cb45cf11",
+          "t": 118,
+          "end": 126,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7167461605080513,
+          "generatedAt": 1794894651805
+        },
+        {
+          "id": "auto-ea0868fa-9f01-410a-8bc3-9abc33083ea5",
+          "t": 137,
+          "end": 149,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6914023842723818,
+          "generatedAt": 1794894651805
+        },
+        {
+          "id": "auto-a2f4b84d-0f03-4443-a7d9-b3bc1432c543",
+          "t": 146,
+          "end": 154,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7543141010558129,
+          "generatedAt": 1794894651805
+        },
+        {
+          "id": "auto-a895ccbb-5395-4bd4-96a1-30f8e4e4809a",
+          "t": 160,
+          "end": 168,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.727267233483802,
+          "generatedAt": 1794894651806
+        },
+        {
+          "id": "auto-0dd8f2a4-7f37-4844-9c28-8a3e0e33f3c0",
+          "t": 172,
+          "end": 180,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7000599930147834,
+          "generatedAt": 1794894651806
+        }
+      ]
+    },
+    {
+      "file": "Party On My Mind _ Race 2 I KK _ Saif_ Deepika_ John Abraham_ Jacqueline(MP3_160K).mp3",
+      "title": "Party On My Mind _ Race 2 I KK _ Saif_ Deepika_ John Abraham_ Jacqueline(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-6e10210f-9cab-4a62-bfd7-e6888e036238",
+          "t": 66,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6133793713170536,
+          "generatedAt": 1794894638047
+        },
+        {
+          "id": "auto-a4efdd2b-381e-4639-a8a8-6b4d3221a0d1",
+          "t": 76,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6451004493657125,
+          "generatedAt": 1794894638047
+        },
+        {
+          "id": "auto-98924ad3-75bc-485a-8b6a-939258f365cd",
+          "t": 88,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6027366370334178,
+          "generatedAt": 1794894638047
+        },
+        {
+          "id": "auto-86fef73c-5c54-422f-818a-38cf7256e7c7",
+          "t": 130,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6834020334064888,
+          "generatedAt": 1794894638047
+        },
+        {
+          "id": "auto-f0bf3759-e998-4d0c-8473-3a65a92532c5",
+          "t": 138,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6889796550046179,
+          "generatedAt": 1794894638047
+        },
+        {
+          "id": "auto-bbc20af1-4f5f-4f04-a10e-2720e5354886",
+          "t": 150,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7264981909070191,
+          "generatedAt": 1794894638047
+        }
+      ]
+    },
+    {
+      "file": "Pooja And Patola(MP3_160K).mp3",
+      "title": "Pooja And Patola(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-cb99f224-07c0-49ef-9735-d0a561095b3f",
+          "t": 88,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6080908791985808,
+          "generatedAt": 1794895393735
+        },
+        {
+          "id": "auto-39049a52-b87e-4c7b-bd29-e72d162fe64a",
+          "t": 130,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6074751774161159,
+          "generatedAt": 1794895393735
+        },
+        {
+          "id": "auto-6c7d4f40-6cc6-4950-b69a-81dd8d4f2884",
+          "t": 148,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6695459210930584,
+          "generatedAt": 1794895393735
+        },
+        {
+          "id": "auto-ea14d82f-39c3-4280-b7b2-95d957a7fc48",
+          "t": 171,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6882315455025237,
+          "generatedAt": 1794895393735
+        },
+        {
+          "id": "auto-e7806b64-60e3-4dcf-9a91-cf3211dc2070",
+          "t": 179,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7784091913105804,
+          "generatedAt": 1794895393735
+        },
+        {
+          "id": "auto-51e3bf61-f5c6-4d49-a33d-03b5faaf0c26",
+          "t": 199,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6528823051566506,
+          "generatedAt": 1794895393735
+        }
+      ]
+    },
+    {
+      "file": "Pyaar Hua x Satya Divine.mp3",
+      "title": "Pyaar Hua x Satya Divine",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-b9836fd0-f12a-4c34-a060-e519380ce24a",
+          "t": 48,
+          "end": 56,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6035162450786158,
+          "generatedAt": 1794894913161
+        },
+        {
+          "id": "auto-5a18ac84-2dc7-4d55-ac79-dc0c2c77b596",
+          "t": 58,
+          "end": 66,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6031524646784154,
+          "generatedAt": 1794894913161
+        },
+        {
+          "id": "auto-4ae4ab9f-db86-43d5-8a59-cf2a2363c401",
+          "t": 68,
+          "end": 76,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6091817883936291,
+          "generatedAt": 1794894913161
+        },
+        {
+          "id": "auto-3b3cbc7e-5f74-4e68-9ab4-927748ef1a6f",
+          "t": 91,
+          "end": 99,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6458033876221921,
+          "generatedAt": 1794894913161
+        },
+        {
+          "id": "auto-307b6749-65a4-4cc8-8bad-7ae862ad5f5e",
+          "t": 106,
+          "end": 114,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6993720267308394,
+          "generatedAt": 1794894913161
+        },
+        {
+          "id": "auto-c88aac68-39ab-42ba-805c-e022a9ccadd8",
+          "t": 116,
+          "end": 124,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6060073208072173,
+          "generatedAt": 1794894913161
+        }
+      ]
+    },
+    {
+      "file": "Ram Chahe Leela x Aria.mp3",
+      "title": "Ram Chahe Leela x Aria",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-34a4c663-4661-48aa-a97f-b29c8dd82055",
+          "t": 94,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6052691116275849,
+          "generatedAt": 1794894720760
+        },
+        {
+          "id": "auto-89ef9e6b-78bb-4596-87d0-5cc5fd7c3d40",
+          "t": 104,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6044254726221702,
+          "generatedAt": 1794894720760
+        },
+        {
+          "id": "auto-8971ca67-56ca-4c29-ba00-3b1a55ba51d7",
+          "t": 125,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6351814414786445,
+          "generatedAt": 1794894720760
+        },
+        {
+          "id": "auto-2fcde4b7-f743-45aa-9cf3-319ca9707581",
+          "t": 134,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.621761333378108,
+          "generatedAt": 1794894720760
+        },
+        {
+          "id": "auto-2459892a-8af3-421c-8aae-f0cb936ddec2",
+          "t": 142,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6544147748415349,
+          "generatedAt": 1794894720760
+        },
+        {
+          "id": "auto-154115f2-84b8-4bf3-a432-4c00314168d6",
+          "t": 163,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7282612691646739,
+          "generatedAt": 1794894720760
+        }
+      ]
+    },
+    {
+      "file": "ROCK THA PARTY Full Video Song _ ROCKY HANDSOME _ John Abraham_ Nora Fatehi _ BOMBAY ROCKERS(MP3_160K).mp3",
+      "title": "ROCK THA PARTY Full Video Song _ ROCKY HANDSOME _ John Abraham_ Nora Fatehi _ BOMBAY ROCKERS(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-01b3ec7c-015b-4606-b457-eb5fdeec22a4",
+          "t": 70,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6406523235407561,
+          "generatedAt": 1794895314509
+        },
+        {
+          "id": "auto-a8354231-5154-45e4-9a33-5ae7d6e94778",
+          "t": 84,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6095392904015097,
+          "generatedAt": 1794895314509
+        },
+        {
+          "id": "auto-56d873fe-40de-402c-a6f3-d7d90e9556f1",
+          "t": 106,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.605350958322015,
+          "generatedAt": 1794895314509
+        },
+        {
+          "id": "auto-b33e8f4e-ac8d-4275-9a29-0f49047dc30d",
+          "t": 135,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6512963134948856,
+          "generatedAt": 1794895314509
+        },
+        {
+          "id": "auto-dd3cf512-a87b-4404-80f8-3d21e4635cf6",
+          "t": 143,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.756234185680692,
+          "generatedAt": 1794895314509
+        },
+        {
+          "id": "auto-4d1aa1fd-c0fb-45bc-820a-3a7c263d1d9c",
+          "t": 156,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6106868777159838,
+          "generatedAt": 1794895314509
+        }
+      ]
+    },
+    {
+      "file": "Run Down The City - Monica _ Dhurandhar _ Ranveer S_ Sara_ Shashwat Sachdev_ Reble_ Asha Bhosle(MP3_160K).mp3",
+      "title": "Monica _ Dhurandhar _ Ranveer S_ Sara_ Shashwat Sachdev_ Reble_ Asha Bhosle(MP3_160K)",
+      "artist": "Run Down The City",
+      "hooks": [
+        {
+          "id": "auto-93833248-244c-4b96-acb3-f1dc2f1eb1b3",
+          "t": 50,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6085389126944271,
+          "generatedAt": 1794895735035
+        },
+        {
+          "id": "auto-267d2551-1c85-4a3c-8029-de82af5cb673",
+          "t": 83,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6221231019729406,
+          "generatedAt": 1794895735035
+        },
+        {
+          "id": "auto-5dc2eeab-5f15-483d-841b-2608ec75316f",
+          "t": 102,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.60119374790624,
+          "generatedAt": 1794895735035
+        },
+        {
+          "id": "auto-aaa19720-66e0-441a-8a04-ee4b5cb7362c",
+          "t": 118,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.62970403356774,
+          "generatedAt": 1794895735035
+        },
+        {
+          "id": "auto-963ea764-228e-44ba-aeac-b814452c0412",
+          "t": 134,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6787152090845822,
+          "generatedAt": 1794895735035
+        }
+      ]
+    },
+    {
+      "file": "Saaho_ Psycho Saiyaan - REMIX _ Prabhas_ Shraddha K _ Tanishk Bagchi_ Dhvani B_Sachet T_ Groovedev(MP3_160K).mp3",
+      "title": "REMIX _ Prabhas_ Shraddha K _ Tanishk Bagchi_ Dhvani B_Sachet T_ Groovedev(MP3_160K)",
+      "artist": "Saaho_ Psycho Saiyaan",
+      "hooks": [
+        {
+          "id": "auto-fa837630-e701-4588-ac7b-7272eae0a2b4",
+          "t": 49,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6402116428988248,
+          "generatedAt": 1794895148462
+        },
+        {
+          "id": "auto-211aefb8-75e5-4678-8853-10d607b401b7",
+          "t": 80,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7767652587277676,
+          "generatedAt": 1794895148462
+        },
+        {
+          "id": "auto-fedbf328-46f7-4146-af9e-c2cd0d4d4fb5",
+          "t": 89,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7866351046897305,
+          "generatedAt": 1794895148462
+        },
+        {
+          "id": "auto-a16dbb3d-2081-42bc-995e-03a08c8c215f",
+          "t": 96,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8133975662682802,
+          "generatedAt": 1794895148462
+        },
+        {
+          "id": "auto-55e1d908-64f2-494e-80ce-888754b57812",
+          "t": 105,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6895907382434927,
+          "generatedAt": 1794895148462
+        },
+        {
+          "id": "auto-b145d251-12e4-4cfb-9489-00f4130ed140",
+          "t": 113,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7196004878743885,
+          "generatedAt": 1794895148462
+        }
+      ]
+    },
+    {
+      "file": "Sapna Super Hit Song Teri Aakhya Ka Yo Kajal _ Lyrics Video _ New Haryanvi Song 2018 _ Sonotek(MP3_160K).mp3",
+      "title": "Sapna Super Hit Song Teri Aakhya Ka Yo Kajal _ Lyrics Video _ New Haryanvi Song 2018 _ Sonotek(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-438b3247-0825-4b39-b197-e9a410003371",
+          "t": 88,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.681186721543225,
+          "generatedAt": 1794894860412
+        },
+        {
+          "id": "auto-f4ad120a-736d-4fc3-b271-342d4eea38fe",
+          "t": 112,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6257542659287705,
+          "generatedAt": 1794894860412
+        },
+        {
+          "id": "auto-8633788d-8fc2-4211-87f4-5b44e9b1dd27",
+          "t": 122,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6510282580892149,
+          "generatedAt": 1794894860412
+        },
+        {
+          "id": "auto-8419ea7c-4c75-479b-a185-8aa513546f11",
+          "t": 168,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6755235507544723,
+          "generatedAt": 1794894860412
+        },
+        {
+          "id": "auto-b9c7bc73-11cc-4bcb-9200-832805ae42c7",
+          "t": 184,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7289150423908595,
+          "generatedAt": 1794894860412
+        },
+        {
+          "id": "auto-05992e03-9a0c-406e-affd-7aec7030fc23",
+          "t": 196,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7019807965169756,
+          "generatedAt": 1794894860412
+        }
+      ]
+    },
+    {
+      "file": "Saturday Saturday _ Humpty Sharma Ki Dulhania _ Varun Dhawan_ Alia Bhatt _Badshah_ Akriti Kakkar_ 4K(MP3_160K).mp3",
+      "title": "Saturday Saturday _ Humpty Sharma Ki Dulhania _ Varun Dhawan_ Alia Bhatt _Badshah_ Akriti Kakkar_ 4K(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-b942a852-2a8d-4739-8de9-906278c53f1a",
+          "t": 56,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7974522569664495,
+          "generatedAt": 1794894198181
+        },
+        {
+          "id": "auto-dcbf18be-1b58-460b-b662-d545987a74c9",
+          "t": 79,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6347593190608006,
+          "generatedAt": 1794894198181
+        },
+        {
+          "id": "auto-f2ea5fca-aa0c-4099-b714-85038d0901d4",
+          "t": 88,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7045216868256771,
+          "generatedAt": 1794894198181
+        },
+        {
+          "id": "auto-d1ca9e1e-7afe-4070-a8dc-8b06b4073ec6",
+          "t": 112,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.664123536954645,
+          "generatedAt": 1794894198181
+        },
+        {
+          "id": "auto-dd5e9ddb-aedc-4369-b70d-713e0f00ba4c",
+          "t": 126,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7522135046288987,
+          "generatedAt": 1794894198181
+        },
+        {
+          "id": "auto-d6957884-daea-41e9-9afd-7374564dcf59",
+          "t": 147,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7253014176179748,
+          "generatedAt": 1794894198181
+        }
+      ]
+    },
+    {
+      "file": "TAMIL Version - Vikram X Jailer X Leo X.mp3",
+      "title": "Vikram X Jailer X Leo X",
+      "artist": "TAMIL Version",
+      "hooks": [
+        {
+          "id": "auto-34367d2e-254a-4b5a-886e-be8ae59c8d59",
+          "t": 18,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6511308168103144,
+          "generatedAt": 1794894623892
+        },
+        {
+          "id": "auto-ee7b4233-ed31-4818-9f46-9fa613ed546d",
+          "t": 54,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6238412782526351,
+          "generatedAt": 1794894623892
+        },
+        {
+          "id": "auto-80389cbc-7421-4e4f-9e8b-73f7932fc932",
+          "t": 98,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6526152759096995,
+          "generatedAt": 1794894623892
+        },
+        {
+          "id": "auto-3521d4cb-fce3-4ed4-9173-58ae0fb59149",
+          "t": 109,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7188503509896822,
+          "generatedAt": 1794894623892
+        },
+        {
+          "id": "auto-510844a7-217c-4264-9524-9e37de9a1670",
+          "t": 177,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6966136264706145,
+          "generatedAt": 1794894623892
+        },
+        {
+          "id": "auto-a1c7f0f2-34fb-437e-a8dc-3b3f00a01d43",
+          "t": 246,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.649154951617691,
+          "generatedAt": 1794894623892
+        }
+      ]
+    },
+    {
+      "file": "Ude Dil Befikre(Befikre Mix)- DJ Rony India X DJ Simi _ Ranveer Singh_ Vaani _(MP3_160K).mp3",
+      "title": "Ude Dil Befikre(Befikre Mix)- DJ Rony India X DJ Simi _ Ranveer Singh_ Vaani _(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-93f5a22f-1d03-4cf4-8470-20790c80e501",
+          "t": 25,
+          "end": 33,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6694192423170223,
+          "generatedAt": 1794899825835
+        },
+        {
+          "id": "auto-4c66e33b-709d-40c0-996e-3363531347e4",
+          "t": 79.5,
+          "end": 120.83,
+          "endSource": "manual",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7241299493250807,
+          "generatedAt": 1794899825835,
+          "endApproved": true
+        },
+        {
+          "id": "auto-b222713e-69c7-4e2b-8a66-1fbb8fcb3251",
+          "t": 156,
+          "end": 168,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7384431361308834,
+          "generatedAt": 1794899825835
+        },
+        {
+          "id": "auto-8fdb7bcd-0e4a-4637-8e9b-26134cf4f48b",
+          "t": 164,
+          "end": 176,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.681341229221289,
+          "generatedAt": 1794899825835
+        }
+      ]
+    },
+    {
+      "file": "Vengaboys - To Brazil_(MP3_160K).mp3",
+      "title": "To Brazil_(MP3_160K)",
+      "artist": "Vengaboys",
+      "hooks": [
+        {
+          "id": "auto-006c160a-e8cb-4f7e-8c96-1db112ef5009",
+          "t": 41,
+          "end": 49,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.721861802129576,
+          "generatedAt": 1794902364047
+        },
+        {
+          "id": "auto-45811e15-9f45-4a10-8c11-4603b4838c9e",
+          "t": 57,
+          "end": 65,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7648612198589246,
+          "generatedAt": 1794902364047
+        },
+        {
+          "id": "auto-89e88bb5-d2f2-4ec0-b927-1e57f208de9f",
+          "t": 70,
+          "end": 78,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7028115735335179,
+          "generatedAt": 1794902364047
+        },
+        {
+          "id": "auto-5a9758aa-b49b-476f-a25c-0f091c40688f",
+          "t": 139,
+          "end": 147,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6972504813383025,
+          "generatedAt": 1794902364047
+        },
+        {
+          "id": "auto-702595e7-1bad-42d8-afcf-f3932d093b63",
+          "t": 149,
+          "end": 165,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6728821570593766,
+          "generatedAt": 1794902364047
+        },
+        {
+          "id": "auto-5a6c709b-cc26-4091-bd9b-aec5fd9e891a",
+          "t": 157,
+          "end": 165,
+          "endSource": "auto",
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7325838777408294,
+          "generatedAt": 1794902364047
+        }
+      ]
+    },
+    {
+      "file": "Vishal _ Shekhar_ Shahid Mallya_ Nisha Mascarenhas_ Marianne D_cruz Aiman - Kukkad(MP3_160K).mp3",
+      "title": "Kukkad(MP3_160K)",
+      "artist": "Vishal _ Shekhar_ Shahid Mallya_ Nisha Mascarenhas_ Marianne D_cruz Aiman",
+      "hooks": [
+        {
+          "id": "auto-594e0bd0-1d6f-4082-ba81-6d3545631455",
+          "t": 50,
+          "end": 58,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.681051669114143,
+          "generatedAt": 1794894992449
+        },
+        {
+          "id": "auto-779eaf55-6a28-4ce8-a3a2-8b3a0d435110",
+          "t": 68,
+          "end": 76,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6006989909944136,
+          "generatedAt": 1794894992449
+        },
+        {
+          "id": "auto-529ac152-9f8c-42fb-93f8-f18eb940fb7c",
+          "t": 82,
+          "end": 90,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6063729818369255,
+          "generatedAt": 1794894992449
+        },
+        {
+          "id": "auto-146a9a98-3fdc-4b91-bd52-b5b88219b7b3",
+          "t": 98,
+          "end": 106,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6157497687700881,
+          "generatedAt": 1794894992449
+        },
+        {
+          "id": "auto-ecd57a9e-b7bd-462e-a150-36773eb2ca5f",
+          "t": 130,
+          "end": 138,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6047508818989848,
+          "generatedAt": 1794894992449
+        },
+        {
+          "id": "auto-cb7176bb-2530-4e8a-bc99-bc3f4d81b2e1",
+          "t": 146,
+          "end": 154,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6151529796479607,
+          "generatedAt": 1794894992449
+        }
+      ]
+    },
+    {
+      "file": "Yaha Ke Bahubali (Official Video) Masoom Sharma _ Amar Karnawal _ New Haryanvi Songs Haryanavi 2026(MP3_160K).mp3",
+      "title": "Yaha Ke Bahubali (Official Video) Masoom Sharma _ Amar Karnawal _ New Haryanvi Songs Haryanavi 2026(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-158471db-e05d-4f63-8708-65f97233d955",
+          "t": 104,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7644625281586029,
+          "generatedAt": 1794895082154
+        },
+        {
+          "id": "auto-b5a30c52-6b34-4f5b-a7d3-9024b2fe724b",
+          "t": 127,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7157094551829151,
+          "generatedAt": 1794895082154
+        },
+        {
+          "id": "auto-ae878d59-d09c-402d-8107-50c018c3c04e",
+          "t": 138,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6904450942793452,
+          "generatedAt": 1794895082154
+        },
+        {
+          "id": "auto-2ca4cfab-9ad3-41e5-b067-bbca333a9a2b",
+          "t": 148,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7866583939750296,
+          "generatedAt": 1794895082154
+        },
+        {
+          "id": "auto-685e51e8-3e37-418f-9514-d7c02a5b5863",
+          "t": 151,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7228116886325237,
+          "generatedAt": 1794895082154
+        },
+        {
+          "id": "auto-f51e0d77-405c-443d-a23c-7728558952ae",
+          "t": 156,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8188742170102973,
+          "generatedAt": 1794895082154
+        }
+      ]
+    },
+    {
+      "file": "Yo Yo Honey Singh_ DIL CHORI (Video) Simar Kaur_ Ishers _ Hans Raj Hans _ Sonu Ke Titu Ki Sweety(MP3_160K).mp3",
+      "title": "Yo Yo Honey Singh_ DIL CHORI (Video) Simar Kaur_ Ishers _ Hans Raj Hans _ Sonu Ke Titu Ki Sweety(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-2a62cf9f-1b1f-46ef-a0f0-b324b35698d1",
+          "t": 115,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8268921000956007,
+          "generatedAt": 1794895210634
+        },
+        {
+          "id": "auto-576b9e05-2082-47f9-a5e9-22794d9e0d5f",
+          "t": 124,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6880516957303755,
+          "generatedAt": 1794895210634
+        },
+        {
+          "id": "auto-e69e6795-86b9-443e-b825-95d4cce1d370",
+          "t": 132,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7906638791723922,
+          "generatedAt": 1794895210634
+        },
+        {
+          "id": "auto-f00614e2-27a7-4a6e-99b0-71ab376f459c",
+          "t": 142,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6874069509695913,
+          "generatedAt": 1794895210634
+        },
+        {
+          "id": "auto-d7eab22c-14ec-43cf-849e-98f49d006b2d",
+          "t": 153,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7152549575736129,
+          "generatedAt": 1794895210634
+        },
+        {
+          "id": "auto-d2613189-ef06-4e1d-ab5c-332f7a215bb5",
+          "t": 161,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7582745127016743,
+          "generatedAt": 1794895210634
+        }
+      ]
+    },
+    {
+      "file": "You_Re My Love Full Video _ Partner _ Salman Khan_ Lara Dutta_ Govinda_ Katreena Kaif _Sajid - Wajid(MP3_160K).mp3",
+      "title": "Wajid(MP3_160K)",
+      "artist": "You_Re My Love Full Video _ Partner _ Salman Khan_ Lara Dutta_ Govinda_ Katreena Kaif _Sajid",
+      "hooks": [
+        {
+          "id": "auto-bda97a91-a330-48a3-8797-3fec458136b4",
+          "t": 126,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7085244344594624,
+          "generatedAt": 1794895579309
+        },
+        {
+          "id": "auto-215a8f9b-f546-407a-8230-1ba06af2590b",
+          "t": 134,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7668654757799542,
+          "generatedAt": 1794895579309
+        },
+        {
+          "id": "auto-72ebf24f-8513-4662-87f6-495af8cce62f",
+          "t": 162,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7495872554113567,
+          "generatedAt": 1794895579309
+        },
+        {
+          "id": "auto-6c9775d3-56b6-48cc-8f00-0cf9fb1bc66a",
+          "t": 170,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.8070041576036474,
+          "generatedAt": 1794895579309
+        },
+        {
+          "id": "auto-38eda112-7c92-4967-a3ee-01b8d596fa11",
+          "t": 180,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6896932040836679,
+          "generatedAt": 1794895579309
+        },
+        {
+          "id": "auto-e969f8f0-ba01-44c2-a4ce-2cd4f869c22d",
+          "t": 196,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7509798518252426,
+          "generatedAt": 1794895579309
+        }
+      ]
+    },
+    {
+      "file": "Zingaat with English Subtitles _ Sairat _ Rinku Rajguru _ Akash Thosar _ Ajay Atul(MP3_160K).mp3",
+      "title": "Zingaat with English Subtitles _ Sairat _ Rinku Rajguru _ Akash Thosar _ Ajay Atul(MP3_160K)",
+      "artist": "Unknown",
+      "hooks": [
+        {
+          "id": "auto-5eeaf8cb-d119-4fc9-b6fe-50bfecedf42c",
+          "t": 23,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6378440778694214,
+          "generatedAt": 1794894792758
+        },
+        {
+          "id": "auto-8ec7ce32-f171-49fe-998d-9f93cad7f580",
+          "t": 131,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6310709325849528,
+          "generatedAt": 1794894792758
+        },
+        {
+          "id": "auto-f48a8e4f-49cb-4c1a-a9ff-17709baac295",
+          "t": 142,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6312229359214658,
+          "generatedAt": 1794894792758
+        },
+        {
+          "id": "auto-0fefdab3-911a-4d77-9e35-bd54e9339a12",
+          "t": 150,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6907231656575956,
+          "generatedAt": 1794894792758
+        },
+        {
+          "id": "auto-8982cad9-845c-4c9d-b7d3-b89ae88abd0e",
+          "t": 189,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6422986100508175,
+          "generatedAt": 1794894792758
+        },
+        {
+          "id": "auto-43d25f8d-0599-4a5e-85e4-8879869c5565",
+          "t": 198,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.655844252720689,
+          "generatedAt": 1794894792758
+        }
+      ]
+    }
+  ]
 }
