@@ -76,7 +76,10 @@
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.detail || payload.error || `Request failed (${response.status})`);
       render(payload);
-      setStatus(payload.vocals_separated ? "Vocals isolated and transcript ready. Review the words and export JSON." : "Transcript ready. Review the words and export the corrected JSON.", "success");
+      const completed = [];
+      if (payload.vocals_separated) completed.push("Vocals isolated");
+      if (payload.words_aligned) completed.push("word timings aligned");
+      setStatus((completed.length ? completed.join(" · ") : "Transcript ready") + ". Review the words and export JSON.", "success");
     } catch (error) {
       setStatus(error.message, "error");
     } finally {
@@ -99,6 +102,11 @@
   exportButton.addEventListener("click", exportJson);
   fetch("/.netlify/functions/lyrics?path=health")
     .then(response => response.ok ? response.json() : Promise.reject())
-    .then(data => setStatus(data.vocal_isolation_available ? "Lyrics service connected · vocal isolation available." : "Lyrics service connected · vocal isolation not installed on server yet.", "success"))
+    .then(data => {
+      const capabilities = ["Lyrics service connected"];
+      capabilities.push(data.vocal_isolation_available ? "vocal isolation ready" : "vocal isolation not installed");
+      capabilities.push(data.word_alignment_available ? "WhisperX alignment ready" : "WhisperX alignment not installed");
+      setStatus(capabilities.join(" · "), "success");
+    })
     .catch(() => setStatus("Lyrics service is not connected yet. Deploy the Python service and configure Netlify environment variables.", "warning"));
 })();
