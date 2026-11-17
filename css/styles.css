@@ -327,13 +327,13 @@ body.party-mode-open{overflow:hidden}
 .training-panel{margin:18px 0;background:linear-gradient(125deg,#20152e,#17121f 65%,#102923);border-color:#60427b}.training-state{font-size:9px;font-weight:950;letter-spacing:1px;padding:7px 10px;border:1px solid #59466c;border-radius:99px;color:#c8b6d8}.training-state.active{color:#8ff0d2;border-color:#3ac8a3;background:#103b32}.training-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:14px 0}.training-metrics>div{display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid #49375b;border-radius:11px;background:#100d18}.training-metrics small{font-size:10px;color:var(--muted)}.training-metrics b{font-size:22px;color:#f2e6ff;font-variant-numeric:tabular-nums}.training-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.training-actions .subtle{font-size:10px}.training-feedback{width:min(720px,94vw)}.training-rating-group{margin:14px 0;padding:13px;border:1px solid #4c3b60;border-radius:12px;background:#17121f}.training-rating-group h3{font-size:14px;margin:0 0 10px}.training-rating-options{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}.training-rating-options button{padding:10px 5px;font-size:10px;line-height:1.35;white-space:normal;min-height:58px}.training-rating-options button.selected{border-color:#a879e8;background:#39244f;box-shadow:0 0 0 1px #a879e8;color:#fff}.training-feedback-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:15px}@media(max-width:650px){.training-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.training-rating-options{grid-template-columns:repeat(2,minmax(0,1fr))}.training-rating-options button:last-child{grid-column:span 2}}
 
 
-/* VIBE LYRICS Studio */
+/* VIBE LYRICS retrieval studio */
 .lyrics-studio{margin:18px 0;background:linear-gradient(125deg,#151e2c,#171321 72%,#102a27);border-color:#34546a}
 .lyrics-pill{font-size:9px;letter-spacing:.8px;font-weight:900;padding:7px 10px;border:1px solid #42677a;border-radius:99px;color:#a8e5ef}
 .lyrics-controls{display:flex;align-items:end;gap:10px;flex-wrap:wrap;margin:16px 0}
 .lyrics-controls label{display:flex;flex-direction:column;gap:7px;font-size:11px;color:var(--muted);font-weight:700}
-.lyrics-controls input,.lyrics-controls select{max-width:100%;min-height:40px;padding:9px;border:1px solid var(--border);border-radius:9px;background:var(--surface,#111);color:inherit}
-.lyrics-file-label input{max-width:260px}
+.lyrics-controls input{max-width:100%;min-height:40px;padding:9px;border:1px solid var(--border);border-radius:9px;background:var(--surface,#111);color:inherit}
+.lyrics-metadata label{flex:1 1 170px}
 .lyrics-status{font-size:12px;color:var(--muted);padding:10px 12px;border:1px solid var(--border);border-radius:9px;background:#0e121b}
 .lyrics-status[data-state="success"]{color:#8ce8c9;border-color:#276d59}
 .lyrics-status[data-state="error"]{color:#ff9eaa;border-color:#87404c}
@@ -345,18 +345,8 @@ body.party-mode-open{overflow:hidden}
 .lyric-line textarea{width:100%;resize:vertical;min-height:42px;border:1px solid var(--border);border-radius:7px;background:#171b27;color:inherit;padding:9px;font:inherit}
 .lyric-line-tags{grid-column:2;display:flex;gap:5px;flex-wrap:wrap}
 .lyric-line-tags span{font-size:9px;color:#d6c1ff;background:#332849;border-radius:99px;padding:4px 7px}
-.lyrics-warning{font-size:11px;color:#f1cb83;padding:8px 10px;border-left:2px solid #b58b3c;background:#282216}
-.lyrics-empty{font-size:12px;color:var(--muted)}
-@media(max-width:600px){.lyric-line{grid-template-columns:1fr}.lyric-line-tags{grid-column:1}.lyrics-controls{align-items:stretch}.lyrics-controls label,.lyrics-controls label input{width:100%;max-width:none}}
-
-/* Optional Demucs switch in VIBE LYRICS */
-.lyrics-controls .lyrics-isolation-toggle{flex-direction:row;align-items:center;gap:9px;padding:10px 12px;border:1px solid var(--border);border-radius:9px;background:rgba(255,255,255,.025);min-height:40px}
-.lyrics-controls .lyrics-isolation-toggle input{width:16px;min-height:16px;margin:0;accent-color:#8ce8c9}
-.lyrics-isolation-toggle small{display:block;color:var(--muted);font-size:10px;font-weight:500}
-
-.lyrics-controls .lyrics-isolation-toggle{flex-wrap:wrap;}
 .lyric-word-details{margin:-3px 0 5px 120px;color:var(--muted);font-size:10px}
 .lyric-word-details summary{cursor:pointer;color:#a8e5ef;font-weight:800;letter-spacing:.3px;padding:5px 0}
 .lyric-word-list{display:flex;flex-wrap:wrap;gap:6px;padding:7px 0}
 .lyric-word-list span{padding:5px 7px;border:1px solid #34546a;border-radius:7px;background:#101c27;color:#d6eff2;font-variant-numeric:tabular-nums}
-@media(max-width:600px){.lyric-word-details{margin-left:0}}
+@media(max-width:600px){.lyric-line{grid-template-columns:1fr}.lyric-line-tags{grid-column:1}.lyrics-controls{align-items:stretch}.lyrics-controls label,.lyrics-controls label input{width:100%;max-width:none}.lyric-word-details{margin-left:0}}
