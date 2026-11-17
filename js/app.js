@@ -571,7 +571,7 @@ function renderHooks() {
   const punchHookSelect=$("#punchTriggerHook");
   if(punchHookSelect){
     const selected=punchHookSelect.value;
-    punchHookSelect.innerHTML='<option value="">Use punch start when queued</option>'+allHooks.map(h=>'<option value="'+esc(h.id)+'">'+esc(h.name||h.lyric||"Hook")+' · '+fmt(h.t)+'</option>').join("");
+    punchHookSelect.innerHTML='<option value="">Use punch start when queued</option>'+hooks.map(h=>'<option value="'+esc(h.id)+'">'+esc(h.name||h.lyric||"Hook")+' · '+fmt(h.t)+'</option>').join("");
     if(allHooks.some(h=>String(h.id)===String(selected)))punchHookSelect.value=selected;
   }
   $("#hookCount").textContent=`${hooks.length} saved · ${hooks.filter(h=>h.source==='auto').length} auto`;
