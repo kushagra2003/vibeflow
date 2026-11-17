@@ -80,6 +80,7 @@
       <div id="aiHookResults" class="ai-hook-results" aria-live="polite"><div class="ai-hook-status">Click Analyse for hooks to scan this song. AI DJ can also scan an unmarked upcoming song automatically.</div></div>
     </section>
 
+    <section id="trainingPanel" class="panel training-panel"><div class="section-heading"><div><div class="eyebrow">VIBE FLOW · SELF-LEARNING</div><h3>AI DJ Training Centre</h3></div><span id="trainingState" class="training-state">TRAINING OFF</span></div><p class="subtle">Train outgoing hook endings and incoming hook starts with 5-second listening tests. Feedback is saved locally.</p><div class="training-metrics"><div><small>Learning score</small><b id="trainingScore">0</b></div><div><small>Transitions rated</small><b id="trainingCount">0</b></div><div><small>Outgoing ratings</small><b id="trainingOutAccuracy">—</b></div><div><small>Incoming ratings</small><b id="trainingInAccuracy">—</b></div></div><div class="training-actions"><button id="startTraining" class="primary-btn">▶ Start training</button><button id="stopTraining" class="quiet-btn" disabled>■ Stop training</button><span id="trainingMessage" class="subtle">Training is independent of normal Auto Mix.</span></div></section>
     <section class="content-grid">
       <div class="panel tracks-panel">
         <div class="section-heading"><div><div class="eyebrow" id="listEyebrow">FIND YOUR NEXT SOUND</div><h3 id="listTitle">Trending on Audius</h3></div><button id="refreshLibrary" class="quiet-btn">↻ Refresh music</button></div>
@@ -141,6 +142,7 @@
 <audio id="a1" preload="auto"></audio>
 <audio id="a2" preload="auto"></audio>
 <script src="js/hook-scanner.js"></script>
+<script src="js/learning-model.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

@@ -26,7 +26,7 @@ const S = {
   seeking: false, seekResetMediaTime: null, seekResetDelay: 0, seekResumeAt: 0,
   activeNoHookDeadline: null, displayUpdateTimer: null,
   hookScans: store.get("hookScans", {}), autoHookInFlight: new Set(), autoHookStartedAt: {},
-  aiHookTrackId: null, aiHookScanning: false, hookEditTarget: {}, bpmCache: store.get("bpmCache", {}), autoMixNextPromise: null
+  aiHookTrackId: null, aiHookScanning: false, hookEditTarget: {}, bpmCache: store.get("bpmCache", {}), autoMixNextPromise: null, training:{active:false,pending:null,feedbackTimer:null,originalDetection:true,originalMode:"hook",originalAutoMix:false,busy:false}
 };
 const save = () => {
   for (const [k, v] of Object.entries({
@@ -794,7 +794,7 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null}=
       : "Now playing "+track.title+" · keep the party moving","LIVE","mix");
     S.hist=[track,...S.hist.filter(x=>x.id!==track.id)].slice(0,100);
     save();
-    if(S.autoMix) ensureAutoMixNextTrack();
+    if(S.autoMix&&!S.training.active) ensureAutoMixNextTrack();
     if(settings.aiEnabled) suggest();
     scheduleTrackDisplayUpdate(token);
   } catch(e) {
@@ -933,7 +933,18 @@ function ensureAutoMixNextTrack() {
   return S.autoMixNextPromise;
 }
 
+function trainingRandomTrack(excludeId=null){const p=S.lib.filter(f=>"my:"+f.file!==excludeId);if(!p.length)return null;const recent=new Set(S.hist.slice(0,3).map(x=>x.id));const f=p.filter(x=>!recent.has("my:"+x.file));const a=f.length?f:p;return toTrack(a[Math.floor(Math.random()*a.length)]);}
+function trainingRandomHook(track){const h=hooksOf(track);return h.length?h[Math.floor(Math.random()*h.length)]:null;}
+async function trainingPrepareTrack(track){if(track?.provider==="mine"&&!hooksOf(track).length&&!S.hookScans[track.id])await scanCurrentSongHooks({automatic:true,trackOverride:track});const h=trainingRandomHook(track);if(!h)return null;return {...h,t:Math.max(0,h.t+window.VibeLearningModel.getOffset(track,h,"incoming")),end:h.end!=null?Math.max(0,h.end+window.VibeLearningModel.getOffset(track,h,"outgoing")):h.end};}
+function trainingRefreshStats(){const s=window.VibeLearningModel.stats();$("#trainingScore").textContent=(s.score>0?"+":"")+s.score;$("#trainingCount").textContent=s.transitions;$("#trainingOutAccuracy").textContent=s.outgoingCount?s.outgoingCount+" ratings":"—";$("#trainingInAccuracy").textContent=s.incomingCount?s.incomingCount+" ratings":"—";}
+function trainingSetUi(on,msg=""){ $("#trainingState").textContent=on?"TRAINING ACTIVE":"TRAINING OFF";$("#trainingState").classList.toggle("active",on);$("#startTraining").disabled=on;$("#stopTraining").disabled=!on;$("#trainingMessage").textContent=msg||(on?"Random hook transitions · feedback after 5 seconds":"Training is independent of normal Auto Mix.");}
+async function startTraining(){if(S.training.active)return;if(S.lib.length<2)return toast("Add at least two songs to My music before training.");S.training.originalDetection=settings.autoHookDetection;S.training.originalMode=settings.autoMode;S.training.originalAutoMix=S.autoMix;S.training.active=true;S.training.pending=null;settings.autoHookDetection=true;settings.autoMode="hook";S.autoMix=true;store.set("autoMix",true);syncControls();trainingSetUi(true,"Preparing a random training track…");const t=trainingRandomTrack(cur()?.id);if(!t){stopTraining();return toast("No eligible training track found.");}try{const h=await trainingPrepareTrack(t);if(!S.training.active)return;transitionTo(t,h,{automatic:true,mode:"hook"});trainingSetUi(true,"Training is running. Feedback appears 5 seconds after each transition.");}catch(e){stopTraining();toast("Training could not start: "+e.message);}}
+function stopTraining(){if(!S.training.active)return;clearTimeout(S.training.feedbackTimer);S.training.active=false;S.training.pending=null;settings.autoHookDetection=S.training.originalDetection;settings.autoMode=S.training.originalMode;S.autoMix=S.training.originalAutoMix;store.set("autoMix",S.autoMix);$("#modalRoot").innerHTML="";syncControls();trainingSetUi(false,"Training stopped. Learned scores and timing adjustments are saved.");render();}
+function trainingFeedbackDialog(){if(!S.training.active||!S.training.pending)return;const p=S.training.pending,r=$("#modalRoot"),o=[["e2","2s too early",-2,2],["e1","1s too early",-1,1],["ok","Perfect",2,0],["l1","1s too late",-1,-1],["l2","2s too late",-2,-2]];const group=(s,title,t,h)=>"<section class=\"training-rating-group\"><h3>"+title+"</h3><p class=\"modal-sub\">"+esc(t?.title||"Song")+" · "+esc(h?.lyric||"Hook")+"</p><div class=\"training-rating-options\">"+o.map(x=>"<button type=\"button\" class=\"quiet-btn\" data-rate=\""+s+"\" data-v=\""+x[0]+"\">"+x[1]+"</button>").join("")+"</div></section>";r.innerHTML="<div class=\"modal-backdrop\"><div class=\"modal-card training-feedback\"><div class=\"modal-head\"><div><div class=\"eyebrow\">TRAINING FEEDBACK</div><h2>How did that mix feel?</h2><p class=\"modal-sub\">Rate both cue positions. Feedback updates future timing.</p></div></div>"+group("out","1 · Previous song ending",p.fromTrack,p.fromHook)+group("in","2 · New song starting",p.toTrack,p.toHook)+"<div class=\"training-feedback-actions\"><button id=\"stopFromFeedback\" class=\"quiet-btn\">Stop training</button><button id=\"saveTrainingFeedback\" class=\"primary-btn\" disabled>Save feedback & continue</button></div></div></div>";const chosen={};r.querySelectorAll("[data-rate]").forEach(b=>b.onclick=()=>{const side=b.dataset.rate;chosen[side]=o.find(x=>x[0]===b.dataset.v);r.querySelectorAll("[data-rate=\""+side+"\"]").forEach(x=>x.classList.toggle("selected",x===b));$("#saveTrainingFeedback").disabled=!(chosen.out&&chosen.in);});$("#stopFromFeedback").onclick=stopTraining;$("#saveTrainingFeedback").onclick=()=>{if(!chosen.out||!chosen.in)return;const stats=window.VibeLearningModel.record(p.fromTrack,p.fromHook,p.toTrack,p.toHook,{score:chosen.out[2],adjust:chosen.out[3]},{score:chosen.in[2],adjust:chosen.in[3]});S.training.pending=null;r.innerHTML="";trainingRefreshStats();trainingSetUi(true,"Feedback saved · overall score "+(stats.score>0?"+":"")+stats.score);audio().play().catch(()=>toast("Press Play to resume training."));};}
+function trainingScheduleFeedback(ft,fh,tt,th){if(!S.training.active)return;S.training.pending={fromTrack:ft,fromHook:fh,toTrack:tt,toHook:th};const wait=()=>{if(!S.training.active||!S.training.pending)return;if(S.mixing||S.transitioning){S.training.feedbackTimer=setTimeout(wait,200);return;}S.training.feedbackTimer=setTimeout(()=>{if(!S.training.active||!S.training.pending)return;audio().pause();trainingSetUi(true,"Playback paused for your transition ratings.");trainingFeedbackDialog();},5000);};wait();}
+async function trainingNextAutomatic(){if(!S.training.active||S.transitioning||S.training.pending||S.training.busy)return;S.training.busy=true;try{const ft=cur(),fh=S.activeHook?{...S.activeHook}:null,t=trainingRandomTrack(ft?.id);if(!t){stopTraining();return toast("Training needs at least two available songs.");}const h=await trainingPrepareTrack(t);if(!S.training.active)return;transitionTo(t,h,{automatic:true,mode:h?"hook":"beginning"});trainingScheduleFeedback(ft,fh,t,h);}finally{S.training.busy=false;}}
 async function nextAutomatic() {
+  if(S.training.active) return trainingNextAutomatic();
   if (!S.autoMix || S.transitioning || S.autoTransitionPending) return;
   S.autoTransitionPending=true;
   try {
@@ -988,7 +999,7 @@ function seekResetDuration() {
 function checkHookTimer() {
   // Hook-end and fallback timers are automatic transitions, never manual controls.
   if (!automaticSwitchingEnabled()) return;
-  const t=cur(), a=audio(); if(!t || a.paused || S.transitioning || S.mixing || S.seeking) return;
+  const t=cur(), a=audio(); if(!t || a.paused || S.transitioning || S.mixing || S.seeking || (S.training.active&&S.training.pending)) return;
   if(S.seekResumeAt) {
     if(a.currentTime-S.seekResetMediaTime>=S.seekResetDelay) {
       S.seekResumeAt=0;
@@ -1000,7 +1011,9 @@ function checkHookTimer() {
   if(h) {
     // A manually saved ending always overrides the configured hook-duration fallback.
     const manuallySavedEnd=h.source!=="auto" && h.end!==null && h.end!==undefined && Number.isFinite(Number(h.end));
-    const deadline=manuallySavedEnd ? Number(h.end) : h.t+settings.hookPlaySeconds;
+    const learnedEnd=S.training.active?window.VibeLearningModel.getOffset(t,{id:h.hookId,t:h.t},"outgoing"):0;
+    // Manual saved ends already carry the learned end offset; generated/no-end hooks use duration + offset.
+    const deadline=manuallySavedEnd?Number(h.end):h.t+settings.hookPlaySeconds+learnedEnd;
     if(a.currentTime>=deadline) handleAutoAdvance();
   } else {
     const fallback=S.activeNoHookDeadline?.trackId===t.id
@@ -1380,6 +1393,7 @@ $("#partyPrev").onclick=previous;
 document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement && !$("#partyMode").hidden){$("#partyMode").hidden=true;document.body.classList.remove("party-mode-open");stopPartyBrandLoop();}});
 $("#openSettings").onclick=openSettings; $("#footerSettings").onclick=openSettings;
 function toggleAutoMix() {
+  if(S.training.active)return toast("Use Stop training to leave the training session safely.");
   S.autoMix=!S.autoMix;
   store.set("autoMix",S.autoMix);
   syncControls();
@@ -1392,7 +1406,7 @@ function toggleAutoMix() {
     toast("Auto mix disabled. The current song will play to its end and then pause.");
   }
 }
-$("#autoMixToggle").onclick=toggleAutoMix;
+$("#autoMixToggle").onclick=toggleAutoMix;$("#startTraining").onclick=startTraining;$("#stopTraining").onclick=stopTraining;trainingRefreshStats();trainingSetUi(false);
 
 A.forEach(a=>{
   a.volume=.8;
