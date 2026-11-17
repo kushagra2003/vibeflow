@@ -366,3 +366,28 @@ body.party-mode-open{overflow:hidden}
 .lyrics-preview-line span{overflow-wrap:anywhere}
 
 .lyrics-audio-metrics{padding:11px 12px;border:1px solid #3c5575;border-radius:9px;background:#111d2b;color:#b8dcf5;font-size:11px;line-height:1.6;font-variant-numeric:tabular-nums}
+
+
+/* VIBE FLOW visual refinement — layout positions remain unchanged. */
+:root{--purple:#9b7cff;--green:#55e4c1;--line:#293b50;--muted:#9ba9bd;--text:#f2f6ff;--surface:#111827}
+body{background:radial-gradient(ellipse at 78% 0%,#172c3a 0%,transparent 42%),#090d16;color:var(--text)}
+.panel,.now-card{border-color:#29445a;box-shadow:0 14px 40px #0003}
+.panel{background:linear-gradient(145deg,#151e2b,#111722 72%,#10231f)}
+.now-card{background:linear-gradient(115deg,#172333,#131b29 60%,#102b29)}
+button,select,input,textarea{transition:background-color .18s,border-color .18s,box-shadow .18s,transform .18s}
+button{border-radius:10px}
+button:not(:disabled):hover{border-color:#6e91ad;box-shadow:0 5px 18px #0003}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid #70dccc;outline-offset:2px}
+.primary-btn{background:linear-gradient(135deg,#7c70e8,#397f9b);border-color:#7c9eea}
+.primary-btn:hover{background:linear-gradient(135deg,#9589ff,#439bb2)}
+.track-row{background:#172230;border-color:#24374a}
+.track-row:hover{background:#1c2b3a;border-color:#4c8293}
+.track-row.current{background:#1a3440;border-color:#56cdbb}
+.hook-item{background:#172431;border-color:#2b4356}
+.choice-row{background:#172431;border-color:#304b60}
+.search-box,.player-bar{background:#0d1520ee;border-color:#293e51}
+.auto-mix-toggle{background:linear-gradient(105deg,#142a30,#171b29);border-color:#34576a}
+.lyrics-studio{background:linear-gradient(125deg,#142735,#151b29 72%,#102c29);border-color:#3c6974}
+.lyrics-panel-toggle.active{border-color:#58d7c0;background:linear-gradient(135deg,#153b3b,#20334a);color:#a8ffea;box-shadow:0 0 0 1px #58d7c044}
+.lyrics-studio[hidden]{display:none!important}
+@media(prefers-reduced-motion:reduce){button,select,input,textarea{transition:none}}
