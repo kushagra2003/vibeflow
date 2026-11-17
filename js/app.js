@@ -24,7 +24,7 @@ const S = {
   seeking: false, seekResetMediaTime: null, seekResetDelay: 0, seekResumeAt: 0,
   activeNoHookDeadline: null, displayUpdateTimer: null,
   hookScans: store.get("hookScans", {}), autoHookInFlight: new Set(), autoHookStartedAt: {},
-  aiHookTrackId: null, aiHookScanning: false, bpmCache: store.get("bpmCache", {}), autoMixNextPromise: null
+  aiHookTrackId: null, aiHookScanning: false, hookEditTarget: {}, bpmCache: store.get("bpmCache", {}), autoMixNextPromise: null
 };
 const save = () => {
   for (const [k, v] of Object.entries({
@@ -79,9 +79,7 @@ async function initLib() {
     const merged = new Map();
     for (const song of discovered) {
       const old = localMap.get(song.file) || {};
-      merged.set(song.file, {...song,...old,hooks:mergeHookLists(old.hooks, archivedHooks[song.file], song.hooks).map(h=>
-        h.source==="auto" && h.endSource!=="manual" ? {...h,end:null} : h
-      )});
+      merged.set(song.file, {...song,...old,hooks:mergeHookLists(old.hooks, archivedHooks[song.file], song.hooks)});
     }
     S.lib = [...merged.values()];
     $("#libraryStatus").textContent = `${S.lib.length} songs discovered`;
@@ -205,17 +203,25 @@ function addHook() {
   $("#hookLabel").value=""; saveLib(); save(); renderHooks(); render();
   toast(`Hook marked at ${fmt(h.t)}. Mark its end when the hook finishes.`);
 }
-function adjustHookStart(id,delta) {
+function adjustHookTime(id,delta,target="start") {
   const t=cur(), entry=t && getLibTrack(t.id);
   if(!entry) return;
   const h=hooksOf(entry).find(x=>String(x.id)===String(id));
   if(!h) return;
-  const maxStart=h.end!=null ? Math.max(0,h.end-0.5) : Infinity;
-  h.t=Math.max(0,Math.min(maxStart,Math.round((Number(h.t||0)+delta)*2)/2));
+  if(target==="end") {
+    if(h.end==null) return toast("Mark an ending first, then adjust it by half a second.");
+    const minEnd=Number(h.t||0)+0.5;
+    h.end=Math.max(minEnd,Math.round((Number(h.end)+delta)*2)/2);
+    h.endSource="manual";
+  } else {
+    const maxStart=h.end!=null ? Math.max(0,Number(h.end)-0.5) : Infinity;
+    h.t=Math.max(0,Math.min(maxStart,Math.round((Number(h.t||0)+delta)*2)/2));
+  }
   t.hooks=entry.hooks;
   if(S.activeHook?.trackId===t.id && String(S.activeHook.hookId)===String(id)) {
     S.activeHook.t=h.t; S.activeHook.end=h.end ?? null;
   }
+  syncTrackHooks(t.id,entry.hooks);
   saveLib(); save();
   renderHooks();
 }
@@ -278,7 +284,7 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
     if(!automatic) toast("Could not locate this song in your GitHub music folder.");
     return;
   }
-  if(S.aiHookScanning || (automatic && (S.autoHookInFlight.has(track.id)||S.hookScans[track.id]))) return;
+  if(S.aiHookScanning || (automatic && (S.autoHookInFlight.has(track.id)||(S.hookScans[track.id]?.version||0)>=2))) return;
   const button=$("#scanHooks");
   if(automatic) {
     S.autoHookInFlight.add(track.id);
@@ -293,6 +299,18 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
   try {
     const candidates=await window.VibeHookScanner.analyse("songs/"+encodeURIComponent(entry.file));
     const existing=hooksOf(entry);
+    let upgradedEnds=0;
+    for(const candidate of candidates) {
+      const match=existing.find(h=>h.source==="auto" && (
+        Math.abs(Number(h.t)-candidate.t)<8 ||
+        String(h.lyric||"").trim().toLowerCase()===candidate.label.toLowerCase()
+      ));
+      if(match && match.end==null && candidate.end!=null && Number(candidate.end)>Number(match.t)) {
+        match.end=Math.max(Number(match.t)+0.5,Math.round(Number(candidate.end)*2)/2);
+        match.endSource="auto";
+        upgradedEnds++;
+      }
+    }
     const accepted=candidates.filter(candidate=>!existing.some(h=>
       Math.abs(Number(h.t)-candidate.t)<8 ||
       (String(h.lyric||"").trim().toLowerCase()===candidate.label.toLowerCase())
@@ -300,7 +318,10 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
     const generated=accepted.map(candidate=>({
       id:"auto-"+(crypto.randomUUID?.()||String(Date.now()+Math.random())),
       t:Math.round(candidate.t*2)/2,
-      end:null,
+      end:candidate.end!=null && Number(candidate.end)>Number(candidate.t)
+        ? Math.max(Math.round(candidate.t*2)/2+0.5,Math.round(Number(candidate.end)*2)/2)
+        : null,
+      endSource:candidate.end!=null && Number(candidate.end)>Number(candidate.t)?"auto":null,
       lyric:candidate.label,
       endLyric:"",
       source:"auto",
@@ -308,19 +329,19 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
       confidence:candidate.confidence,
       generatedAt:Date.now()
     }));
-    if(generated.length) {
+    if(generated.length || upgradedEnds) {
       entry.hooks=[...existing,...generated].sort((a,b)=>a.t-b.t);
       syncTrackHooks(track.id,entry.hooks);
       saveLib();
     }
-    S.hookScans[track.id]={at:Date.now(),generated:generated.length,version:1};
+    S.hookScans[track.id]={at:Date.now(),generated:generated.length,upgradedEnds,version:2};
     save();
     if(automatic) {
       setDJActivity(generated.length?"HOOKS AUTO-DETECTED":"SCAN COMPLETE · NO STRONG MATCH",
-        generated.length?generated.length+" local cue point(s) ready on "+track.title:"No strong repeated section found on "+track.title,
+        (generated.length||upgradedEnds)?generated.length+" new cue(s), "+upgradedEnds+" existing ending(s) updated on "+track.title:"No strong repeated section found on "+track.title,
         "READY","ready");
     } else if(generated.length) {
-      toast("Found "+generated.length+" possible hook(s). They are saved as AUTO cues and ready to mix.");
+      toast("Found "+generated.length+" new hook(s); updated "+upgradedEnds+" existing hook ending(s). AUTO cues are saved and ready to mix.");
     } else {
       toast("Analysis complete. No strong hook patterns found; your existing hooks were left untouched.");
     }
@@ -352,8 +373,10 @@ async function scanCurrentSongHooks({automatic=false,trackOverride=null}={}) {
   }
 }
 function maybeAutoScanUpcoming(track) {
-  if(!S.autoMix || settings.autoMode!=="hook" || !track || track.provider!=="mine" || hooksOf(track).length) return;
-  if(S.hookScans[track.id] || S.autoHookInFlight.has(track.id) || S.aiHookScanning) return;
+  if(!S.autoMix || settings.autoMode!=="hook" || !track || track.provider!=="mine") return;
+  const needsEndUpgrade=hooksOf(track).some(h=>h.source==="auto" && h.end==null);
+  if(hooksOf(track).length && !needsEndUpgrade) return;
+  if((S.hookScans[track.id]?.version||0)>=2 || S.autoHookInFlight.has(track.id) || S.aiHookScanning) return;
   scanCurrentSongHooks({automatic:true,trackOverride:track});
 }
 function renderAIHookSuggestions() {
@@ -390,30 +413,45 @@ function renderHooks() {
   }
   $("#hooksList").innerHTML=hooks.map((h,i)=>{
     const isActive=S.activeHook?.trackId===t.id && String(S.activeHook.hookId)===String(h.id);
+    const target=S.hookEditTarget[h.id]==="end"?"end":"start";
+    const editingEnd=target==="end";
+    const shown=editingEnd?h.end:h.t;
     return `
     <div class="hook-item ${h.source==="auto"?"auto-hook-item":"manual-hook-item"} ${isActive?"active-hook-item":""}">
       <div class="hook-main">
-        <div class="hook-time-control" aria-label="Adjust hook start time">
-          <button type="button" data-hook-start-adjust="${esc(h.id)}" data-delta="-0.5" aria-label="Move hook start back half a second" title="−0.5 seconds">−</button>
-          <span class="hook-time">${fmtHook(h.t)}</span>
-          <button type="button" data-hook-start-adjust="${esc(h.id)}" data-delta="0.5" aria-label="Move hook start forward half a second" title="+0.5 seconds">+</button>
+        <div class="hook-time-editor">
+          <div class="hook-edit-toggle" role="group" aria-label="Choose hook time to adjust">
+            <button type="button" data-hook-target="${esc(h.id)}" data-target="start" class="${!editingEnd?"selected":""}">START</button>
+            <button type="button" data-hook-target="${esc(h.id)}" data-target="end" class="${editingEnd?"selected":""}">END</button>
+          </div>
+          <div class="hook-time-control" aria-label="Adjust hook ${target} time">
+            <button type="button" data-hook-adjust="${esc(h.id)}" data-target="${target}" data-delta="-0.5" aria-label="Move hook ${target} back half a second" title="−0.5 seconds">−</button>
+            <span class="hook-time">${shown==null?"Not set":fmtHook(shown)}</span>
+            <button type="button" data-hook-adjust="${esc(h.id)}" data-target="${target}" data-delta="0.5" aria-label="Move hook ${target} forward half a second" title="+0.5 seconds">+</button>
+          </div>
+          ${editingEnd&&h.end==null?'<small class="hook-end-help">Mark an end while the song plays to enable adjustment</small>':""}
         </div>
         <div class="hook-detail">
           <b title="${esc(h.lyric || "Hook "+(i+1))}">${esc(h.lyric || "Hook "+(i+1))}${isActive?'<span class="active-hook-badge">NOW PLAYING · AUTO MIX CUE</span>':""}</b>
-          <small><span class="hook-origin ${h.source==="auto"?"auto":"manual"}">${h.source==="auto"?"AUTO":"MANUAL"}</span> · ${h.source==="auto"?(h.detector==="repeated-section"?"Pattern match":"Energy peak"):"User cue"} · ${h.end!=null?`Ends ${fmt(h.end)}${h.endLyric?" · "+esc(h.endLyric):""}`:"End not marked"}</small>
+          <small><span class="hook-origin ${h.source==="auto"?"auto":"manual"}">${h.source==="auto"?"AUTO":"MANUAL"}</span> · ${h.source==="auto"?(h.detector==="repeated-section"?"Pattern match":"Energy peak"):"User cue"} · ${h.end!=null?`Ends ${fmt(h.end)}${h.endSource==="manual"?" · edited":""}${h.endLyric?" · "+esc(h.endLyric):""}`:"End not marked"}</small>
         </div>
       </div>
       <div class="hook-controls">
-        <button data-hook-go="${esc(h.id)}" title="Jump exactly to hook">Go</button>
+        <button data-hook-go="${esc(h.id)}" title="Jump exactly to hook start">Go</button>
         <input id="endLine-${esc(h.id)}" aria-label="Hook ending lyric" placeholder="End line" value="${esc(h.endLyric||"")}" style="width:110px;padding:6px;font-size:10px">
-        <button data-hook-end="${esc(h.id)}" title="Mark hook end here">Mark end</button>
+        <button data-hook-end="${esc(h.id)}" title="Capture the current song time as hook end">Mark end</button>
         ${h.source==="auto"?`<button data-hook-verify="${esc(h.id)}" title="Save and verify this generated hook">Save hook</button>`:""}
         <button data-hook-delete="${esc(h.id)}" title="Delete hook">×</button>
       </div>
     </div>`;
   }).join("");
   $("#hooksList").querySelectorAll("[data-hook-go]").forEach(b=>b.onclick=()=>playHookDirect(hooks.find(h=>String(h.id)===b.dataset.hookGo)));
-  $("#hooksList").querySelectorAll("[data-hook-start-adjust]").forEach(b=>b.onclick=()=>adjustHookStart(b.dataset.hookStartAdjust,Number(b.dataset.delta)));
+  $("#hooksList").querySelectorAll("[data-hook-target]").forEach(b=>b.onclick=()=>{
+    S.hookEditTarget[b.dataset.hookTarget]=b.dataset.target; renderHooks();
+  });
+  $("#hooksList").querySelectorAll("[data-hook-adjust]").forEach(b=>b.onclick=()=>
+    adjustHookTime(b.dataset.hookAdjust,Number(b.dataset.delta),b.dataset.target)
+  );
   $("#hooksList").querySelectorAll("[data-hook-end]").forEach(b=>b.onclick=()=>markHookEnd(b.dataset.hookEnd));
   $("#hooksList").querySelectorAll("[data-hook-verify]").forEach(b=>b.onclick=()=>verifyAutoHook(b.dataset.hookVerify));
   $("#hooksList").querySelectorAll("[data-hook-delete]").forEach(b=>b.onclick=()=>deleteHook(b.dataset.hookDelete));
