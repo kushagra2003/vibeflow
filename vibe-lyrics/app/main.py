@@ -10,7 +10,7 @@ from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-APP_VERSION = "0.2.0"
+APP_VERSION = "0.3.0"
 MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_MB", "80")) * 1024 * 1024
 ALLOWED_SUFFIXES = {".mp3", ".wav", ".m4a", ".aac", ".ogg", ".flac", ".mp4", ".webm"}
 
@@ -127,18 +127,58 @@ def separate_vocal_stem(input_path: Path, output_dir: Path) -> Path:
     return candidates[0]
 
 
+def align_with_whisperx(segments, audio_path: Path, detected_language: str):
+    """Refine word boundaries using WhisperX while reusing the faster-whisper transcript."""
+    try:
+        import whisperx
+    except ImportError as exc:
+        raise HTTPException(status_code=503, detail="WhisperX alignment is not installed. Rebuild with INSTALL_ALIGNMENT=1.") from exc
+
+    device = os.getenv("WHISPERX_DEVICE", os.getenv("WHISPER_DEVICE", "cpu"))
+    try:
+        audio = whisperx.load_audio(str(audio_path))
+        align_model, metadata = whisperx.load_align_model(
+            language_code=detected_language,
+            device=device,
+            model_name=os.getenv("WHISPERX_ALIGN_MODEL") or None,
+        )
+        source_segments = [
+            {"start": float(segment.start), "end": float(segment.end), "text": segment.text}
+            for segment in segments
+        ]
+        aligned = whisperx.align(source_segments, align_model, metadata, audio, device, return_char_alignments=False)
+        return aligned.get("segments", []), None
+    except Exception as exc:
+        return segments, f"WhisperX alignment unavailable for '{detected_language}': {type(exc).__name__}: {exc}"
+
+
 def make_lines(segments) -> list[LyricLine]:
     lines: list[LyricLine] = []
     for index, segment in enumerate(segments):
         words = []
-        for word in (getattr(segment, "words", None) or []):
+        segment_words = segment.get("words", []) if isinstance(segment, dict) else (getattr(segment, "words", None) or [])
+        for word in segment_words:
+            if isinstance(word, dict):
+                word_text = word.get("word", word.get("text", ""))
+                word_start, word_end = word.get("start"), word.get("end")
+                word_probability = word.get("score", word.get("probability"))
+            else:
+                word_text = word.word
+                word_start, word_end = word.start, word.end
+                word_probability = word.probability
+            if word_start is None or word_end is None:
+                continue
             words.append(LyricWord(
-                text=(word.word or "").strip(),
-                start=round(float(word.start), 3),
-                end=round(float(word.end), 3),
-                probability=round(float(word.probability), 4) if word.probability is not None else None,
+                text=(word_text or "").strip(),
+                start=round(float(word_start), 3),
+                end=round(float(word_end), 3),
+                probability=round(float(word_probability), 4) if word_probability is not None else None,
             ))
-        text = (segment.text or "").strip()
+        segment_text = segment.get("text", "") if isinstance(segment, dict) else segment.text
+        segment_start = segment.get("start", 0) if isinstance(segment, dict) else segment.start
+        segment_end = segment.get("end", 0) if isinstance(segment, dict) else segment.end
+        segment_confidence = segment.get("avg_logprob") if isinstance(segment, dict) else getattr(segment, "avg_logprob", None)
+        text = (segment_text or "").strip()
         if not text:
             continue
         tags = []
@@ -149,11 +189,11 @@ def make_lines(segments) -> list[LyricLine]:
         lines.append(LyricLine(
             id=f"line-{index + 1}",
             text=text,
-            start=round(float(segment.start), 3),
-            end=round(float(segment.end), 3),
+            start=round(float(segment_start), 3),
+            end=round(float(segment_end), 3),
             words=words,
             tags=tags,
-            confidence=round(float(segment.avg_logprob), 4) if getattr(segment, "avg_logprob", None) is not None else None,
+            confidence=round(float(segment_confidence), 4) if segment_confidence is not None else None,
         ))
     counts: dict[str, int] = {}
     for line in lines:
@@ -172,11 +212,17 @@ def health():
         demucs_available = True
     except ImportError:
         demucs_available = False
+    try:
+        import whisperx  # noqa: F401
+        alignment_available = True
+    except ImportError:
+        alignment_available = False
     return {
         "status": "ok",
         "service": "vibe-lyrics",
         "version": APP_VERSION,
         "vocal_isolation_available": demucs_available,
+        "word_alignment_available": alignment_available,
     }
 
 
@@ -185,6 +231,7 @@ async def transcribe(
     file: UploadFile = File(...),
     language: Literal["auto", "hindi", "english", "punjabi", "haryanvi", "bhojpuri"] = Form("auto"),
     separate_vocals: bool = Form(False),
+    align_words: bool = Form(False),
     authorization: str | None = Header(default=None),
 ):
     verify_token(authorization)
@@ -223,10 +270,22 @@ async def transcribe(
                 beam_size=5,
             )
             segments = list(segments)
+            detected = getattr(info, "language", None) or language_code(language) or "unknown"
+            words_aligned = False
+            if align_words:
+                segments, alignment_warning = align_with_whisperx(segments, transcription_path, detected)
+                words_aligned = alignment_warning is None
+                if alignment_warning:
+                    warnings.append(alignment_warning)
             lines = make_lines(segments)
             duration = float(getattr(info, "duration", 0.0) or (lines[-1].end if lines else 0.0))
-            detected = getattr(info, "language", None) or language_code(language) or "unknown"
-            engine = f"demucs:{os.getenv('DEMUCS_MODEL', 'htdemucs')}+faster-whisper:{os.getenv('WHISPER_MODEL', 'small')}" if separate_vocals else f"faster-whisper:{os.getenv('WHISPER_MODEL', 'small')}"
+            engine_parts = []
+            if separate_vocals:
+                engine_parts.append(f"demucs:{os.getenv('DEMUCS_MODEL', 'htdemucs')}")
+            engine_parts.append(f"faster-whisper:{os.getenv('WHISPER_MODEL', 'small')}")
+            if words_aligned:
+                engine_parts.append("whisperx-align")
+            engine = "+".join(engine_parts)
             return TranscriptionResponse(
                 track_name=file.filename or "Uploaded audio",
                 language=detected,
@@ -234,6 +293,7 @@ async def transcribe(
                 engine=engine,
                 duration=round(duration, 3),
                 vocals_separated=separate_vocals,
+                words_aligned=words_aligned,
                 lines=lines,
                 warnings=warnings,
             )
