@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T13:44:13.800Z",
+  "updatedAt": "2026-11-17T13:44:20.258Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -2322,6 +2322,28 @@
       "title": "ganganam_sytle_jeene_ke_hai_chaardin",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "audio-80-0",
+          "t": 8,
+          "end": 35.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:08",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794923058215
+        },
+        {
+          "id": "audio-240-1",
+          "t": 24,
+          "end": 35,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:24",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794923058215
+        },
         {
           "id": "auto-c5d30305-7d18-4eb3-9d8c-7fcce79d7c60",
           "t": 93,
