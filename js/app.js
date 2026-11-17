@@ -191,51 +191,60 @@ async function previewPunch(id) {
   const p=allPunches().find(x=>x.id===id); if(!p)return;
   if(!cur()||audio().paused)return toast("Start a song first to preview a punch over it.");
   if(p.trackId===cur().id)return toast("Choose a punch from a different song.");
-  const deck=A[1-ci], token=++S.punchPreviewToken;
+  const musicDeck=audio(), deck=A[1-ci], token=++S.punchPreviewToken;
+  const masterVolume=vol();
   try {
     clearTimeout(S.punchPreviewTimer);
-    clearInterval(deck._punchFade);
-    deck._punchFade=null;
+    // Cancel any previous punch envelope and restore the underlying song.
+    for(const d of A){clearInterval(d._punchFade);d._punchFade=null;}
+    if(S.punchDuckDeck&&S.punchDuckDeck!==musicDeck)S.punchDuckDeck.volume=vol();
+    musicDeck.volume=masterVolume;
+    S.punchDuckDeck=musicDeck;
     deck.pause();
     deck.src=await getUrl(getLibTrack(p.trackId)&&toTrack(getLibTrack(p.trackId)));
     await waitMetadata(deck);
     const punchLength=Math.max(0.1,Number(p.end)-Number(p.start));
-    // Scale each ramp with punch length; neither ramp can exceed 1.5 seconds.
-    const rampSeconds=Math.min(1.5,punchLength*0.2);
-    const rampMs=Math.max(100,rampSeconds*1000);
+    // Both ramps scale with punch length and are capped at 1.5 seconds.
+    const rampMs=Math.max(100,Math.min(1500,punchLength*200));
     deck.currentTime=p.start;
     deck.volume=0;
     await deck.play();
-    const fade=(from,to,duration,onDone)=>{
+    const fade=(targetDeck,from,to,duration,onDone)=>{
       const started=performance.now();
-      clearInterval(deck._punchFade);
-      deck._punchFade=setInterval(()=>{
+      clearInterval(targetDeck._punchFade);
+      targetDeck._punchFade=setInterval(()=>{
         const progress=Math.min(1,(performance.now()-started)/duration);
         const eased=progress*progress*(3-2*progress);
-        deck.volume=from+(to-from)*eased;
+        targetDeck.volume=from+(to-from)*eased;
         if(progress>=1){
-          clearInterval(deck._punchFade);
-          deck._punchFade=null;
+          clearInterval(targetDeck._punchFade);
+          targetDeck._punchFade=null;
           if(onDone)onDone();
         }
       },25);
     };
-    fade(0,vol(),rampMs);
+    // Punch rises to 100% while the playing song ducks to 65%.
+    fade(deck,0,masterVolume,rampMs);
+    fade(musicDeck,musicDeck.volume,masterVolume*0.65,rampMs);
     clearTimeout(S.punchPreviewTimer);
-    // Start the fade-out early enough to reach silence exactly at the punch end.
+    // Fade the punch to silence and restore the original song to 100% together.
     S.punchPreviewTimer=setTimeout(()=>{
       if(token!==S.punchPreviewToken)return;
-      fade(deck.volume,0,rampMs,()=>{
+      fade(deck,deck.volume,0,rampMs,()=>{
         deck.pause();
         deck.removeAttribute("src");
         deck.load();
       });
+      fade(musicDeck,musicDeck.volume,masterVolume,rampMs,()=>{
+        if(S.punchDuckDeck===musicDeck)S.punchDuckDeck=null;
+      });
     },Math.max(0,punchLength*1000-rampMs));
-    toast("Punch preview playing with a short fade-in and fade-out.");
+    toast("Punch playing at full volume; the current song is ducked to 65%.");
   } catch(e){
-    clearInterval(deck._punchFade);
-    deck._punchFade=null;
+    for(const d of A){clearInterval(d._punchFade);d._punchFade=null;}
     deck.pause();
+    musicDeck.volume=masterVolume;
+    if(S.punchDuckDeck===musicDeck)S.punchDuckDeck=null;
     toast("Could not preview this punch: "+e.message);
   }
 }
