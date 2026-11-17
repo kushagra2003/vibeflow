@@ -64,11 +64,13 @@
     exportButton.hidden = true;
     result.replaceChildren();
     const isolate = $("#lyricsSeparateVocals").checked;
-    setStatus(isolate ? "Separating vocals, then generating timestamped lyrics. This can take several minutes…" : "Uploading audio and generating timestamped lyrics…", "busy");
+    const align = $("#lyricsAlignWords").checked;
+    setStatus(align ? "Generating transcript and refining word-level timing. This can take several minutes…" : isolate ? "Separating vocals, then generating timestamped lyrics. This can take several minutes…" : "Uploading audio and generating timestamped lyrics…", "busy");
     const body = new FormData();
     body.append("file", file);
     body.append("language", $("#lyricsLanguage").value);
     body.append("separate_vocals", isolate ? "true" : "false");
+    body.append("align_words", align ? "true" : "false");
     try {
       const response = await fetch("/.netlify/functions/lyrics?path=v1/transcribe", { method: "POST", body });
       const payload = await response.json();
