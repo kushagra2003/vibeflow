@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T18:08:24.175Z",
+  "updatedAt": "2026-11-17T18:08:44.785Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -6893,6 +6893,28 @@
       "title": "Ram Chahe Leela x Aria",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "audio-0-0",
+          "t": 0,
+          "end": 10,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:00",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794938922554
+        },
+        {
+          "id": "audio-320-1",
+          "t": 32,
+          "end": 40,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:32",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794938922554
+        },
         {
           "id": "1ff1608f-4f52-4a50-a79b-a664c836343b",
           "t": 81,
