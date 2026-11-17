@@ -1213,6 +1213,14 @@ window.VibeFlowDJ = {
     save();
     return map;
   },
+  planVocalSafeMix(outgoingId,incomingId,outgoingAt,crossfadeSeconds) {
+    const outgoing=S.queue.find(item=>item.id===outgoingId);
+    const incoming=S.queue.find(item=>item.id===incomingId);
+    if(!window.VibeVocalIntelligence) return {safe:false,reason:"Vocal intelligence module is unavailable."};
+    return window.VibeVocalIntelligence.planCandidate(
+      outgoing?.vocalMap,incoming?.vocalMap,Number(outgoingAt)||0,Number(crossfadeSeconds)||6
+    );
+  },
   applyLyricsHooks(trackId, generatedHooks) {
     const track=S.queue.find(item=>item.id===trackId);
     if(!track || !Array.isArray(generatedHooks)) return false;
