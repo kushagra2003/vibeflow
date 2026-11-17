@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T15:19:29.386Z",
+  "updatedAt": "2026-11-17T15:19:53.059Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -3772,6 +3772,18 @@
       "title": "Kalyani X Aasa Kooda X Majboor",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "auto-6a86c11f-ca02-4327-aeed-5482908f457b",
+          "t": 16,
+          "end": 29.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:16",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794928791683
+        },
         {
           "id": "auto-fbc01444-1912-44f5-9b59-0e4bb9077914",
           "t": 56,
