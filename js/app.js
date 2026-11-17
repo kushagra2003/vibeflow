@@ -449,7 +449,7 @@ function renderHooks() {
   $("#hooksList").querySelectorAll("[data-hook-target]").forEach(b=>b.onclick=()=>{
     S.hookEditTarget[b.dataset.hookTarget]=b.dataset.target; renderHooks();
   });
-  $("#hooksList").querySelectorAll("[data-hook-adjust]").forEach(b=>b.onclick=>
+  $("#hooksList").querySelectorAll("[data-hook-adjust]").forEach(b=>b.onclick=()=>
     adjustHookTime(b.dataset.hookAdjust,Number(b.dataset.delta),b.dataset.target)
   );
   $("#hooksList").querySelectorAll("[data-hook-end]").forEach(b=>b.onclick=()=>markHookEnd(b.dataset.hookEnd));
