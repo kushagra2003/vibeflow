@@ -541,16 +541,9 @@ function ensureQueued(track) {
   if(i<0) { S.queue.splice(Math.max(0,S.idx+1),0,track); i=Math.max(0,S.idx+1); }
   return i;
 }
-function mixStartForHook(hook,track=cur()) {
+function mixStartForHook(hook) {
   const lead=Math.max(0,(S.currentCrossfadeSeconds ?? mixSec())-settings.leadSubtract);
-  const raw=Math.max(0,hook.t-lead);
-  const analysis=track?.mixAnalysis;
-  const phraseGrid=analysis?.phraseStarts||[];
-  const barGrid=analysis?.barStarts||[];
-  const grid=phraseGrid.length?phraseGrid:barGrid;
-  if(!grid.length) return raw;
-  const aligned=grid.reduce((best,t)=>Math.abs(t-raw)<Math.abs(best-raw)?t:best,grid[0]);
-  return Math.abs(aligned-raw)<=8?Math.max(0,aligned):raw;
+  return Math.max(0,hook.t-lead);
 }
 
 // ---------- Mix choice dialog ----------
@@ -1005,17 +998,6 @@ function seekResetDuration() {
   if(h) return settings.hookPlaySeconds;
   return settings.noHookSeconds;
 }
-function phraseAlignedDeadline(track,target) {
-  const analysis=track?.mixAnalysis;
-  if(!analysis || Number(analysis.bpmConfidence||0)<0.12) return target;
-  const phrases=analysis.phraseStarts||[];
-  const bars=analysis.barStarts||[];
-  const nextPhrase=phrases.find(time=>time>=target);
-  if(nextPhrase!=null && nextPhrase-target<=16) return nextPhrase;
-  const nextBar=bars.find(time=>time>=target);
-  if(nextBar!=null && nextBar-target<=2) return nextBar;
-  return target;
-}
 function checkHookTimer() {
   // Hook-end and fallback timers are automatic transitions, never manual controls.
   if (!automaticSwitchingEnabled()) return;
@@ -1034,13 +1016,13 @@ function checkHookTimer() {
     const learnedEnd=S.training.active?window.VibeLearningModel.getOffset(t,{id:h.hookId,t:h.t},"outgoing"):0;
     // Manual saved ends already carry the learned end offset; generated/no-end hooks use duration + offset.
     const rawDeadline=manuallySavedEnd?Number(h.end):h.t+settings.hookPlaySeconds+learnedEnd;
-    const deadline=phraseAlignedDeadline(t,rawDeadline);
+    const deadline=rawDeadline;
     if(a.currentTime>=deadline) handleAutoAdvance();
   } else {
     const fallback=S.activeNoHookDeadline?.trackId===t.id
       ? S.activeNoHookDeadline.at
       : settings.noHookSeconds;
-    const deadline=phraseAlignedDeadline(t,fallback);
+    const deadline=fallback;
     if(a.currentTime>=deadline) handleAutoAdvance();
   }
 }
@@ -1214,8 +1196,9 @@ window.VibeFlowDJ = {
       if(entry){entry.mixAnalysis=analysis;entry.hooks=track.hooks;saveLib();}
     }
     save();
+    // Do not rerender the whole player or emit queue-updated from background analysis.
+    // That event can recursively schedule more analysis while a transition is pending.
     renderHooks();
-    render();
     return {analysis,generatedHooks:cues.length};
   },
   applyLyricsHooks(trackId, generatedHooks) {
