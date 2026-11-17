@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T13:57:24.632Z",
+  "updatedAt": "2026-11-17T14:00:06.081Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -4422,6 +4422,28 @@
       "title": "PARTY ALL NIGHT __ REMIX __ DJ AK __ DJ AKASH TEJAS __ HONEY SINGH __ AKSHAY KUMAR __ SONAKSHI SINHA(MP3_160K)",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "audio-140-0",
+          "t": 14,
+          "end": 28,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:14",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794924004619
+        },
+        {
+          "id": "audio-340-1",
+          "t": 34,
+          "end": 42,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:34",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794924004619
+        },
         {
           "id": "auto-40959f6f-cc30-4e72-ac97-02a14e45bf29",
           "t": 87,
