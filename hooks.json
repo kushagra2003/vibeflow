@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T14:01:38.462Z",
+  "updatedAt": "2026-11-17T14:02:10.032Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -1011,6 +1011,28 @@
       "title": "Arijit Singh _ Holiday _ Akshay Kumar_ Sonakshi Sinha _ Aditi Singh Sharma(MP3_160K)",
       "artist": "Blame The Night",
       "hooks": [
+        {
+          "id": "audio-160-0",
+          "t": 16,
+          "end": 52,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:16",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1794924128483
+        },
+        {
+          "id": "audio-440-1",
+          "t": 44,
+          "end": 52,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:44",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794924128483
+        },
         {
           "id": "auto-6968049a-c9e3-4390-8c28-0d34cfe3c016",
           "t": 104,
