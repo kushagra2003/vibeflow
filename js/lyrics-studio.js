@@ -7,6 +7,7 @@
   const result = $("#lyricsResult");
   const autoToggle = $("#lyricsAutoMode");
   const analysed = new Set();
+  const attempted = new Set();
   const inFlight = new Set();
   const cache = new Map();
   let autoEnabled = false;
@@ -150,7 +151,8 @@
   }
   async function analyse(track,{silent=false}={}){
     if(!track){if(!silent)setStatus("There is no selected track yet. Start a song or add tracks to the queue.","warning");return;}
-    if(inFlight.has(track.id))return;
+    if(inFlight.has(track.id)||attempted.has(track.id))return;
+    attempted.add(track.id);
     if(cache.has(track.id)){const cached=cache.get(track.id);if(!silent)renderResult(track,cached.data,cached.hooks);return;}
     inFlight.add(track.id);
     if(!silent)setStatus("Finding timed lyrics for "+track.title+"…","busy");
