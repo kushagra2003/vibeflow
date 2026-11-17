@@ -200,14 +200,21 @@
         let buffer;
         try { buffer = await context.decodeAudioData(bytes.slice(0)); }
         catch { throw new Error("The audio file could not be decoded by this browser."); }
-        if (buffer.duration > 720) throw new Error("Worker analysis is limited to tracks under 12 minutes to protect browser memory.");
-        const channels = [];
-        const transfers = [];
-        for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
-          const pcm = buffer.getChannelData(channel);
-          channels.push(pcm);
-          transfers.push(pcm.buffer);
-        }
+        if (buffer.duration > 480) throw new Error("Worker analysis is limited to tracks under 8 minutes to protect browser memory.");
+        // Resample/mix to mono through the browser audio renderer before transfer.
+        // The worker receives ~11 kHz PCM instead of multi-channel 44/48 kHz PCM.
+        const targetRate = 11025;
+        const OfflineContext = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+        if (!OfflineContext) throw new Error("This browser does not support safe background audio resampling.");
+        const offline = new OfflineContext(1, Math.ceil(buffer.duration * targetRate), targetRate);
+        const source = offline.createBufferSource();
+        source.buffer = buffer;
+        source.connect(offline.destination);
+        source.start(0);
+        const monoBuffer = await offline.startRendering();
+        const pcm = monoBuffer.getChannelData(0);
+        const channels = [pcm];
+        const transfers = [pcm.buffer];
         const worker = new Worker(new URL("js/audio-analysis.worker.js", document.baseURI), { type: "classic" });
         try {
           const result = await new Promise((resolve, reject) => {
