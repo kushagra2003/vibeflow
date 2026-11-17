@@ -50,3 +50,18 @@ This processing runs in the browser and downloads/decodes the selected audio for
 - The DJ bridge stores these maps with queue tracks so a future transition planner can inspect both songs.
 
 **Important safety boundary:** synced lyrics tell us where known lyric lines occur; they do not prove that the gaps contain no backing vocals, ad-libs or wordless singing. The current browser waveform worker does not detect vocals. Its output explicitly says `vocalStatus: "not-detected"`. The planner therefore returns candidate-only, never `safe: true`. Do not enable automatic instrumental-only transitions until a real vocal-activity model or source-separated vocal stem has been evaluated on a representative music set.
+
+
+## Shared hook backup (GitHub)
+
+Hooks are still cached locally for offline resilience, and are also synchronized to the repository's `hooks.json` through a Cloudflare Pages Function. This makes saved hooks available to every browser/device using the deployed site. The Pages Function keeps the GitHub token server-side; never put a GitHub token in frontend JavaScript.
+
+### One-time Cloudflare setup
+
+1. Deploy the repository to Cloudflare Pages with Functions enabled (the `functions/api/hooks.js` file is picked up automatically by Pages).
+2. In Cloudflare Pages → your project → Settings → Variables and Secrets, add **`GITHUB_TOKEN`** as an encrypted secret. Use a fine-grained GitHub token scoped only to this repository with **Contents: Read and write** permission.
+3. Optionally set `GITHUB_REPOSITORY` (defaults to `kushagra2003/vibeflow`) and `GITHUB_BRANCH` (defaults to `main`).
+4. Redeploy the Pages project so the Function receives the secret.
+5. Open VIBE FLOW, let the library load, and save or rename a hook. The status will show that shared hooks are loaded/backed up when synchronization is working.
+
+The endpoint merges hook lists by stable hook ID instead of replacing the entire shared archive, reducing the chance that two browsers overwrite one another. Existing browser-local hooks are merged into the shared archive on load. Until the Cloudflare secret is configured, the app continues to use localStorage and the manual JSON export/import controls.
