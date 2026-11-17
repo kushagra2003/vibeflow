@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T14:27:28.079Z",
+  "updatedAt": "2026-11-17T14:45:04.238Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -20,6 +20,18 @@
           "generatedAt": 1794894233527
         },
         {
+          "id": "auto-537fe093-258f-490b-bcd2-c8a840bcb491",
+          "t": 21,
+          "end": 28,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7241823220247573,
+          "generatedAt": 1794868011287,
+          "verifiedAt": 1794868047527
+        },
+        {
           "id": "auto-4a7cb737-63a5-43f3-9af4-f686d2c27071",
           "t": 48,
           "end": null,
@@ -31,6 +43,18 @@
           "generatedAt": 1794894233527
         },
         {
+          "id": "auto-c3dd5557-ed61-4db2-ae6d-8a99c0873e42",
+          "t": 51,
+          "end": 60,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7092187295753141,
+          "generatedAt": 1794868011287,
+          "verifiedAt": 1794868061192
+        },
+        {
           "id": "auto-fdc1c325-a782-4c91-9f50-5c7249193d81",
           "t": 92,
           "end": null,
@@ -40,6 +64,18 @@
           "detector": "repeated-section",
           "confidence": 0.6732243285661246,
           "generatedAt": 1794894233527
+        },
+        {
+          "id": "auto-593684a9-22b2-46eb-ba46-27eff66cb9fd",
+          "t": 95.5,
+          "end": 104,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.6732244758971672,
+          "generatedAt": 1794868011287,
+          "verifiedAt": 1794868080038
         },
         {
           "id": "auto-530274ff-9ec3-4664-baa1-bfe0791e159c",
@@ -62,6 +98,18 @@
           "detector": "repeated-section",
           "confidence": 0.709148341077552,
           "generatedAt": 1794894233527
+        },
+        {
+          "id": "auto-0857ca38-b2f9-40fb-9b3e-50d4715553d5",
+          "t": 140,
+          "end": 146,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7090816957015664,
+          "generatedAt": 1794868011287,
+          "verifiedAt": 1794868095907
         },
         {
           "id": "auto-b0b7a141-b5cd-49b9-a26c-a9868fb4c1d6",
@@ -379,6 +427,17 @@
           "generatedAt": 1794895287842
         },
         {
+          "id": "auto-74559868-52d6-4ebf-a4a7-9c313ce80615",
+          "t": 80,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6751719178978961,
+          "generatedAt": 1794867582349
+        },
+        {
           "id": "auto-35ea654f-43ea-49ea-bcdc-92923e9f2127",
           "t": 80.5,
           "end": 100,
@@ -674,6 +733,17 @@
           "endSource": "auto"
         },
         {
+          "id": "auto-6f61a58d-91fb-42b5-a9f6-4bdbb2b1d3d1",
+          "t": 91,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7508836924764682,
+          "generatedAt": 1794898743399
+        },
+        {
           "id": "auto-269447e9-bb84-47d7-854e-aa9490cd459e",
           "t": 102,
           "end": 152.02,
@@ -749,6 +819,18 @@
           "detector": "energy-peak",
           "confidence": 0.53,
           "generatedAt": 1794921011478
+        },
+        {
+          "id": "auto-680a2d16-bd08-44f2-94ee-d07f5a2476e0",
+          "t": 50,
+          "end": 58,
+          "endSource": "auto",
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6046384068570486,
+          "generatedAt": 1794899198508
         },
         {
           "id": "auto-cc502c8b-5cc8-457a-a970-929f09ad46e4",
@@ -852,6 +934,17 @@
           "verifiedAt": 1794894157779,
           "endSource": "manual",
           "endApproved": true
+        },
+        {
+          "id": "auto-a11163e8-5669-4096-a0d4-7a3f398ca4a0",
+          "t": 115,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7189130765560517,
+          "generatedAt": 1794867922952
         },
         {
           "id": "auto-3d756830-e998-4a72-bc91-8b691f716863",
@@ -980,6 +1073,17 @@
           "generatedAt": 1794895754977
         },
         {
+          "id": "auto-68ecadfb-f84f-4977-a6f9-2e216f730927",
+          "t": 172,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7580324943031559,
+          "generatedAt": 1794867689837
+        },
+        {
           "id": "auto-6ee81e5f-4942-4f9c-a6ad-b8220c31f121",
           "t": 176.5,
           "end": 230,
@@ -1067,6 +1171,17 @@
           "generatedAt": 1794893887222,
           "endSource": "manual",
           "endApproved": true
+        },
+        {
+          "id": "auto-4528d428-18ec-475b-acf7-8a049280a087",
+          "t": 113,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7156952466251781,
+          "generatedAt": 1794868038787
         },
         {
           "id": "auto-98373cfc-bdf1-4cc1-91dc-6421dce850cd",
@@ -1708,6 +1823,17 @@
           "generatedAt": 1794902304434
         },
         {
+          "id": "auto-a8c859a4-a870-4cd3-b924-5af1eb0549e0",
+          "t": 138,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6541402669773166,
+          "generatedAt": 1794867614242
+        },
+        {
           "id": "auto-a92cfafb-cad7-4808-b8f1-0c5c55a07e32",
           "t": 154,
           "end": 168,
@@ -1718,6 +1844,17 @@
           "detector": "repeated-section",
           "confidence": 0.7459207133115818,
           "generatedAt": 1794902304434
+        },
+        {
+          "id": "auto-a92f2a5a-9af2-44bf-a008-0df66aac424d",
+          "t": 160,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7489780808596987,
+          "generatedAt": 1794867614242
         },
         {
           "id": "auto-87b3b03c-8bb7-4033-8fd1-346edfb82808",
@@ -2822,6 +2959,17 @@
           "detector": "repeated-section",
           "confidence": 0.7156623586339633,
           "generatedAt": 1794895658291
+        },
+        {
+          "id": "auto-289842ca-8564-476e-a918-c36158fc6a72",
+          "t": 128,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7191993152165083,
+          "generatedAt": 1794898682246
         }
       ]
     },
@@ -2851,6 +2999,17 @@
           "detector": "energy-peak",
           "confidence": 0.53,
           "generatedAt": 1794921005074
+        },
+        {
+          "id": "auto-bf4282d8-3b18-4e28-8dd6-dfc94c414c1f",
+          "t": 40,
+          "end": null,
+          "lyric": "High-energy section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.6037748311653486,
+          "generatedAt": 1794867361262
         },
         {
           "id": "auto-905bb7e7-0c6a-4ae6-b6d7-ea4d880a9a5b",
@@ -2899,6 +3058,17 @@
           "detector": "repeated-section",
           "confidence": 0.6819933128998278,
           "generatedAt": 1794895800281
+        },
+        {
+          "id": "auto-e61e7a00-3aa4-4f63-8bfd-58317c5128f5",
+          "t": 116,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6421241810878029,
+          "generatedAt": 1794867361262
         },
         {
           "id": "auto-c6454b60-b057-4e0a-a5ab-25c209ba5c1a",
@@ -3096,6 +3266,17 @@
           "detector": "repeated-section",
           "confidence": 0.778474131482921,
           "generatedAt": 1794901860853
+        },
+        {
+          "id": "auto-6581b7ea-19a1-4a5f-aa83-5fc7707d326e",
+          "t": 226,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.822104906708931,
+          "generatedAt": 1794867516155
         }
       ]
     },
@@ -4028,6 +4209,17 @@
           "detector": "repeated-section",
           "confidence": 0.7137962664138768,
           "generatedAt": 1794915999163
+        },
+        {
+          "id": "auto-797c97ee-ce71-4d98-b435-4b7d539c1aa6",
+          "t": 166,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7627504103140179,
+          "generatedAt": 1794867970029
         },
         {
           "id": "auto-6dc4118f-815a-40f1-b1a4-043155f12fad",
@@ -5460,6 +5652,39 @@
           "endApproved": true
         },
         {
+          "id": "auto-79441e24-8d83-447a-b785-4d23ed115c8c",
+          "t": 91,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6645947064729093,
+          "generatedAt": 1794867415611
+        },
+        {
+          "id": "auto-27a124d7-6336-444e-9858-87f8a4f29b32",
+          "t": 133,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.724128543788698,
+          "generatedAt": 1794867415611
+        },
+        {
+          "id": "auto-96ed775b-f2ad-4741-a97c-62f531d9a9b9",
+          "t": 145,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6868918178362236,
+          "generatedAt": 1794867415611
+        },
+        {
           "id": "auto-b222713e-69c7-4e2b-8a66-1fbb8fcb3251",
           "t": 156,
           "end": 168,
@@ -5527,6 +5752,17 @@
           "generatedAt": 1794902364047
         },
         {
+          "id": "auto-85462103-e841-4b03-a6b6-c9c45e287613",
+          "t": 76,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.6796690792603197,
+          "generatedAt": 1794867304345
+        },
+        {
           "id": "auto-5a9758aa-b49b-476f-a25c-0f091c40688f",
           "t": 139,
           "end": 147,
@@ -5549,6 +5785,17 @@
           "detector": "repeated-section",
           "confidence": 0.6728821570593766,
           "generatedAt": 1794902364047
+        },
+        {
+          "id": "auto-5630e698-6934-46f3-9d24-352b07a609bd",
+          "t": 153,
+          "end": null,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.728530650669942,
+          "generatedAt": 1794867304345
         },
         {
           "id": "auto-5a6c709b-cc26-4091-bd9b-aec5fd9e891a",
