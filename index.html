@@ -28,13 +28,14 @@
         <button type="submit">Search</button>
       </form>
       <button id="lyricsPanelToggle" class="party-launch lyrics-panel-toggle" type="button" aria-expanded="false" aria-controls="lyricsStudio">♫ Lyrics tools</button>
-      <button id="partyModeButton" class="party-launch">✦ Party mode</button>
+      <button id="punchMenuButton" class="party-launch" type="button">✦ Punches</button><button id="partyModeButton" class="party-launch">✦ Party mode</button>
     </header>
 
     <section id="firstPlayPrompt" class="first-play-prompt" aria-label="Start VIBE FLOW">
       <div><span class="eyebrow">YOUR MUSIC. YOUR DJ.</span><strong>Ready to let VIBE FLOW take over?</strong><small>Start a random track with a manually saved hook.</small></div>
       <button id="firstPlayButton" class="first-play-button" type="button"><span aria-hidden="true">▶</span> Start listening</button>
     </section>
+    <section id="homePunches" class="home-punches" aria-label="Pinned music punches"></section>
     <section class="now-card">
       <div class="cover-wrap no-art"><img id="art" alt="" src=""><div class="vinyl-fallback paused" id="vinylFallback" aria-hidden="true"><div class="vinyl-disc"><div class="vinyl-label"><span>V</span></div></div><span class="vinyl-caption">VIBE FLOW</span></div><div class="cover-shine"></div></div>
       <div class="now-info">
@@ -93,6 +94,7 @@
         <input id="hookLabel" placeholder="Hook name or lyric line (e.g. Chorus)">
         <button id="addHook" class="primary-btn">＋ Mark hook here</button>
       </div>
+      <div class="punch-create"><input id="punchName" placeholder="Punch name (optional)"><button id="markPunchStart" type="button">Mark punch start</button><span id="punchStartTime">Not set</span><button id="markPunchEnd" class="primary-btn" type="button">Save punch end</button></div>
       <div id="hooksList" class="hooks-list"><div class="empty-state">Play a song and mark its best moments as hooks.</div></div>
       <div class="hook-data-actions"><button id="exportHooks" type="button">↓ Export hook backup</button><button id="importHooks" type="button">↑ Restore hook backup</button><input id="importHooksFile" type="file" accept="application/json,.json" hidden></div>
       <div class="ai-hook-tools"><div class="ai-hook-tools-copy"><b>VIBE FLOW · LOCAL HOOK ANALYSIS</b><small>Detect repeated musical sections and high-energy moments directly in your browser. No AI API key or audio upload required.</small></div><button id="scanHooks" class="primary-btn" type="button">⌕ Analyse for hooks</button></div>

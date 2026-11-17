@@ -403,3 +403,13 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 .first-play-button:hover{transform:translateY(-2px);filter:brightness(1.12)}
 .first-play-button:disabled{opacity:.7;cursor:wait;transform:none}
 @media(max-width:700px){.first-play-prompt{align-items:flex-start;flex-direction:column}.first-play-button{width:100%}}
+
+/* Manual punch library and four home-screen quick cues */
+.home-punches{margin:0 0 16px;padding:15px 17px;border:1px solid #31566a;border-radius:16px;background:linear-gradient(110deg,#10232c,#171b2b 70%,#211a32)}
+.punch-deck-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.punch-deck-head>div{display:grid;gap:3px}.punch-deck-head>b{font-size:14px}
+.punch-deck-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.punch-card,.punch-manager-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;border:1px solid #35475d;border-radius:10px;background:#101824}
+.punch-card>div:first-child,.punch-manager-row label span{display:grid;gap:4px;min-width:0}.punch-card b,.punch-manager-row b{font-size:11px}.punch-card small,.punch-manager-row small{font-size:9px;color:var(--muted)}
+.punch-card-actions{display:flex;gap:5px;flex-wrap:wrap}.punch-card-actions button,.punch-manager-row button,.punch-deck-head button{font-size:9px;padding:6px 8px}
+.punch-create{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0}.punch-create input{flex:1 1 150px;min-height:38px;padding:8px;border:1px solid var(--border);border-radius:8px;background:#111722;color:inherit}.punch-create button{padding:9px 12px}.punch-create span{font-size:10px;color:#9edce6;min-width:55px}
+.punch-manager-list{display:grid;gap:8px;max-height:55vh;overflow:auto}.punch-manager-row label{display:flex;align-items:center;gap:9px;flex:1;min-width:0}.punch-manager-row input{accent-color:#9b7cff}.punch-manager-foot{display:flex;justify-content:flex-end;margin-top:14px}
+@media(max-width:700px){.punch-deck-grid{grid-template-columns:1fr}.punch-card{align-items:flex-start;flex-direction:column}.punch-manager-row{flex-wrap:wrap}}
