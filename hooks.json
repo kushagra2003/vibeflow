@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-17T14:02:41.225Z",
+  "updatedAt": "2026-11-17T14:02:45.878Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -617,6 +617,28 @@
       "title": "Amplifier _ Imran Khan _ Reggaeton Mix _ DJ Ravish(MP3_160K)",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "audio-160-0",
+          "t": 16,
+          "end": 28.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:16",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794924164533
+        },
+        {
+          "id": "audio-320-1",
+          "t": 32,
+          "end": 43,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:32",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.53,
+          "generatedAt": 1794924164533
+        },
         {
           "id": "auto-2c768d3c-9804-40f3-8c7f-9736c0502e32",
           "t": 36,
