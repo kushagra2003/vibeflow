@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#0b0912">
   <title>VibeFlow — AI DJ</title>
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/arrangement-studio.css">
 </head>
 <body>
 <div class="app-shell">
@@ -31,6 +32,20 @@
       <button id="punchMenuButton" class="party-launch" type="button">✦ Punches</button><button id="partyModeButton" class="party-launch">✦ Party mode</button>
     </header>
 
+
+    <section id="arrangementStudio" class="arrangement-studio">
+      <div class="arrangement-heading"><div><div class="eyebrow">VIBE FLOW · SONG ARRANGEMENT</div><h2>Music workspace</h2><p>Choose a song, mark its musical sections, and audition every selection precisely.</p></div><div class="arrangement-actions"><button id="decodeExport" type="button">Export decode</button><button id="decodeImportButton" type="button">Import decode</button><input id="decodeImportFile" type="file" accept="application/json,.json" hidden></div></div>
+      <div class="arrangement-layout">
+        <aside class="arrangement-library"><div class="arrangement-subhead"><b>YOUR SONGS</b><span id="arrangementSongCount">0 tracks</span></div><input id="arrangementSearch" placeholder="Find a song…" autocomplete="off"><div id="arrangementSongList" class="arrangement-song-list"><div class="empty-state">Loading your music…</div></div></aside>
+        <div class="arrangement-editor">
+          <div class="arrangement-track-head"><div><span class="arrangement-track-kicker">SELECTED TRACK</span><h3 id="arrangementTrackTitle">Choose a song to begin</h3><p id="arrangementTrackArtist">Your song arrangement will appear here.</p></div><div class="arrangement-track-actions"><button id="arrangementPlayFull" type="button" disabled>▶ Play full song</button><button id="arrangementQueue" type="button" disabled>＋ Add to queue</button></div></div>
+          <div class="arrangement-wave-wrap"><div class="arrangement-wave-meta"><span>WAVEFORM · CLICK TO POSITION PLAYHEAD</span><b id="arrangementClock">0:00 / 0:00</b></div><canvas id="arrangementWaveform" width="1200" height="190" aria-label="Audio waveform timeline"></canvas><div class="arrangement-playhead-row"><span id="arrangementCursorLabel">Cursor 0:00</span><div class="arrangement-nudges"><button data-nudge="-1" type="button">−1s</button><button data-nudge="-0.5" type="button">−0.5s</button><button data-nudge="-0.1" type="button">−0.1s</button><button data-nudge="0.1" type="button">+0.1s</button><button data-nudge="0.5" type="button">+0.5s</button><button data-nudge="1" type="button">+1s</button></div></div></div>
+          <div class="arrangement-selection"><div class="arrangement-selection-head"><b>SELECTION RANGE</b><span>Set IN / OUT while listening or type exact timestamps</span></div><div class="arrangement-range-fields"><label>IN <input id="arrangementIn" type="number" min="0" step="0.1" value="0"></label><label>OUT <input id="arrangementOut" type="number" min="0" step="0.1" value="0"></label><button id="arrangementSetIn" type="button">Set IN at cursor</button><button id="arrangementSetOut" type="button">Set OUT at cursor</button></div><div class="arrangement-selection-controls"><button id="arrangementPlaySelection" class="primary-btn" type="button" disabled>▶ Play selection</button><button id="arrangementStopPreview" type="button" disabled>■ Stop</button><label class="arrangement-loop"><input id="arrangementLoop" type="checkbox" checked> Loop selection</label><span id="arrangementPreviewStatus">Select a range to audition it.</span></div></div>
+          <div class="arrangement-mark"><div><div class="eyebrow">SAVE THIS SECTION</div><b>What is happening in this part?</b></div><div class="arrangement-type-picker"><label><input type="radio" name="segmentType" value="intro" checked><span class="type-intro">INTRO</span></label><label><input type="radio" name="segmentType" value="instrumental"><span class="type-instrumental">INSTRUMENTAL</span></label><label><input type="radio" name="segmentType" value="vocals"><span class="type-vocals">VOCALS</span></label></div><div class="arrangement-save-row"><input id="arrangementSegmentName" placeholder="Optional label · e.g. Chorus 2"><button id="arrangementSaveSegment" class="primary-btn" type="button" disabled>＋ Save segment</button></div><small class="arrangement-hint">Segments can repeat and overlap only if you intentionally create them. Keep vocal sections complete; mark instrumental only when lead vocals are absent.</small></div>
+          <div class="arrangement-segments"><div class="arrangement-subhead"><b>SONG ARRANGEMENT</b><span id="arrangementSegmentCount">0 sections saved</span></div><div id="arrangementSegmentList" class="arrangement-segment-list"><div class="empty-state">No sections marked yet. Select a range and save it as Intro, Instrumental or Vocals.</div></div></div>
+        </div>
+      </div>
+    </section>
     <section id="firstPlayPrompt" class="first-play-prompt" aria-label="Start VIBE FLOW">
       <div><span class="eyebrow">YOUR MUSIC. YOUR DJ.</span><strong>Ready to let VIBE FLOW take over?</strong><small>Start a random track with a manually saved hook.</small></div>
       <button id="firstPlayButton" class="first-play-button" type="button"><span aria-hidden="true">▶</span> Start listening</button>
@@ -163,10 +178,12 @@
 <div id="toast" role="status"></div>
 <audio id="a1" preload="auto"></audio>
 <audio id="a2" preload="auto"></audio>
+<audio id="arrangementPreviewAudio" preload="auto"></audio>
 <script src="js/hook-scanner.js"></script>
 <script src="js/vocal-intelligence.js"></script>
 <script src="js/learning-model.js"></script>
 <script src="js/app.js"></script>
 <script src="js/lyrics-studio.js"></script>
+<script src="js/arrangement-studio.js"></script>
 </body>
 </html>
