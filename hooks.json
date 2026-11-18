@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-18T13:49:06.222Z",
+  "updatedAt": "2026-11-18T14:09:04.377Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -4691,6 +4691,30 @@
       "title": "Intro – Cheema Y _ Full Song _ Punjabi Song _ HD Audio(MP3_160K)",
       "artist": "Unknown",
       "hooks": [
+        {
+          "id": "auto-7974668f-032c-4fd4-825b-a7c4c01de321",
+          "t": 12,
+          "end": 37.5,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:12",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1795010941192
+        },
+        {
+          "id": "auto-9b75e665-483e-4bc5-b103-a2a3aa023476",
+          "t": 30,
+          "end": 38,
+          "endSource": "auto",
+          "lyric": "Energy section · 0:30",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "energy-peak",
+          "confidence": 0.54,
+          "generatedAt": 1795010941192
+        },
         {
           "id": "auto-63e1ae78-478d-482f-8e2f-f86f5f9cbd7d",
           "t": 62,
