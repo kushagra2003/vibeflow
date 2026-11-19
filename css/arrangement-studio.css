@@ -47,3 +47,4 @@ body.arrangement-mode.insights-active .now-card .wave-panel{display:block}
 body.arrangement-mode.insights-active .now-info{display:none}
 body.arrangement-mode.insights-active .cover-wrap{display:none}
 @media(max-width:900px){body.arrangement-mode.insights-active .now-card{grid-template-columns:1fr}}
+.insights-active .waveform{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:7px;align-items:stretch;min-height:0}.insights-dash-box{min-width:0;width:auto}.insights-dash-box.is-active{border-color:#e0b8ff;box-shadow:0 0 18px #a879ff35}.insights-progress-card{min-width:0}.insights-progress-card.is-active{box-shadow:0 0 16px #a879ff30}
