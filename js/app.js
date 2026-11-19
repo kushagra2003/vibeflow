@@ -1717,9 +1717,9 @@ $("#closeParty").onclick=async()=>{
   $("#partyMode").hidden=true; document.body.classList.remove("party-mode-open"); stopPartyBrandLoop();
   try { if(document.fullscreenElement) await document.exitFullscreen?.(); } catch {}
 };
-$("#partyPlay").onclick=togglePlay;
-$("#partyNext").onclick=next;
-$("#partyPrev").onclick=previous;
+if($("#partyPlay")) $("#partyPlay").onclick=togglePlay;
+if($("#partyNext")) $("#partyNext").onclick=next;
+if($("#partyPrev")) $("#partyPrev").onclick=previous;
 document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement && !$("#partyMode").hidden){$("#partyMode").hidden=true;document.body.classList.remove("party-mode-open");stopPartyBrandLoop();}});
 $("#openSettings").onclick=openSettings; $("#footerSettings").onclick=openSettings;
 function toggleAutoMix() {
