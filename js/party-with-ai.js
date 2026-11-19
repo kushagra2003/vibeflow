@@ -1,5 +1,5 @@
 (()=>{"use strict";
-const $=s=>document.querySelector(s),root=$("#partyAi"),state={tracks:[],index:0,remaining:[],playing:false,mode:"idle",fade:null,visual:null,drag:null,volume:.9,manifestSaved:false,skipBusy:false};
+const $=s=>document.querySelector(s),root=$("#partyAi"),state={tracks:[],index:0,remaining:[],playing:false,mode:"idle",fade:null,visual:null,drag:null,volume:.9,manifestSaved:false,skipBusy:false,playToken:0};
 const music=new Audio(),intro=new Audio(),scratch=new Audio();music.preload=intro.preload=scratch.preload="auto";music.volume=.9;intro.volume=.9;scratch.volume=.9;
 let introContext=null,introGain=null;const introLevels=new Map();
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
@@ -39,14 +39,14 @@ function close(){stop();root.hidden=true;document.body.classList.remove("party-a
 function fadeAudio(a,to,duration=850){return new Promise(resolve=>{clearInterval(a._fade);const from=a.volume,start=performance.now();a._fade=setInterval(()=>{const p=Math.min(1,(performance.now()-start)/duration),e=p*p*(3-2*p);a.volume=from+(to-from)*e;if(p>=1){clearInterval(a._fade);a._fade=null;resolve();}},20);});}
 async function prepareIntro(url){try{if(!introContext){const C=window.AudioContext||window.webkitAudioContext;if(C){introContext=new C();const source=introContext.createMediaElementSource(intro);introGain=introContext.createGain();const compressor=introContext.createDynamicsCompressor();compressor.threshold.value=-20;compressor.knee.value=18;compressor.ratio.value=3;compressor.attack.value=.008;compressor.release.value=.22;source.connect(compressor).connect(introGain).connect(introContext.destination);}}if(introContext?.state==="suspended")await introContext.resume();if(introContext&&introGain&&!introLevels.has(url)){let gain=1;try{const response=await fetch(url);if(response.ok){const decoded=await introContext.decodeAudioData(await response.arrayBuffer());let sum=0,count=0;for(let ch=0;ch<decoded.numberOfChannels;ch++){const data=decoded.getChannelData(ch),stride=Math.max(1,Math.floor(data.length/120000));for(let i=0;i<data.length;i+=stride){sum+=data[i]*data[i];count++;}}const rms=count?Math.sqrt(sum/count):0;if(rms>0.0001)gain=Math.max(.55,Math.min(2.8,.14/rms));}}catch(e){console.warn("Intro loudness analysis unavailable; using compressor only",e);}introLevels.set(url,gain);}if(introGain)introGain.gain.value=introLevels.get(url)||1;}catch(e){console.warn("Intro loudness processor unavailable",e);}}
 async function playCurrent(){
- clearTimeout(state.timer);
+ clearTimeout(state.timer);const token=++state.playToken;
  const t=track();if(!t)return finish();
  state.playing=true;setScreen("play");$("#paiNowTitle").textContent=t.title;$("#paiComment").textContent=t.comment||"";$("#paiComment").classList.toggle("has-copy",!!t.comment);
  music.pause();intro.pause();music.src=t.file;music.currentTime=0;music.volume=0;
- if(t.intro){try{state.mode="intro";updateSkipControls();$("#paiPhase").textContent="DJ INTRO";await prepareIntro(t.intro);intro.src=t.intro;intro.currentTime=0;intro.volume=.9;await intro.play();$("#paiComment").classList.toggle("visible",!!t.comment);say("Introducing "+t.title);intro.onended=()=>{if(state.playing)startMusic();};}catch(e){console.warn("Intro playback failed",e);state.timer=setTimeout(()=>{if(state.playing)startMusic();},2000);}}
- else{state.mode="pause";updateSkipControls();$("#paiPhase").textContent="NEXT MIX";$("#paiComment").classList.remove("visible");say("No intro found for "+t.title+" · starting in 2 seconds");setTimeout(()=>{if(state.playing)startMusic();},2000);}
+ if(t.intro){try{state.mode="intro";updateSkipControls();$("#paiPhase").textContent="DJ INTRO";await prepareIntro(t.intro);if(token!==state.playToken||!state.playing)return;intro.src=t.intro;intro.currentTime=0;intro.volume=.9;await intro.play();$("#paiComment").classList.toggle("visible",!!t.comment);say("Introducing "+t.title);intro.onended=()=>{if(state.playing&&token===state.playToken)startMusic(true,token);};}catch(e){console.warn("Intro playback failed",e);state.timer=setTimeout(()=>{if(state.playing&&token===state.playToken)startMusic(true,token);},2000);}}
+ else{state.mode="pause";updateSkipControls();$("#paiPhase").textContent="NEXT MIX";$("#paiComment").classList.remove("visible");say("No intro found for "+t.title+" · starting in 2 seconds");state.timer=setTimeout(()=>{if(state.playing&&token===state.playToken)startMusic(true,token);},2000);}
 }
-async function startMusic(){if(!state.playing)return;intro.pause();state.mode="music";updateSkipControls();$("#paiPhase").textContent="NOW PLAYING";$("#paiComment").classList.remove("visible");try{music.currentTime=0;music.volume=0;await music.play();await fadeAudio(music,state.volume,1100);say("Playing "+track().title);}catch(e){say("Could not play this mix: "+e.message);next();}}
+async function startMusic(resetPosition=true,token=state.playToken){if(!state.playing||token!==state.playToken)return;intro.pause();state.mode="music";updateSkipControls();$("#paiPhase").textContent="NOW PLAYING";$("#paiComment").classList.remove("visible");try{if(resetPosition)music.currentTime=0;music.volume=0;await music.play();if(token!==state.playToken)return;await fadeAudio(music,state.volume,resetPosition?1100:500);if(token===state.playToken)say("Playing "+track().title);}catch(e){if(token===state.playToken){say("Could not play this mix: "+e.message);next();}}}
 function chooseNextIndex(){
  if(!state.remaining.length)return -1;
  const currentBpm=Number(track()?.bpm);
@@ -70,7 +70,7 @@ function next(){
  else finish();
 }
 function finish(){state.playing=false;state.mode="done";state.skipBusy=false;music.pause();intro.pause();setScreen("done");$("#paiPhase").textContent="SESSION COMPLETE";$("#paiNowTitle").textContent="That’s a wrap.";$("#paiComment").textContent="Your party set has finished.";$("#paiComment").classList.add("visible");say("All party mixes played.");}
-function stop(){clearTimeout(state.timer);state.playing=false;state.skipBusy=false;music.pause();intro.pause();scratch.pause();clearInterval(music._fade);clearInterval(intro._fade);if(state.visual)cancelAnimationFrame(state.visual);state.visual=null;setScreen("manage");}
+function stop(){clearTimeout(state.timer);state.playToken++;state.playing=false;state.skipBusy=false;music.pause();intro.pause();scratch.pause();clearInterval(music._fade);clearInterval(intro._fade);if(state.visual)cancelAnimationFrame(state.visual);state.visual=null;setScreen("manage");}
 async function skipBy(offset){
  if(!state.playing||state.mode!=="music"||state.skipBusy)return;
  const activeTrack=track(),duration=music.duration,current=music.currentTime;
@@ -81,12 +81,23 @@ async function skipBy(offset){
  try{
   await fadeAudio(music,0,180);
   music.pause();
-  await scratchPlay();
   if(!state.playing||state.mode!=="music"||track()!==activeTrack)return;
   if(goesPastEnd){state.skipBusy=false;next();return;}
-  music.currentTime=target;
-  await music.play();
-  await fadeAudio(music,state.volume,500);
+  // Seek first, wait for the browser to apply it, then resume without resetting to 0.
+  if(Math.abs(music.currentTime-target)>0.05){
+   await new Promise((resolve,reject)=>{
+    const timer=setTimeout(()=>{cleanup();resolve();},900);
+    const cleanup=()=>{clearTimeout(timer);music.removeEventListener("seeked",onSeeked);music.removeEventListener("error",onError);};
+    const onSeeked=()=>{cleanup();resolve();};
+    const onError=()=>{cleanup();reject(new Error("Audio seek failed"));};
+    music.addEventListener("seeked",onSeeked,{once:true});
+    music.addEventListener("error",onError,{once:true});
+    music.currentTime=target;
+   });
+  }
+  if(!state.playing||state.mode!=="music"||track()!==activeTrack)return;
+  scratchPlay();
+  await startMusic(false,state.playToken);
  }catch(e){say("Skip failed: "+e.message);}
  finally{state.skipBusy=false;updateSkipControls();}
 }
