@@ -37,3 +37,13 @@ body.arrangement-mode .app-shell{grid-template-columns:190px minmax(0,1fr)}body.
 .insights-progress-card small{display:block;margin-top:6px;color:#bba9ce;font-size:9px}
 @media(max-width:950px){.arrangement-settings-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.arrangement-modebar button{flex:1}.arrangement-settings-grid{grid-template-columns:1fr 1fr}.arrangement-track-actions{flex-wrap:wrap}}
+
+body.arrangement-mode.insights-active .now-card{display:grid!important;margin-top:14px}
+body.arrangement-mode.insights-active .now-card .wave-panel{display:block}
+.insights-dash-box{width:100%;padding:10px 12px;border:1px solid #9d70d1;border-radius:9px;background:#1d1728;color:#eadcff;display:flex;flex-direction:column;gap:8px}
+.insights-dash-box b{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.insights-dash-box span{height:7px;border-radius:9px;background:#09070e;overflow:hidden}
+.insights-dash-box span i{display:block;width:0;height:100%;background:linear-gradient(90deg,#8e61cb,#e0aaff);box-shadow:0 0 12px #b77bff;transition:width .12s linear}
+body.arrangement-mode.insights-active .now-info{display:none}
+body.arrangement-mode.insights-active .cover-wrap{display:none}
+@media(max-width:900px){body.arrangement-mode.insights-active .now-card{grid-template-columns:1fr}}
