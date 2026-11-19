@@ -1,5 +1,5 @@
 (()=>{"use strict";
-const $=s=>document.querySelector(s),root=$("#partyAi"),state={tracks:[],index:0,playing:false,mode:"idle",fade:null,visual:null,drag:null,volume:.9,manifestSaved:false,skipBusy:false};
+const $=s=>document.querySelector(s),root=$("#partyAi"),state={tracks:[],index:0,remaining:[],playing:false,mode:"idle",fade:null,visual:null,drag:null,volume:.9,manifestSaved:false,skipBusy:false};
 const music=new Audio(),intro=new Audio(),scratch=new Audio();music.preload=intro.preload=scratch.preload="auto";music.volume=.9;intro.volume=.9;scratch.volume=.9;
 let introContext=null,introGain=null;const introLevels=new Map();
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
@@ -47,7 +47,28 @@ async function playCurrent(){
  else{state.mode="pause";updateSkipControls();$("#paiPhase").textContent="NEXT MIX";$("#paiComment").classList.remove("visible");say("No intro found for "+t.title+" · starting in 2 seconds");setTimeout(()=>{if(state.playing)startMusic();},2000);}
 }
 async function startMusic(){if(!state.playing)return;intro.pause();state.mode="music";updateSkipControls();$("#paiPhase").textContent="NOW PLAYING";$("#paiComment").classList.remove("visible");try{music.currentTime=0;music.volume=0;await music.play();await fadeAudio(music,state.volume,1100);say("Playing "+track().title);}catch(e){say("Could not play this mix: "+e.message);next();}}
-function next(){if(state.index<state.tracks.length-1){state.index++;playCurrent();}else finish();}
+function chooseNextIndex(){
+ if(!state.remaining.length)return -1;
+ const currentBpm=Number(track()?.bpm);
+ const known=state.remaining.filter(i=>Number(state.tracks[i]?.bpm)>0);
+ if(!Number.isFinite(currentBpm)||currentBpm<=0||!known.length){
+  const pick=Math.floor(Math.random()*state.remaining.length);
+  return state.remaining.splice(pick,1)[0];
+ }
+ const ranked=known.map(i=>({index:i,diff:Math.abs(Number(state.tracks[i].bpm)-currentBpm)})).sort((a,b)=>a.diff-b.diff);
+ const closest=ranked[0].diff;
+ // Randomize among close BPM matches instead of always following a fixed sequence.
+ const tolerance=Math.max(3,closest+2);
+ const pool=ranked.filter(x=>x.diff<=tolerance);
+ const chosen=pool[Math.floor(Math.random()*pool.length)].index;
+ state.remaining.splice(state.remaining.indexOf(chosen),1);
+ return chosen;
+}
+function next(){
+ const chosen=chooseNextIndex();
+ if(chosen>=0){state.index=chosen;playCurrent();}
+ else finish();
+}
 function finish(){state.playing=false;state.mode="done";state.skipBusy=false;music.pause();intro.pause();setScreen("done");$("#paiPhase").textContent="SESSION COMPLETE";$("#paiNowTitle").textContent="That’s a wrap.";$("#paiComment").textContent="Your party set has finished.";$("#paiComment").classList.add("visible");say("All party mixes played.");}
 function stop(){clearTimeout(state.timer);state.playing=false;state.skipBusy=false;music.pause();intro.pause();scratch.pause();clearInterval(music._fade);clearInterval(intro._fade);if(state.visual)cancelAnimationFrame(state.visual);state.visual=null;setScreen("manage");}
 async function skipBy(offset){
@@ -84,9 +105,12 @@ function scratchPlay(){
 function animate(){const c=$("#paiViz"),ctx=c.getContext("2d");let w,h;const draw=()=>{if(root.hidden||root.dataset.screen!=="play")return;w=c.width=c.clientWidth*devicePixelRatio;h=c.height=c.clientHeight*devicePixelRatio;ctx.clearRect(0,0,w,h);const time=performance.now()/1000;for(let i=0;i<64;i++){const x=(i+.5)*w/64,amp=(.12+Math.abs(Math.sin(time*2+i*.53))*.55)*h*.36;ctx.fillStyle="rgba(180,115,255,"+(.22+Math.abs(Math.sin(time+i))*.5)+")";ctx.fillRect(x,h/2-amp,Math.max(2,w/110),amp*2);}state.visual=requestAnimationFrame(draw);};draw();}
 function bind(){
  $("#partyAiOpen").onclick=open;$("#paiClose").onclick=close;$("#paiRefresh").onclick=load;$("#paiSave").onclick=save;
- $("#paiStart").onclick=()=>{if(!state.tracks.length)return say("Upload your pre-mixed files first.");state.index=0;playCurrent();animate();};
+ $("#paiStart").onclick=()=>{if(!state.tracks.length)return say("Upload your pre-mixed files first.");state.remaining=state.tracks.map((_,i)=>i);
+ const first= Math.floor(Math.random()*state.remaining.length);
+ state.index=state.remaining.splice(first,1)[0];
+ playCurrent();animate();};
  $("#paiPause").onclick=()=>{music.pause();intro.pause();state.playing=false;$("#paiPlay").dataset.playing="false";updateSkipControls();};
- $("#paiResume").onclick=()=>{if(state.mode==="done"){state.index=0;playCurrent();}else if(state.mode==="music"){music.play();state.playing=true;$("#paiPlay").dataset.playing="true";updateSkipControls();}else if(state.mode==="intro"){intro.play();state.playing=true;$("#paiPlay").dataset.playing="true";updateSkipControls();}else playCurrent();};
+ $("#paiResume").onclick=()=>{if(state.mode==="done"){state.remaining=state.tracks.map((_,i)=>i);const first=Math.floor(Math.random()*state.remaining.length);state.index=state.remaining.splice(first,1)[0];playCurrent();}else if(state.mode==="music"){music.play();state.playing=true;$("#paiPlay").dataset.playing="true";updateSkipControls();}else if(state.mode==="intro"){intro.play();state.playing=true;$("#paiPlay").dataset.playing="true";updateSkipControls();}else playCurrent();};
  $("#paiNext").onclick=()=>{music.pause();intro.pause();next();};
  $("#paiSkipBack45").onclick=()=>skipBy(-45);$("#paiSkipBack30").onclick=()=>skipBy(-30);$("#paiSkipBack15").onclick=()=>skipBy(-15);
  $("#paiSkip15").onclick=()=>skipBy(15);$("#paiSkip30").onclick=()=>skipBy(30);$("#paiSkip45").onclick=()=>skipBy(45);
