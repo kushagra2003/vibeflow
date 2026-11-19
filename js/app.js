@@ -791,6 +791,9 @@ function openMixChoices() {
 let partyTaglineTimer=null;
 const PARTY_TAGLINES=["IS YOUR DJ","BY KUSHAGRA","AI IS YOUR DJ TONIGHT","LET'S PARTY"];
 let partyTaglineIndex=0;
+let partyVisualFrame=0;
+function startPartyVisualizer(){const canvas=$("#partyVisualizer");if(!canvas)return;cancelAnimationFrame(partyVisualFrame);const ctx=canvas.getContext("2d");if(!ctx)return;const draw=now=>{if($("#partyMode").hidden){partyVisualFrame=0;return;}const dpr=Math.min(2,window.devicePixelRatio||1),w=canvas.clientWidth,h=canvas.clientHeight;if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);}ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);const t=now/1000,playing=!audio().paused,count=Math.max(48,Math.min(112,Math.floor(w/9))),mid=h*.52;for(let i=0;i<count;i++){const x=(i+.5)*w/count,env=.18+Math.pow(Math.abs(Math.sin(i*.105+t*.9))*Math.abs(Math.cos(i*.037-t*.48)),1.4)*.82,pulse=playing?(.65+.35*Math.sin(t*5+i*.21)):.24,bh=(12+env*(h*.34))*pulse,hue=265+Math.sin(i*.07+t*.18)*45,grad=ctx.createLinearGradient(0,mid-bh,0,mid+bh);grad.addColorStop(0,"hsla("+hue+",95%,82%,.88)");grad.addColorStop(.5,"hsla("+(hue+48)+",90%,65%,.95)");grad.addColorStop(1,"hsla("+hue+",95%,75%,.75)");ctx.fillStyle=grad;ctx.shadowBlur=playing?13:5;ctx.shadowColor="hsla("+hue+",90%,65%,.6)";const bw=Math.max(2,w/count*.48);ctx.fillRect(x-bw/2,mid-bh,bw,bh*2);}ctx.shadowBlur=0;partyVisualFrame=requestAnimationFrame(draw);};partyVisualFrame=requestAnimationFrame(draw);}
+function stopPartyVisualizer(){cancelAnimationFrame(partyVisualFrame);partyVisualFrame=0;}
 function startPartyBrandLoop(){
   const tagline=$("#partyTagline"), wave=$("#partySoundwave");
   if(!tagline) return;
@@ -969,7 +972,7 @@ async function transitionTo(track,hook,{manual=false,automatic=false,mode=null,i
   $(".dj-upcoming")?.classList.add("upcoming-mixing");
   S.currentCrossfadeSeconds=chooseCrossfadeSeconds();
   updateCrossfadeIndicator();
-  const startAt=hook ? mixStartForHook(hook,track) : ((automatic || mode==="no-hook") ? settings.noHookStartSeconds : 0);
+  const startAt=hook ? mixStartForHook(hook,track) : (mode==="party" ? 0 : ((automatic || mode==="no-hook") ? settings.noHookStartSeconds : 0));
   showTransition(track,hook,automatic);
   try {
     const url=await getUrl(track);
@@ -1709,13 +1712,17 @@ function enablePartyDJTools() {
   if(auto && !auto.checked) { auto.checked=true; auto.dispatchEvent(new Event("change",{bubbles:true})); }
   if(!S.autoMix) { S.autoMix=true; store.set("autoMix",true); syncControls(); }
 }
-async function launchPartyWithManualHook() {
-  enablePartyDJTools();
-  if(!cur() || audio().paused) await pickRandomManualHookTrack();
-  else {
-    // Party mode always starts on a saved-hook track, even if another track was already playing.
-    await pickRandomManualHookTrack();
+async function launchPartyMode() {
+  const alreadyPlaying=!!cur()&&!audio().paused;
+  if(!alreadyPlaying) {
+    if(!S.lib.length) await initLib();
+    const track=pickNextTrack();
+    if(!track) { toast("Add songs to My music before starting Party Mode."); return false; }
+    S.shuffle=true; $("#shuffle")?.classList.add("active");
+    window.__vibePartyShuffle=true;
+    transitionTo(track,null,{manual:true,initialFade:true,mode:"party"});
   }
+  return true;
 }
 $("#firstPlayButton").onclick=async()=>{
   const button=$("#firstPlayButton"), prompt=$("#firstPlayPrompt");
@@ -1726,10 +1733,10 @@ $("#firstPlayButton").onclick=async()=>{
   else { button.disabled=false; button.innerHTML='<span aria-hidden="true">▶</span> Start listening'; }
 };
 $("#partyModeButton").onclick=async()=>{
-  await launchPartyWithManualHook();
+  const ready=await launchPartyMode(); if(!ready)return;
   $("#partyMode").hidden=false; document.body.classList.add("party-mode-open");
-  startPartyBrandLoop(); syncPartyMotion();
-  showPartyMessage("Surprise incoming… VIBE FLOW is taking over! 🪩");
+  startPartyBrandLoop(); startPartyVisualizer(); syncPartyMotion();
+  showPartyMessage("VIBE FLOW is live. Let the music take over. 🪩");
   try { if(!document.fullscreenElement) await document.documentElement.requestFullscreen?.(); } catch {}
 };
 $("#closeParty").onclick=async()=>{
@@ -1766,7 +1773,7 @@ A.forEach(a=>{
     if(!S.seeking) checkHookTimer();
     updateDJStatus();
   };
-  a.onended=()=>{if(a===audio()&&!S.transitioning){if(automaticSwitchingEnabled())nextAutomatic();else{a.pause();setDJActivity("TRACK FINISHED · AUTO MIX OFF","The song has ended. Turn Auto mix on or press play to continue.","PAUSED","paused");render();}}};
+  a.onended=()=>{if(a===audio()&&!S.transitioning){if(window.__vibePartyShuffle){const t=pickNextTrack();if(t)transitionTo(t,null,{automatic:true,mode:"party",initialFade:true});else{window.__vibePartyShuffle=false;render();}}else if(automaticSwitchingEnabled())nextAutomatic();else{a.pause();setDJActivity("TRACK FINISHED · AUTO MIX OFF","The song has ended. Turn Auto mix on or press play to continue.","PAUSED","paused");render();}}};
   a.onerror=()=>{if(a===audio()&&a.src)toast("This audio file could not be played. Check the file URL and format.");};
 });
 $("#modalRoot").addEventListener("click",e=>{if(e.target.classList.contains("modal-backdrop")&&e.target.dataset.dismiss)$("#modalRoot").innerHTML="";});
