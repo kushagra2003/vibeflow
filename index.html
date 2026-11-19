@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0b0912">
   <title>VibeFlow — AI DJ</title>
   <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/arrangement-studio.css">
+  <link rel="stylesheet" href="css/arrangement-studio.css">\n  <link rel="stylesheet" href="css/party-with-ai.css">
 </head>
 <body>
 <div class="app-shell">
@@ -29,7 +29,7 @@
         <button type="submit">Search</button>
       </form>
       <button id="lyricsPanelToggle" class="party-launch lyrics-panel-toggle" type="button" aria-expanded="false" aria-controls="lyricsStudio">♫ Lyrics tools</button>
-      <button id="punchMenuButton" class="party-launch" type="button">✦ Punches</button><button id="partyModeButton" class="party-launch">✦ Party mode</button>
+      <button id="punchMenuButton" class="party-launch" type="button">✦ Punches</button><button id="partyModeButton" class="party-launch">✦ Party mode</button><button id="partyAiOpen" class="party-launch" type="button">✦ Party with AI</button>
     </header>
 
 
@@ -168,6 +168,7 @@
   </div>
 </section>
 
+<section id="partyAi" hidden data-screen="manage" aria-label="Party with AI"><div class="pai-shell"><header class="pai-head"><div class="pai-brand">VIBE FLOW <small>PARTY WITH AI · PRE-MIXED SETS</small></div><button id="paiClose" type="button">← Back to VIBE FLOW</button></header><div id="paiManage"><div class="eyebrow">YOUR PRIVATE DJ SET</div><h2>Party with AI</h2><p class="pai-sub">Add pre-mixed tracks, match each recorded DJ intro by filename, write its intro line and arrange your set.</p><div class="pai-panel"><div class="pai-toolbar"><button id="paiRefresh" type="button">↻ Refresh folders</button><button id="paiSave" type="button">Save playlist & comments</button><button id="paiStart" class="pai-primary" type="button">▶ Start party</button></div><div id="paiList"><div class="pai-empty">Scanning your party folders…</div></div><div id="paiStatus" class="pai-status" role="status">Loading…</div></div></div><div id="paiPlay" class="pai-player" hidden><div class="pai-phase" id="paiPhase">DJ INTRO</div><h2 class="pai-title" id="paiNowTitle">Party Mix 01</h2><div class="pai-comment-display" id="paiComment"></div><div class="pai-disc" id="paiDisc"></div><div class="pai-progress"><span id="paiProgress"></span></div><div class="pai-clock" id="paiClock">0:00 / 0:00</div><canvas id="paiViz" aria-hidden="true"></canvas><div class="pai-player-controls"><button id="paiPause" type="button">Ⅱ Pause</button><button id="paiResume" type="button">▶ Resume</button><button id="paiNext" type="button">Next mix →</button><button id="paiSkip15" type="button">Scratch +15s</button><button id="paiSkip30" type="button">Scratch +30s</button><button id="paiSkip45" type="button">Scratch +45s</button><button id="paiBack" type="button">Playlist</button></div></div></div></section>
 <footer class="player-bar">
   <div class="mini-track"><div class="mini-cover">♫</div><div><b id="miniTitle">Nothing playing</b><small id="miniArtist">VibeFlow</small></div></div>
   <div class="transport">
@@ -191,6 +192,6 @@
 <script src="js/learning-model.js"></script>
 <script src="js/app.js"></script>
 <script src="js/lyrics-studio.js"></script>
-<script src="js/arrangement-studio.js"></script>
+<script src="js/arrangement-studio.js"></script>\n<script src="js/party-with-ai.js"></script>
 </body>
 </html>
