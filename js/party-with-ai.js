@@ -1,5 +1,5 @@
 (()=>{"use strict";
-const $=s=>document.querySelector(s),root=$("#partyAi"),state={tracks:[],index:0,playing:false,mode:"idle",fade:null,visual:null,drag:null,volume:.9,manifestSaved:false};
+const $=s=>document.querySelector(s),root=$("#partyAi"),state={tracks:[],index:0,playing:false,mode:"idle",fade:null,visual:null,drag:null,volume:.9,manifestSaved:false,skipBusy:false};
 const music=new Audio(),intro=new Audio(),scratch=new Audio();music.preload=intro.preload=scratch.preload="auto";music.volume=.9;intro.volume=.9;scratch.volume=.9;
 let introContext=null,introGain=null;const introLevels=new Map();
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
@@ -29,7 +29,11 @@ async function save(){
  try{await request("/api/party-library",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({tracks:state.tracks})});state.manifestSaved=true;say("Playlist metadata saved to GitHub.");}
  catch(e){say("Saved in this browser. GitHub sync unavailable: "+e.message);}
 }
-function setScreen(screen){root.dataset.screen=screen;$("#paiManage").hidden=screen!=="manage";$("#paiPlay").hidden=screen==="manage";$("#paiPlay").dataset.playing=String(state.playing);}
+function updateSkipControls(){
+ const enabled=state.playing&&state.mode==="music"&&!state.skipBusy;
+ ["#paiSkipBack45","#paiSkipBack30","#paiSkipBack15","#paiSkip15","#paiSkip30","#paiSkip45"].forEach(id=>{const button=$(id);if(button)button.disabled=!enabled;});
+}
+function setScreen(screen){root.dataset.screen=screen;$("#paiManage").hidden=screen!=="manage";$("#paiPlay").hidden=screen==="manage";$("#paiPlay").dataset.playing=String(state.playing);updateSkipControls();}
 function open(){root.hidden=false;document.body.classList.add("party-ai-open");load().then(()=>{mergeLocal();render();});}
 function close(){stop();root.hidden=true;document.body.classList.remove("party-ai-open");}
 function fadeAudio(a,to,duration=850){return new Promise(resolve=>{clearInterval(a._fade);const from=a.volume,start=performance.now();a._fade=setInterval(()=>{const p=Math.min(1,(performance.now()-start)/duration),e=p*p*(3-2*p);a.volume=from+(to-from)*e;if(p>=1){clearInterval(a._fade);a._fade=null;resolve();}},20);});}
@@ -39,23 +43,54 @@ async function playCurrent(){
  const t=track();if(!t)return finish();
  state.playing=true;setScreen("play");$("#paiNowTitle").textContent=t.title;$("#paiComment").textContent=t.comment||"";$("#paiComment").classList.toggle("has-copy",!!t.comment);
  music.pause();intro.pause();music.src=t.file;music.currentTime=0;music.volume=0;
- if(t.intro){try{await prepareIntro(t.intro);intro.src=t.intro;intro.currentTime=0;intro.volume=.9;await intro.play();state.mode="intro";$("#paiPhase").textContent="DJ INTRO";$("#paiComment").classList.toggle("visible",!!t.comment);say("Introducing "+t.title);intro.onended=()=>{if(state.playing)startMusic();};}catch(e){console.warn("Intro playback failed",e);state.timer=setTimeout(()=>{if(state.playing)startMusic();},2000);}}
- else{state.mode="pause";$("#paiPhase").textContent="NEXT MIX";$("#paiComment").classList.remove("visible");say("No intro found for "+t.title+" · starting in 2 seconds");setTimeout(()=>{if(state.playing)startMusic();},2000);}
+ if(t.intro){try{state.mode="intro";updateSkipControls();$("#paiPhase").textContent="DJ INTRO";await prepareIntro(t.intro);intro.src=t.intro;intro.currentTime=0;intro.volume=.9;await intro.play();$("#paiComment").classList.toggle("visible",!!t.comment);say("Introducing "+t.title);intro.onended=()=>{if(state.playing)startMusic();};}catch(e){console.warn("Intro playback failed",e);state.timer=setTimeout(()=>{if(state.playing)startMusic();},2000);}}
+ else{state.mode="pause";updateSkipControls();$("#paiPhase").textContent="NEXT MIX";$("#paiComment").classList.remove("visible");say("No intro found for "+t.title+" · starting in 2 seconds");setTimeout(()=>{if(state.playing)startMusic();},2000);}
 }
-async function startMusic(){if(!state.playing)return;intro.pause();state.mode="music";$("#paiPhase").textContent="NOW PLAYING";$("#paiComment").classList.remove("visible");try{music.currentTime=0;music.volume=0;await music.play();await fadeAudio(music,state.volume,1100);say("Playing "+track().title);}catch(e){say("Could not play this mix: "+e.message);next();}}
+async function startMusic(){if(!state.playing)return;intro.pause();state.mode="music";updateSkipControls();$("#paiPhase").textContent="NOW PLAYING";$("#paiComment").classList.remove("visible");try{music.currentTime=0;music.volume=0;await music.play();await fadeAudio(music,state.volume,1100);say("Playing "+track().title);}catch(e){say("Could not play this mix: "+e.message);next();}}
 function next(){if(state.index<state.tracks.length-1){state.index++;playCurrent();}else finish();}
-function finish(){state.playing=false;state.mode="done";music.pause();intro.pause();setScreen("done");$("#paiPhase").textContent="SESSION COMPLETE";$("#paiNowTitle").textContent="That’s a wrap.";$("#paiComment").textContent="Your party set has finished.";$("#paiComment").classList.add("visible");say("All party mixes played.");}
-function stop(){clearTimeout(state.timer);state.playing=false;music.pause();intro.pause();scratch.pause();clearInterval(music._fade);clearInterval(intro._fade);if(state.visual)cancelAnimationFrame(state.visual);state.visual=null;setScreen("manage");}
-function skip(seconds){if(!state.playing||state.mode!=="music")return;const target=music.currentTime+seconds;if(target>=music.duration){scratchPlay(()=>next());return;}scratchPlay(async()=>{await fadeAudio(music,0,180);music.currentTime=target;await fadeAudio(music,state.volume,550);});}
-function scratchPlay(done){if(!state.effect){done?.();return;}scratch.src=state.effect;scratch.currentTime=0;scratch.volume=.95;$("#paiDisc").classList.add("scratching");scratch.onended=()=>{$("#paiDisc").classList.remove("scratching");done?.();};scratch.play().catch(()=>{ $("#paiDisc").classList.remove("scratching");done?.();});}
+function finish(){state.playing=false;state.mode="done";state.skipBusy=false;music.pause();intro.pause();setScreen("done");$("#paiPhase").textContent="SESSION COMPLETE";$("#paiNowTitle").textContent="That’s a wrap.";$("#paiComment").textContent="Your party set has finished.";$("#paiComment").classList.add("visible");say("All party mixes played.");}
+function stop(){clearTimeout(state.timer);state.playing=false;state.skipBusy=false;music.pause();intro.pause();scratch.pause();clearInterval(music._fade);clearInterval(intro._fade);if(state.visual)cancelAnimationFrame(state.visual);state.visual=null;setScreen("manage");}
+async function skipBy(offset){
+ if(!state.playing||state.mode!=="music"||state.skipBusy)return;
+ const activeTrack=track(),duration=music.duration,current=music.currentTime;
+ if(!Number.isFinite(current)||!Number.isFinite(duration)||duration<=0)return;
+ const target=Math.max(0,Math.min(duration,current+offset));
+ const goesPastEnd=offset>0&&current+offset>=duration;
+ state.skipBusy=true;updateSkipControls();
+ try{
+  await fadeAudio(music,0,180);
+  music.pause();
+  await scratchPlay();
+  if(!state.playing||state.mode!=="music"||track()!==activeTrack)return;
+  if(goesPastEnd){state.skipBusy=false;next();return;}
+  music.currentTime=target;
+  await music.play();
+  await fadeAudio(music,state.volume,500);
+ }catch(e){say("Skip failed: "+e.message);}
+ finally{state.skipBusy=false;updateSkipControls();}
+}
+function scratchPlay(){
+ return new Promise(resolve=>{
+  if(!state.effect){resolve();return;}
+  let settled=false;
+  const finishScratch=()=>{if(settled)return;settled=true;clearTimeout(fallback);scratch.onended=null;scratch.onerror=null;$("#paiDisc").classList.remove("scratching");resolve();};
+  const fallback=setTimeout(finishScratch,2600);
+  scratch.pause();scratch.src=state.effect;scratch.currentTime=0;scratch.volume=.95;
+  $("#paiDisc").classList.add("scratching");
+  scratch.onended=finishScratch;scratch.onerror=finishScratch;
+  scratch.play().catch(finishScratch);
+ });
+}
 function animate(){const c=$("#paiViz"),ctx=c.getContext("2d");let w,h;const draw=()=>{if(root.hidden||root.dataset.screen!=="play")return;w=c.width=c.clientWidth*devicePixelRatio;h=c.height=c.clientHeight*devicePixelRatio;ctx.clearRect(0,0,w,h);const time=performance.now()/1000;for(let i=0;i<64;i++){const x=(i+.5)*w/64,amp=(.12+Math.abs(Math.sin(time*2+i*.53))*.55)*h*.36;ctx.fillStyle="rgba(180,115,255,"+(.22+Math.abs(Math.sin(time+i))*.5)+")";ctx.fillRect(x,h/2-amp,Math.max(2,w/110),amp*2);}state.visual=requestAnimationFrame(draw);};draw();}
 function bind(){
  $("#partyAiOpen").onclick=open;$("#paiClose").onclick=close;$("#paiRefresh").onclick=load;$("#paiSave").onclick=save;
  $("#paiStart").onclick=()=>{if(!state.tracks.length)return say("Upload your pre-mixed files first.");state.index=0;playCurrent();animate();};
- $("#paiPause").onclick=()=>{music.pause();intro.pause();state.playing=false;$("#paiPlay").dataset.playing="false";};
- $("#paiResume").onclick=()=>{if(state.mode==="done"){state.index=0;playCurrent();}else if(state.mode==="music"){music.play();state.playing=true;$("#paiPlay").dataset.playing="true";}else if(state.mode==="intro"){intro.play();state.playing=true;$("#paiPlay").dataset.playing="true";}else playCurrent();};
+ $("#paiPause").onclick=()=>{music.pause();intro.pause();state.playing=false;$("#paiPlay").dataset.playing="false";updateSkipControls();};
+ $("#paiResume").onclick=()=>{if(state.mode==="done"){state.index=0;playCurrent();}else if(state.mode==="music"){music.play();state.playing=true;$("#paiPlay").dataset.playing="true";updateSkipControls();}else if(state.mode==="intro"){intro.play();state.playing=true;$("#paiPlay").dataset.playing="true";updateSkipControls();}else playCurrent();};
  $("#paiNext").onclick=()=>{music.pause();intro.pause();next();};
- $("#paiSkip15").onclick=()=>skip(15);$("#paiSkip30").onclick=()=>skip(30);$("#paiSkip45").onclick=()=>skip(45);
+ $("#paiSkipBack45").onclick=()=>skipBy(-45);$("#paiSkipBack30").onclick=()=>skipBy(-30);$("#paiSkipBack15").onclick=()=>skipBy(-15);
+ $("#paiSkip15").onclick=()=>skipBy(15);$("#paiSkip30").onclick=()=>skipBy(30);$("#paiSkip45").onclick=()=>skipBy(45);
+ updateSkipControls();
  $("#paiBack").onclick=()=>{stop();};
  music.ontimeupdate=()=>{$("#paiProgress").style.width=(music.duration?music.currentTime/music.duration*100:0)+"%";$("#paiClock").textContent=fmt(music.currentTime)+" / "+fmt(music.duration);};
  music.onended=()=>{if(state.playing)next();};
