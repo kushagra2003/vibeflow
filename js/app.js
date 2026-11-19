@@ -61,59 +61,24 @@ const getUrl = async t => t.provider === "mine"
 // ---------- Library discovery: scan GitHub folder, no songs.json ----------
 async function initLib() {
   const local = store.get("lib", []);
-  const endpoint = "https://api.github.com/repos/kushagra2003/vibeflow/contents/songs?ref=main";
   try {
-    const r = await fetch(endpoint, {cache:"no-store"});
-    if (!r.ok) throw new Error(`GitHub returned ${r.status}`);
-    const files = await r.json();
-    if (!Array.isArray(files)) throw new Error("GitHub did not return a folder listing");
-    const discovered = files.filter(f => f.type === "file" && /\.(mp3|wav|m4a|ogg|flac|aac)$/i.test(f.name)).map(f => {
-      const base = f.name.replace(/\.[^.]+$/, "");
-      const p = base.split(" - ");
-      return {
-        file:f.name,
-        artist:p.length > 1 ? p.shift().trim() : "Unknown",
-        title:p.length ? p.join(" - ").trim() : base.replace(/[_-]+/g," ").trim(),
-        hooks:[]
-      };
-    });
-    // Pull the shared GitHub hook archive before reconciling this browser's local copy.
+    const response = await fetch("/api/library", {cache:"no-store"});
+    if (!response.ok) throw new Error("Library service returned " + response.status);
+    const payload = await response.json();
+    if (!Array.isArray(payload.songs)) throw new Error("Library service returned an invalid song list");
+    const discovered = payload.songs.map(song => ({file:song.file,title:song.title,artist:song.artist||"Unknown",hooks:[],segments:[]}));
     let sharedHooks = {};
     try {
       const shared = await fetch("/api/hooks", {cache:"no-store"});
-      if (shared.ok) {
-        const payload = await shared.json();
-        for (const item of (payload.songs || [])) if (item?.file) sharedHooks[item.file] = item.hooks || [];
-        S.hookCloudReady = true;
-        S.hookCloudConfigured = true;
-      } else {
-        const issue = await shared.json().catch(()=>({}));
-        S.hookCloudReady = false;
-        S.hookCloudConfigured = shared.status !== 503;
-        console.warn("Shared hook archive unavailable:", issue.error || shared.status);
-      }
-    } catch (error) {
-      S.hookCloudReady = false;
-      S.hookCloudConfigured = false;
-      console.warn("Shared hook archive unavailable; using this browser's backup.", error);
-    }
-    const localMap = new Map((Array.isArray(local)?local:[]).filter(x=>x?.file).map(x=>[x.file,x]));
-    const archivedHooks = store.get("hookArchive", {});
-    const merged = new Map();
-    for (const song of discovered) {
-      const old = localMap.get(song.file) || {};
-      merged.set(song.file, {...song,...old,hooks:mergeHookLists(sharedHooks[song.file], old.hooks, archivedHooks[song.file], song.hooks)});
-    }
-    S.lib = [...merged.values()];
-    $("#libraryStatus").textContent = S.hookCloudReady ? `${S.lib.length} songs · shared hooks loaded` : `${S.lib.length} songs discovered · local hook backup`;
+      if (shared.ok) { const archive = await shared.json(); for (const item of (archive.songs || [])) if (item?.file) sharedHooks[item.file] = item.hooks || []; S.hookCloudReady=true; S.hookCloudConfigured=true; }
+      else { const issue=await shared.json().catch(()=>({})); S.hookCloudReady=false; S.hookCloudConfigured=shared.status!==503; console.warn("Shared hook archive unavailable:",issue.error||shared.status); }
+    } catch(error) { S.hookCloudReady=false; S.hookCloudConfigured=false; console.warn("Shared hook archive unavailable; using local backup.",error); }
+    const localMap=new Map((Array.isArray(local)?local:[]).filter(x=>x?.file).map(x=>[x.file,x]));
+    const archivedHooks=store.get("hookArchive",{});
+    S.lib=discovered.map(song=>{const old=localMap.get(song.file)||{};return {...song,...old,file:song.file,hooks:mergeHookLists(sharedHooks[song.file],old.hooks,archivedHooks[song.file],song.hooks),segments:Array.isArray(old.segments)?old.segments:[]};});
+    $("#libraryStatus").textContent=S.hookCloudReady?S.lib.length+" songs · shared hooks loaded":S.lib.length+" songs · local hook backup";
     saveLib();
-  } catch (e) {
-    console.error("GitHub discovery:", e);
-    S.lib = Array.isArray(local) ? local : [];
-    S.hookCloudConfigured = false; S.hookCloudReady = false;
-    $("#libraryStatus").textContent = "GitHub library unavailable";
-    toast(`GitHub library error: ${e.message}`);
-  }
+  } catch(error) { console.error("GitHub discovery:",error); S.lib=Array.isArray(local)?local:[]; S.hookCloudConfigured=false; S.hookCloudReady=false; $("#libraryStatus").textContent=S.lib.length?S.lib.length+" cached songs · GitHub unavailable":"Music library unavailable"; toast("Could not load GitHub songs: "+error.message); }
   render();
 }
 let hookCloudTimer = null;
