@@ -49,6 +49,7 @@ async function playCurrent(){
 async function startMusic(resetPosition=true,token=state.playToken){if(!state.playing||token!==state.playToken)return;intro.pause();state.mode="music";updateSkipControls();$("#paiPhase").textContent="NOW PLAYING";$("#paiComment").classList.remove("visible");try{if(resetPosition)music.currentTime=0;music.volume=0;await music.play();if(token!==state.playToken)return;await fadeAudio(music,state.volume,resetPosition?1100:500);if(token===state.playToken)say("Playing "+track().title);}catch(e){if(token===state.playToken){say("Could not play this mix: "+e.message);next();}}}
 function chooseNextIndex(){
  if(!state.remaining.length)return -1;
+ if(state.playOrder==="chronological")return state.remaining.shift();
  const currentBpm=Number(track()?.bpm);
  const known=state.remaining.filter(i=>Number(state.tracks[i]?.bpm)>0);
  if(!Number.isFinite(currentBpm)||currentBpm<=0||!known.length){
@@ -116,12 +117,11 @@ function scratchPlay(){
 function animate(){const c=$("#paiViz"),ctx=c.getContext("2d");let w,h;const draw=()=>{if(root.hidden||root.dataset.screen!=="play")return;w=c.width=c.clientWidth*devicePixelRatio;h=c.height=c.clientHeight*devicePixelRatio;ctx.clearRect(0,0,w,h);const time=performance.now()/1000;for(let i=0;i<64;i++){const x=(i+.5)*w/64,amp=(.12+Math.abs(Math.sin(time*2+i*.53))*.55)*h*.36;ctx.fillStyle="rgba(180,115,255,"+(.22+Math.abs(Math.sin(time+i))*.5)+")";ctx.fillRect(x,h/2-amp,Math.max(2,w/110),amp*2);}state.visual=requestAnimationFrame(draw);};draw();}
 function bind(){
  $("#partyAiOpen").onclick=open;$("#paiClose").onclick=close;$("#paiRefresh").onclick=load;$("#paiSave").onclick=save;
- $("#paiStart").onclick=()=>{if(!state.tracks.length)return say("Upload your pre-mixed files first.");state.remaining=state.tracks.map((_,i)=>i);
- const first= Math.floor(Math.random()*state.remaining.length);
- state.index=state.remaining.splice(first,1)[0];
- playCurrent();animate();};
+ $("#paiStart").onclick=()=>{if(!state.tracks.length)return say("Upload your pre-mixed files first.");$("#paiPlayChoice").hidden=false;say("Choose Shuffle or play chronologically from Mix 01.");};
+ $("#paiShuffleStart").onclick=()=>{if(!state.tracks.length)return;state.playOrder="shuffle";$("#paiPlayChoice").hidden=true;state.remaining=state.tracks.map((_,i)=>i);const first=Math.floor(Math.random()*state.remaining.length);state.index=state.remaining.splice(first,1)[0];playCurrent();animate();};
+ $("#paiChronologicalStart").onclick=()=>{if(!state.tracks.length)return;state.playOrder="chronological";$("#paiPlayChoice").hidden=true;state.remaining=state.tracks.map((_,i)=>i);state.index=state.remaining.shift();playCurrent();animate();};
  $("#paiPause").onclick=()=>{music.pause();intro.pause();state.playing=false;$("#paiPlay").dataset.playing="false";updateSkipControls();};
- $("#paiResume").onclick=()=>{if(state.mode==="done"){state.remaining=state.tracks.map((_,i)=>i);const first=Math.floor(Math.random()*state.remaining.length);state.index=state.remaining.splice(first,1)[0];playCurrent();}else if(state.mode==="music"){music.play();state.playing=true;$("#paiPlay").dataset.playing="true";updateSkipControls();}else if(state.mode==="intro"){intro.play();state.playing=true;$("#paiPlay").dataset.playing="true";updateSkipControls();}else playCurrent();};
+ $("#paiResume").onclick=()=>{if(state.mode==="done"){state.remaining=state.tracks.map((_,i)=>i);if(state.playOrder==="chronological")state.index=state.remaining.shift();else{const first=Math.floor(Math.random()*state.remaining.length);state.index=state.remaining.splice(first,1)[0];}playCurrent();}else if(state.mode==="music"){music.play();state.playing=true;$("#paiPlay").dataset.playing="true";updateSkipControls();}else if(state.mode==="intro"){intro.play();state.playing=true;$("#paiPlay").dataset.playing="true";updateSkipControls();}else playCurrent();};
  $("#paiNext").onclick=()=>{music.pause();intro.pause();next();};
  $("#paiSkipBack45").onclick=()=>skipBy(-45);$("#paiSkipBack30").onclick=()=>skipBy(-30);$("#paiSkipBack15").onclick=()=>skipBy(-15);
  $("#paiSkip15").onclick=()=>skipBy(15);$("#paiSkip30").onclick=()=>skipBy(30);$("#paiSkip45").onclick=()=>skipBy(45);
