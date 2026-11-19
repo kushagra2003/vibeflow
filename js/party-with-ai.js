@@ -29,7 +29,7 @@ async function save(){
  try{await request("/api/party-library",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({tracks:state.tracks})});state.manifestSaved=true;say("Playlist metadata saved to GitHub.");}
  catch(e){say("Saved in this browser. GitHub sync unavailable: "+e.message);}
 }
-function setScreen(screen){root.dataset.screen=screen;}
+function setScreen(screen){root.dataset.screen=screen;$("#paiManage").hidden=screen!=="manage";$("#paiPlay").hidden=screen==="manage";$("#paiPlay").dataset.playing=String(state.playing);}
 function open(){root.hidden=false;document.body.classList.add("party-ai-open");load().then(()=>{mergeLocal();render();});}
 function close(){stop();root.hidden=true;document.body.classList.remove("party-ai-open");}
 function fadeAudio(a,to,duration=850){return new Promise(resolve=>{clearInterval(a._fade);const from=a.volume,start=performance.now();a._fade=setInterval(()=>{const p=Math.min(1,(performance.now()-start)/duration),e=p*p*(3-2*p);a.volume=from+(to-from)*e;if(p>=1){clearInterval(a._fade);a._fade=null;resolve();}},20);});}
@@ -43,7 +43,7 @@ async function playCurrent(){
 }
 async function startMusic(){if(!state.playing)return;intro.pause();state.mode="music";$("#paiPhase").textContent="NOW PLAYING";$("#paiComment").classList.remove("visible");try{music.currentTime=0;music.volume=0;await music.play();await fadeAudio(music,state.volume,1100);say("Playing "+track().title);}catch(e){say("Could not play this mix: "+e.message);next();}}
 function next(){if(state.index<state.tracks.length-1){state.index++;playCurrent();}else finish();}
-function finish(){state.playing=false;state.mode="done";music.pause();intro.pause();setScreen("done");$("#paiPhase").textContent="SESSION COMPLETE";say("All party mixes played.");}
+function finish(){state.playing=false;state.mode="done";music.pause();intro.pause();setScreen("done");$("#paiPhase").textContent="SESSION COMPLETE";$("#paiNowTitle").textContent="That’s a wrap.";$("#paiComment").textContent="Your party set has finished.";$("#paiComment").classList.add("visible");say("All party mixes played.");}
 function stop(){state.playing=false;music.pause();intro.pause();scratch.pause();clearInterval(music._fade);clearInterval(intro._fade);if(state.visual)cancelAnimationFrame(state.visual);state.visual=null;setScreen("manage");}
 function skip(seconds){if(!state.playing||state.mode!=="music")return;const target=music.currentTime+seconds;if(target>=music.duration){scratchPlay(()=>next());return;}scratchPlay(async()=>{await fadeAudio(music,0,180);music.currentTime=target;await fadeAudio(music,state.volume,550);});}
 function scratchPlay(done){if(!state.effect){done?.();return;}scratch.src=state.effect;scratch.currentTime=0;scratch.volume=.95;$("#paiDisc").classList.add("scratching");scratch.onended=()=>{$("#paiDisc").classList.remove("scratching");done?.();};scratch.play().catch(()=>{ $("#paiDisc").classList.remove("scratching");done?.();});}
@@ -51,8 +51,8 @@ function animate(){const c=$("#paiViz"),ctx=c.getContext("2d");let w,h;const dra
 function bind(){
  $("#partyAiOpen").onclick=open;$("#paiClose").onclick=close;$("#paiRefresh").onclick=load;$("#paiSave").onclick=save;
  $("#paiStart").onclick=()=>{if(!state.tracks.length)return say("Upload your pre-mixed files first.");state.index=0;playCurrent();animate();};
- $("#paiPause").onclick=()=>{if(music.paused&&state.mode==="music"){music.play();state.playing=true;}else{music.pause();state.playing=false;}};
- $("#paiResume").onclick=()=>{if(state.mode==="done"){state.index=0;playCurrent();}else if(state.mode==="music"){music.play();state.playing=true;}else if(state.mode==="intro"){intro.play();state.playing=true;}else playCurrent();};
+ $("#paiPause").onclick=()=>{music.pause();intro.pause();state.playing=false;$("#paiPlay").dataset.playing="false";};
+ $("#paiResume").onclick=()=>{if(state.mode==="done"){state.index=0;playCurrent();}else if(state.mode==="music"){music.play();state.playing=true;$("#paiPlay").dataset.playing="true";}else if(state.mode==="intro"){intro.play();state.playing=true;$("#paiPlay").dataset.playing="true";}else playCurrent();};
  $("#paiNext").onclick=()=>{music.pause();intro.pause();next();};
  $("#paiSkip15").onclick=()=>skip(15);$("#paiSkip30").onclick=()=>skip(30);$("#paiSkip45").onclick=()=>skip(45);
  $("#paiBack").onclick=()=>{stop();};
