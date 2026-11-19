@@ -1,4 +1,60 @@
 {
   "version": 1,
-  "tracks": []
+  "updatedAt": "2026-11-19T09:53:17.217Z",
+  "tracks": [
+    {
+      "id": "mix-01",
+      "comment": "TECHNO TIME, DJ BY VIBEFLOW",
+      "bpm": null,
+      "order": 0
+    },
+    {
+      "id": "mix-02",
+      "comment": "All the honey singh fans in the house, Make Some NOISE",
+      "bpm": null,
+      "order": 1
+    },
+    {
+      "id": "mix-03",
+      "comment": "Ladies and Gentleman, put your hands up in air, Gangnum Style",
+      "bpm": null,
+      "order": 2
+    },
+    {
+      "id": "mix-04",
+      "comment": "ALL THE DHURANDHAR FANS IN THE HOUSE? MAKE SOME NOISE",
+      "bpm": null,
+      "order": 3
+    },
+    {
+      "id": "mix-05",
+      "comment": "NOW A LITTLE TECHNO FOR MY BADDIES, SORRY SWEETY",
+      "bpm": null,
+      "order": 4
+    },
+    {
+      "id": "mix-06",
+      "comment": "GUYS? YOU KNOW WHAT? ITS NAAG IN TIME",
+      "bpm": null,
+      "order": 5
+    },
+    {
+      "id": "mix-07",
+      "comment": "ALL THE THALA PATY FANS IN THE HOUSE, THIS ONE IS FOR YOU",
+      "bpm": null,
+      "order": 6
+    },
+    {
+      "id": "mix-08",
+      "comment": "HOW ABOUT I MIX JAMAICA WITH CLASSIC BOLLYWOOD DOL NA DOL NA, LETS NACHO",
+      "bpm": null,
+      "order": 7
+    },
+    {
+      "id": "mix-09",
+      "comment": "LADIES AND GENTLEMAN A LITTLE SURPRISE NOW, SHEELA KI, JAVANI",
+      "bpm": null,
+      "order": 8
+    }
+  ]
 }
