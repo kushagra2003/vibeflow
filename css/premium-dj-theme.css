@@ -139,3 +139,77 @@ input::placeholder,textarea::placeholder{color:#77827e}
 .arrangement-track-head,.arrangement-selection,.arrangement-mark,.arrangement-segments,.arrangement-dj-settings{background:#141b1b;border-radius:10px}
 .arrangement-studio .primary-btn{background:linear-gradient(135deg,#d7bd8b,#a98755);color:#141713}
 .lyrics-studio,.punch-deck{background:var(--surface);border-color:#34413d}
+
+/* Party with AI: premium hardware-inspired stage, no violet/neon palette. */
+#partyAi{background:radial-gradient(ellipse at 50% 0%,#263127 0%,#111817 43%,#080c0d 100%);color:#f1f0e9}
+#partyAi .pai-panel{background:#151d1c;border-color:#3b4942;border-radius:13px}
+#partyAi button{background:#1b2422;border-color:#3b4942;color:#e9eee5;border-radius:8px}
+#partyAi button:hover{background:#27332a;border-color:#a4bd69}
+#partyAi .pai-primary,#partyAi .pai-flow-primary{background:linear-gradient(135deg,#d7bd8b,#a98755);border:1px solid #d7bd8b;color:#141713;font-weight:900}
+#partyAi .pai-primary:hover,#partyAi .pai-flow-primary:hover{background:linear-gradient(135deg,#ead4a5,#c19b62)}
+#partyAi input{background:#0d1413;color:#f1f0e9;border-color:#3b4942}
+#partyAi .pai-number,#partyAi .pai-stage-kicker{color:#d1bd91}
+#partyAi .pai-track{border-color:#34413d}
+#partyAi .pai-track-main>small,#partyAi .pai-sub,#partyAi .pai-clock{color:#9aa69e}
+#partyAi .pai-empty{background:#101716;color:#a8b2aa}
+#partyAi .pai-status{color:#c3cebf}
+#partyAi .pai-stage{background:radial-gradient(ellipse at 50% 42%,#202a22 0%,#111918 49%,#090e0f 100%);border-color:#455447;border-radius:17px;box-shadow:0 30px 100px #000b}
+#partyAi .pai-stage:before{border-color:#c7ef6719;box-shadow:0 0 100px #c7ef6710,inset 0 0 100px #c7ef6709}
+#partyAi .pai-stage-head{border-bottom-color:#ffffff14}
+#partyAi .pai-stage-brand b{letter-spacing:2.5px;color:#f0eee4}
+#partyAi .pai-stage-brand small,#partyAi .pai-stage-topline{color:#9ca99f}
+#partyAi .pai-live-dot{background:#c7ef67;box-shadow:0 0 14px #c7ef67;animation:pai-pulse 1.4s infinite}
+#partyAi .pai-stage-topline i{background:#c7ef67;box-shadow:0 0 10px #c7ef67}
+#partyAi .pai-show-unlock{border-color:#67764f;background:#1b251d;color:#dce8c7}
+#partyAi .pai-stage-close{background:#1b2422}
+#partyAi .pai-stage-title{color:#f3f1e8;letter-spacing:-1.8px}
+#partyAi .pai-stage-subtitle{color:#a6b1a8}
+#partyAi .pai-deck-scene{filter:drop-shadow(0 20px 32px #0008)}
+#partyAi .pai-deck{background:linear-gradient(145deg,#27312d,#131a19);border-color:#566354;box-shadow:inset 0 1px #ffffff18,0 14px 34px #0008}
+#partyAi .pai-deck-label{color:#c9d2c7}
+#partyAi .pai-deck-label span{color:#c7a56a}
+#partyAi .pai-vinyl{background:repeating-radial-gradient(circle,#111716 0 3px,#29332e 4px 5px,#0b1010 6px 8px);border-color:#64705b;box-shadow:0 0 35px #c7ef6715}
+#partyAi .pai-vinyl-core{background:linear-gradient(145deg,#e0c58f,#9b7849);color:#121713}
+#partyAi .pai-vinyl.scratching{filter:drop-shadow(0 0 14px #c7ef67)}
+#partyAi .pai-deck-meter{background:#0b1110;border-color:#455447}
+#partyAi .pai-deck-meter i{background:linear-gradient(90deg,#c7a56a,#c7ef67)}
+#partyAi .pai-dj-core{background:radial-gradient(circle,#d2b780 0%,#778b5b 34%,#1b2822 65%,#101615 100%);box-shadow:0 0 70px #c7ef6720}
+#partyAi .pai-orbit{border-color:#a2b47a55}
+#partyAi .pai-core-glow{background:#c7ef671c}
+#partyAi .pai-core-avatar{color:#f1e5c7}
+#partyAi .pai-core-eq i{background:#c7ef67}
+#partyAi .pai-asset-card{background:#141d1a;border-color:#3b4942}
+#partyAi .pai-asset-card>b{color:#e6d3a7}
+#partyAi .pai-asset-card>small{color:#8e9c92}
+#partyAi .pai-mic-message{background:linear-gradient(90deg,#202a20,#151d1b);border-color:#59664a}
+#partyAi .pai-mic-message>span{color:#d8c08d}
+#partyAi .pai-mic-message>div>small{color:#c7a56a}
+#partyAi .pai-comment-display{color:#e9e7da;text-shadow:0 0 30px #c7ef6715}
+#partyAi .pai-stage-controls .pai-drop-button{background:linear-gradient(120deg,#d7bd8b,#a98755);color:#141713;border:0}
+#partyAi .pai-start-panel{background:#111918;border-color:#3b4942}
+#partyAi .pai-start-panel>div small,#partyAi .pai-flow-choice>small{color:#9aa69e}
+#partyAi .pai-stage-footer{color:#7e8b82}
+#partyAi .pai-progress{background:#303b35}
+#partyAi .pai-progress span{background:linear-gradient(90deg,#c7a56a,#c7ef67)}
+#partyAi canvas{opacity:.38}
+@keyframes pai-pulse{50%{opacity:.4;box-shadow:0 0 4px #c7ef67}}
+/* Arrangement studio details and insight states. */
+.arrangement-studio{background:linear-gradient(145deg,#171f1e,#101615);border-color:#35433c;border-radius:14px}
+.arrangement-heading p,.arrangement-track-head p,.arrangement-song-copy small,.arrangement-segment-main small,.arrangement-selection-head span{color:#9aa69e}
+.arrangement-subhead,.arrangement-track-kicker{color:#d1bd91}
+.arrangement-library,.arrangement-editor{background:#101716;border-color:#303d38}
+.arrangement-song{background:#18211e}
+.arrangement-song.active{border-color:#a4bd69;background:#222e23}
+.arrangement-song-art{background:linear-gradient(135deg,#596b49,#1e2923)}
+.arrangement-song-count,.arrangement-playhead-row>span{color:#d4e5a6}
+.arrangement-wave-wrap,.arrangement-selection,.arrangement-mark,.arrangement-segments,.arrangement-dj-settings{background:#151d1c;border-color:#34413d}
+#arrangementWaveform{background:linear-gradient(180deg,#1b2421,#111817)}
+.arrangement-range-fields label,.arrangement-settings-grid label,.insights-crossfade-label{color:#b8c2b9}
+.arrangement-type-picker span{border-color:#465348}
+.arrangement-type-picker input:checked+.type-intro{background:#26352c;border-color:#a4bd69;color:#d9e9bc}
+.arrangement-type-picker input:checked+.type-instrumental{background:#26352c;border-color:#a4bd69;color:#d9e9bc}
+.arrangement-type-picker input:checked+.type-vocals{background:#3a3324;border-color:#c7a56a;color:#ead5a7}
+.arrangement-segment,.insight-block{background:#1b2521;border-color:#3b4942;color:#edf0e6}
+.insights-sequence{background:#101716;border-color:#56634c}
+.insights-dash-box,.insights-progress-card{background:#17211c;border-color:#82965b}
+.insights-dash-box span i,.insights-progress-track i{background:linear-gradient(90deg,#c7a56a,#c7ef67);box-shadow:0 0 12px #c7ef6740}
