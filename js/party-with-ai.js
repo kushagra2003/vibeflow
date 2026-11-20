@@ -1,5 +1,5 @@
 (()=>{"use strict";
-const $=s=>document.querySelector(s),root=$("#partyAi"),state={tracks:[],index:0,remaining:[],playing:false,mode:"idle",fade:null,visual:null,drag:null,volume:.9,manifestSaved:false,skipBusy:false,playToken:0,loaded:false,unlockClicks:0,unlockTimer:null,visualContext:null,musicAnalyser:null,musicSource:null};
+const $=s=>document.querySelector(s),root=$("#partyAi"),state={tracks:[],index:0,remaining:[],playing:false,mode:"idle",fade:null,visual:null,drag:null,volume:.9,manifestSaved:false,skipBusy:false,skipToken:0,playToken:0,loaded:false,unlockClicks:0,unlockTimer:null,visualContext:null,musicAnalyser:null,musicSource:null};
 const music=new Audio(),intro=new Audio(),scratch=new Audio();music.preload=intro.preload=scratch.preload="auto";music.volume=.9;intro.volume=.9;scratch.volume=.9;
 let introContext=null,introGain=null;const introLevels=new Map();
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
@@ -9,7 +9,7 @@ function say(s){const el=$("#paiStatus");if(el)el.textContent=s;}function stageS
 async function request(url,options){const r=await fetch(url,options);const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||"Request failed");return d;}
 async function load(){
  say("Scanning party-mixes and matching introductions…");
- try{const d=await request("/api/party-library");state.tracks=d.tracks||[];state.effect=d.effect;state.manifestSaved=d.persistAvailable;state.loaded=true;render();updateAssetCounts();say(state.tracks.length?state.tracks.length+" mixes ready · "+(state.manifestSaved?"GitHub metadata sync available":"browser-only metadata until Cloudflare secret is configured"):"No mixes found yet. Upload mix-01.mp3, mix-02.mp3… to party-mixes.");}
+ try{const d=await request("/api/party-library");state.tracks=d.tracks||[];state.effect=d.effect;state.manifestSaved=d.persistAvailable;state.loaded=true;mergeLocal();render();updateAssetCounts();say(state.tracks.length?state.tracks.length+" mixes ready · "+(state.manifestSaved?"GitHub metadata sync available":"browser-only metadata until Cloudflare secret is configured"):"No mixes found yet. Upload mix-01.mp3, mix-02.mp3… to party-mixes.");}
  catch(e){say(e.message+" · Check the Party with AI folders.");$("#paiList").innerHTML='<div class="pai-empty">'+esc(e.message)+'</div>';}
 }
 function updateAssetCounts(){const n=state.tracks.length;$("#paiVocalCount").textContent=n;$("#paiInstrumentCount").textContent=n;$("#paiIntroCount").textContent=state.tracks.filter(t=>!!t.intro).length;$("#paiEngineState").textContent=n?"READY":"STANDBY";}
@@ -35,11 +35,12 @@ function updateSkipControls(){
  ["#paiSkipBack45","#paiSkipBack30","#paiSkipBack15","#paiSkip15","#paiSkip30","#paiSkip45"].forEach(id=>{const button=$(id);if(button)button.disabled=!enabled;});
 }
 function setScreen(screen){root.dataset.screen=screen;$("#paiManage").hidden=screen!=="manage";$("#paiShow").hidden=screen==="manage";$("#paiShow").dataset.playing=String(state.playing);updateSkipControls();}
-function open(){root.hidden=false;document.body.classList.add("party-ai-open");setScreen("show");if(!state.loaded)load().then(()=>{mergeLocal();render();updateAssetCounts();});if(!state.visual)animate();}
+function open(){root.hidden=false;document.body.classList.add("party-ai-open");setScreen("show");if(!state.loaded)load();if(!state.visual)animate();}
 function registerUnlockClick(){state.unlockClicks++;clearTimeout(state.unlockTimer);if(state.unlockClicks>=5){state.unlockClicks=0;setScreen("manage");say("Operator console unlocked.");return true;}state.unlockTimer=setTimeout(()=>{state.unlockClicks=0;},1700);return false;}
 function launcherClick(){if(registerUnlockClick())return;open();}
+function close(){stop();clearTimeout(state.unlockTimer);state.unlockClicks=0;root.hidden=true;document.body.classList.remove("party-ai-open");}
 function ensureVisualAudio(){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;if(!state.visualContext)state.visualContext=new C();if(state.visualContext.state==="suspended")state.visualContext.resume().catch(()=>{});if(!state.musicAnalyser){state.musicAnalyser=state.visualContext.createAnalyser();state.musicAnalyser.fftSize=256;state.musicAnalyser.smoothingTimeConstant=.82;state.musicSource=state.visualContext.createMediaElementSource(music);state.musicSource.connect(state.musicAnalyser);state.musicAnalyser.connect(state.visualContext.destination);}}catch(e){console.warn("Audio analysis unavailable; visual fallback active",e);}}
-function fadeAudio(a,to,duration=850){return new Promise(resolve=>{clearInterval(a._fade);const from=a.volume,start=performance.now();a._fade=setInterval(()=>{const p=Math.min(1,(performance.now()-start)/duration),e=p*p*(3-2*p);a.volume=from+(to-from)*e;if(p>=1){clearInterval(a._fade);a._fade=null;resolve();}},20);});}
+function fadeAudio(a,to,duration=850){return new Promise(resolve=>{if(a._fade){clearInterval(a._fade);a._fade=null;a._fadeResolve?.();}let settled=false;const done=()=>{if(settled)return;settled=true;if(a._fadeResolve===done)a._fadeResolve=null;resolve();};a._fadeResolve=done;const from=a.volume,start=performance.now();a._fade=setInterval(()=>{const p=Math.min(1,(performance.now()-start)/duration),e=p*p*(3-2*p);a.volume=from+(to-from)*e;if(p>=1){clearInterval(a._fade);a._fade=null;done();}},20);});}
 async function prepareIntro(url){try{if(!introContext){const C=window.AudioContext||window.webkitAudioContext;if(C){introContext=new C();const source=introContext.createMediaElementSource(intro);introGain=introContext.createGain();const compressor=introContext.createDynamicsCompressor();compressor.threshold.value=-20;compressor.knee.value=18;compressor.ratio.value=3;compressor.attack.value=.008;compressor.release.value=.22;source.connect(compressor).connect(introGain).connect(introContext.destination);}}if(introContext?.state==="suspended")await introContext.resume();if(introContext&&introGain&&!introLevels.has(url)){let gain=1;try{const response=await fetch(url);if(response.ok){const decoded=await introContext.decodeAudioData(await response.arrayBuffer());let sum=0,count=0;for(let ch=0;ch<decoded.numberOfChannels;ch++){const data=decoded.getChannelData(ch),stride=Math.max(1,Math.floor(data.length/120000));for(let i=0;i<data.length;i+=stride){sum+=data[i]*data[i];count++;}}const rms=count?Math.sqrt(sum/count):0;if(rms>0.0001)gain=Math.max(.55,Math.min(2.8,.14/rms));}}catch(e){console.warn("Intro loudness analysis unavailable; using compressor only",e);}introLevels.set(url,gain);}if(introGain)introGain.gain.value=introLevels.get(url)||1;}catch(e){console.warn("Intro loudness processor unavailable",e);}}
 async function playCurrent(){
  clearTimeout(state.timer);const token=++state.playToken;
@@ -69,50 +70,62 @@ function chooseNextIndex(){
  return chosen;
 }
 function next(){
+ state.skipToken++;
  const chosen=chooseNextIndex();
  if(chosen>=0){state.index=chosen;playCurrent();}
  else finish();
 }
 function finish(){state.playing=false;state.mode="done";state.skipBusy=false;music.pause();intro.pause();setScreen("show");$("#paiPhase").textContent="SESSION COMPLETE";$("#paiComment").textContent="That was a moment. Want to run it back?";$("#paiComment").classList.add("visible");$("#paiStartPanel").hidden=false;$("#paiEngineState").textContent="STANDBY";stageSay("READY FOR ANOTHER SET");say("All party mixes played.");}
-function stop(){clearTimeout(state.timer);state.playToken++;state.playing=false;state.skipBusy=false;music.pause();intro.pause();scratch.pause();clearInterval(music._fade);clearInterval(intro._fade);if(state.visual)cancelAnimationFrame(state.visual);state.visual=null;setScreen("show");$("#paiStartPanel").hidden=false;stageSay("ENGINE STANDBY");}
+function stop(){clearTimeout(state.timer);state.skipToken++;state.playToken++;state.playing=false;state.skipBusy=false;music.pause();intro.pause();scratch.pause();clearInterval(music._fade);music._fade=null;music._fadeResolve?.();clearInterval(intro._fade);intro._fade=null;intro._fadeResolve?.();music.volume=state.volume;if(state.visual)cancelAnimationFrame(state.visual);state.visual=null;setScreen("show");$("#paiStartPanel").hidden=false;stageSay("ENGINE STANDBY");}
 async function skipBy(offset){
  if(!state.playing||state.mode!=="music"||state.skipBusy)return;
  const activeTrack=track(),duration=music.duration,current=music.currentTime;
  if(!Number.isFinite(current)||!Number.isFinite(duration)||duration<=0)return;
  const target=Math.max(0,Math.min(duration,current+offset));
  const goesPastEnd=offset>0&&current+offset>=duration;
+ const operation=++state.skipToken;
  state.skipBusy=true;updateSkipControls();
  try{
   await fadeAudio(music,0,180);
+  if(operation!==state.skipToken||!state.playing||state.mode!=="music"||track()!==activeTrack)return;
   music.pause();
-  if(!state.playing||state.mode!=="music"||track()!==activeTrack)return;
   if(goesPastEnd){state.skipBusy=false;next();return;}
-  // Seek first, wait for the browser to apply it, then resume without resetting to 0.
   if(Math.abs(music.currentTime-target)>0.05){
    await new Promise((resolve,reject)=>{
-    const timer=setTimeout(()=>{cleanup();resolve();},900);
+    let settled=false;
     const cleanup=()=>{clearTimeout(timer);music.removeEventListener("seeked",onSeeked);music.removeEventListener("error",onError);};
-    const onSeeked=()=>{cleanup();resolve();};
-    const onError=()=>{cleanup();reject(new Error("Audio seek failed"));};
+    const finish=(error)=>{if(settled)return;settled=true;cleanup();error?reject(error):resolve();};
+    const timer=setTimeout(()=>finish(new Error("Audio seek timed out; position not confirmed")),3000);
+    const onSeeked=()=>finish();
+    const onError=()=>finish(new Error("Audio seek failed"));
     music.addEventListener("seeked",onSeeked,{once:true});
     music.addEventListener("error",onError,{once:true});
-    music.currentTime=target;
+    try{music.currentTime=target;}catch(e){finish(e);}
    });
   }
-  if(!state.playing||state.mode!=="music"||track()!==activeTrack)return;
+  if(operation!==state.skipToken||!state.playing||state.mode!=="music"||track()!==activeTrack)return;
   scratchPlay();
   await startMusic(false,state.playToken);
- }catch(e){say("Skip failed: "+e.message);}
- finally{state.skipBusy=false;updateSkipControls();}
+ }catch(e){
+  if(operation===state.skipToken){
+   say("Skip failed: "+e.message);
+   if(state.playing&&state.mode==="music")try{await startMusic(false,state.playToken);}catch{}
+  }
+ }finally{
+  if(operation===state.skipToken)state.skipBusy=false;
+  if(state.playing&&state.mode==="music")music.volume=state.volume;
+  updateSkipControls();
+ }
 }
 function scratchPlay(){
  return new Promise(resolve=>{
   if(!state.effect){resolve();return;}
+  const vinyls=[...root.querySelectorAll(".pai-vinyl")];
   let settled=false;
-  const finishScratch=()=>{if(settled)return;settled=true;clearTimeout(fallback);scratch.onended=null;scratch.onerror=null;$("#paiDisc").classList.remove("scratching");resolve();};
+  const finishScratch=()=>{if(settled)return;settled=true;clearTimeout(fallback);scratch.onended=null;scratch.onerror=null;vinyls.forEach(el=>el.classList.remove("scratching"));resolve();};
   const fallback=setTimeout(finishScratch,2600);
   scratch.pause();scratch.src=state.effect;scratch.currentTime=0;scratch.volume=.95;
-  $("#paiDisc").classList.add("scratching");
+  vinyls.forEach(el=>el.classList.add("scratching"));
   scratch.onended=finishScratch;scratch.onerror=finishScratch;
   scratch.play().catch(finishScratch);
  });
@@ -122,7 +135,7 @@ function bind(){
  $("#partyAiOpen").onclick=launcherClick;$("#paiShowUnlock").onclick=()=>{if(registerUnlockClick())return;stageSay("PLAY WITH AI · "+state.unlockClicks+"/5");};$("#paiClose").onclick=close;$("#paiRefresh").onclick=()=>{state.loaded=false;load();};$("#paiSave").onclick=save;$("#paiReturnShow").onclick=()=>{setScreen("show");if(!state.visual)animate();stageSay(state.playing?"LIVE PERFORMANCE CONTINUES":"ENGINE STANDBY");};$("#paiStart").onclick=()=>{setScreen("show");if(!state.visual)animate();};
  $("#paiShuffleStart").onclick=()=>{if(!state.tracks.length)return say("No pre-mixed audio assets found.");state.playOrder="shuffle";$("#paiStartPanel").hidden=true;state.remaining=state.tracks.map((_,i)=>i);const first=Math.floor(Math.random()*state.remaining.length);state.index=state.remaining.splice(first,1)[0];playCurrent();animate();};
  $("#paiChronologicalStart").onclick=()=>{if(!state.tracks.length)return say("No pre-mixed audio assets found.");state.playOrder="chronological";$("#paiStartPanel").hidden=true;state.remaining=state.tracks.map((_,i)=>i);state.index=state.remaining.shift();playCurrent();animate();};
- $("#paiPause").onclick=()=>{music.pause();intro.pause();state.playing=false;$("#paiShow").dataset.playing="false";updateSkipControls();stageSay("PERFORMANCE PAUSED");};
+ $("#paiPause").onclick=()=>{state.skipToken++;clearInterval(music._fade);music._fade=null;music._fadeResolve?.();music.volume=state.volume;music.pause();intro.pause();state.playing=false;$("#paiShow").dataset.playing="false";updateSkipControls();stageSay("PERFORMANCE PAUSED");};
  $("#paiResume").onclick=()=>{if(state.mode==="done"){state.remaining=state.tracks.map((_,i)=>i);if(state.playOrder==="chronological")state.index=state.remaining.shift();else{const first=Math.floor(Math.random()*state.remaining.length);state.index=state.remaining.splice(first,1)[0];}playCurrent();}else if(state.mode==="music"){music.play();state.playing=true;$("#paiShow").dataset.playing="true";updateSkipControls();}else if(state.mode==="intro"){intro.play();state.playing=true;$("#paiShow").dataset.playing="true";updateSkipControls();}else playCurrent();};
  $("#paiNext").onclick=()=>{music.pause();intro.pause();next();};
  $("#paiSkipBack45").onclick=()=>skipBy(-45);$("#paiSkipBack30").onclick=()=>skipBy(-30);$("#paiSkipBack15").onclick=()=>skipBy(-15);$("#paiSkip15").onclick=()=>skipBy(15);$("#paiSkip30").onclick=()=>skipBy(30);$("#paiSkip45").onclick=()=>skipBy(45);updateSkipControls();
