@@ -1,0 +1,141 @@
+/* VIBE FLOW — premium DJ visual system
+   Obsidian / brushed champagne / signal-lime. Presentation-only layer. */
+:root{
+  color-scheme:dark;
+  --bg:#090b0c;--panel:#111516;--panel2:#171d1e;--line:#293233;
+  --text:#f1f0e9;--muted:#9aa5a1;--purple:#c7a56a;--purple2:#e4c58c;
+  --green:#c7ef67;--danger:#f17e72;--shadow:0 24px 70px #0009;
+  --accent:#c7ef67;--accent-soft:#c7ef671c;--metal:#c7a56a;
+  --surface:linear-gradient(145deg,#171d1e,#101516);
+}
+html,body{background:var(--bg);color:var(--text);font-family:Inter,"Avenir Next",Avenir,ui-sans-serif,system-ui,sans-serif;letter-spacing:.005em}
+body{background:radial-gradient(ellipse 70% 48% at 78% -12%,#c7a56a14,transparent 68%),radial-gradient(ellipse 45% 38% at 0% 55%,#c7ef6708,transparent 72%),#090b0c}
+::selection{background:#c7ef67;color:#101411}
+button,input,select,textarea{font-family:inherit}
+button{border:1px solid #303b3c;background:linear-gradient(180deg,#1b2223,#141a1b);color:#e9ece5;border-radius:9px;box-shadow:inset 0 1px #ffffff09;transition:background .2s,border-color .2s,transform .2s,box-shadow .2s}
+button:hover{background:linear-gradient(180deg,#283131,#1b2424);border-color:#8c9a83;transform:translateY(-1px);box-shadow:0 8px 22px #0005}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #c7ef67;outline-offset:2px}
+input,select,textarea{background:#0c1112;border:1px solid #303b3c;border-radius:9px;color:var(--text);box-shadow:inset 0 1px 4px #0005}
+input::placeholder,textarea::placeholder{color:#77827e}
+.app-shell{grid-template-columns:238px minmax(0,1fr);gap:0}
+.sidebar{position:relative;background:linear-gradient(180deg,#101516f5,#0b1011f5);border-right:1px solid #293233;padding:28px 17px;gap:8px}
+.sidebar:after{content:"";position:absolute;top:0;right:-1px;width:1px;height:180px;background:linear-gradient(180deg,#c7a56a88,transparent)}
+.brand{margin:0 7px 44px;gap:13px}
+.brand-mark{width:39px;height:39px;border-radius:12px;background:linear-gradient(145deg,#e2c58e,#98764a);color:#101312;font-weight:950;box-shadow:0 8px 24px #c7a56a26}
+.brand-copy strong{font-size:19px;letter-spacing:1.4px;font-weight:900}
+.brand-copy small{color:#d6c29b;font-size:10px;letter-spacing:.7px}
+.brand-copy em{color:#77827d;font-size:8px;letter-spacing:2px}
+.nav-label,.eyebrow{color:#9caa9f;letter-spacing:2px;font-size:9px}
+.nav-label{margin:0 10px 10px}
+.nav-btn,.settings-nav{min-height:42px;border:1px solid transparent;border-radius:9px;color:#a5afaa;background:transparent;letter-spacing:.02em;font-size:12px}
+.nav-btn span,.settings-nav span{color:#8f9b94}
+.nav-btn.active,.nav-btn:hover,.settings-nav:hover{background:linear-gradient(90deg,#c7ef6717,#c7ef6705);border-color:#536044;color:#eff3e8;box-shadow:inset 2px 0 #c7ef67}
+.nav-btn.active span{color:var(--accent)}
+.sidebar-status{color:#84918b;border-top:1px solid #293233;margin-top:auto;padding-top:17px}
+.status-dot,.live-dot{background:var(--accent);box-shadow:0 0 12px #c7ef6780}
+.main-content{padding:30px clamp(18px,3.2vw,52px) 42px;max-width:1900px}
+.topbar{gap:14px;margin-bottom:26px;flex-wrap:wrap}
+.topbar h1{font-size:27px;font-weight:750;letter-spacing:-1.1px}
+.search-box{background:#111718;border:1px solid #2b3636;border-radius:10px;box-shadow:0 8px 25px #0003}
+.search-box input{background:transparent;box-shadow:none}
+.search-box button{background:#c7ef67;color:#101510;border-color:#c7ef67;font-weight:850}
+.search-box button:hover{background:#dcff83;border-color:#dcff83}
+.party-launch{border-radius:8px;background:#171e1f;border-color:#34403e;color:#c7d0c8;font-size:11px;font-weight:750;letter-spacing:.03em}
+#partyAiOpen,.party-launch:last-of-type{border-color:#a58b5e;background:linear-gradient(135deg,#c7a56a,#907247);color:#111511;box-shadow:0 6px 20px #c7a56a24}
+#partyAiOpen:hover,.party-launch:last-of-type:hover{background:linear-gradient(135deg,#e1c58f,#b28e5b)}
+.now-card{position:relative;grid-template-columns:178px minmax(260px,1fr) minmax(190px,.72fr);gap:26px;padding:25px;background:linear-gradient(115deg,#1a2222,#121819 58%,#171b18);border:1px solid #394442;border-radius:15px;box-shadow:var(--shadow);margin-bottom:18px}
+.now-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,#c7ef67,#c7a56a,transparent)}
+.cover-wrap{width:178px;height:178px}
+.cover-wrap img{border-radius:11px;box-shadow:0 18px 40px #0009}
+.cover-shine{border-radius:11px;box-shadow:inset 0 0 0 1px #ffffff22}
+.now-kicker{color:#c5cdbf;letter-spacing:1.6px;font-size:9px}
+.now-info h2{font-size:29px;letter-spacing:-1.1px;font-weight:760}
+.now-info>p{color:#9ba7a1}
+.now-meta{color:#c8d0c7}
+#seek{accent-color:var(--accent)}
+.icon-btn{background:#171e1f;border-color:#34403e}
+.play-btn{background:linear-gradient(145deg,#e1c58f,#b18c57);color:#111510;box-shadow:0 6px 22px #c7a56a3b}
+.play-btn:hover{background:linear-gradient(145deg,#f0d9a9,#c19b62)}
+.primary-btn{background:linear-gradient(135deg,#d7bd8b,#a98755);border-color:#d9bd89;color:#141713;font-weight:850;box-shadow:0 7px 20px #c7a56a22}
+.primary-btn:hover{background:linear-gradient(135deg,#ebd5a6,#c29e67);border-color:#ead3a2}
+.force-mix-btn{background:#c7ef6714;border-color:#7d9548;color:#d9f69c}
+.wave-panel{border-left-color:#ffffff16}
+.wave-title{color:#c4cdbf;letter-spacing:1.7px}
+.wave-title span{color:var(--accent)}
+.waveform i{background:linear-gradient(180deg,#d7c59c,#c7ef67);opacity:.75}
+.wave-caption{color:#93a099}
+.transition-banner{border-color:#68774a;background:linear-gradient(90deg,#20291b,#151d19);border-radius:10px}
+.transition-tag{color:var(--accent)}
+.scanner i{background:#c7ef67}
+.panel,.tracks-panel,.queue-panel{background:var(--surface);border:1px solid #2e3938;border-radius:13px;box-shadow:0 12px 32px #0002}
+.section-heading h3{font-weight:750;letter-spacing:-.35px}
+.subtle,.muted{color:#9ba7a1}
+.hook-item,.track-row,.choice-row,.setting-field{background:#171e1f;border-color:#2d3938;border-radius:10px}
+.track-row:hover{background:#202928;border-color:#71805c}
+.track-row.current{background:#202a20;border-color:#a4bd69;box-shadow:inset 2px 0 var(--accent)}
+.track-row.drop-target{background:#17261d;border-color:var(--accent)}
+.track-art{border-radius:8px;background:linear-gradient(145deg,#4c5b42,#1c2724)}
+.hook-time,.hook-end{color:#d9c18e!important}
+.track-hook-count{background:linear-gradient(145deg,#29352a,#18211d);border-color:#778b59;color:#e8f1d6}
+.track-hook-count:hover{background:linear-gradient(145deg,#3c4d32,#202b21);border-color:#c7ef67}
+.track-hook-popover{background:#141b1b;border-color:#64754c}
+.hook-pick-option:hover,.hook-pick-option:focus{background:#263326}
+.hook-pick-number{background:#91aa58;color:#101510}
+.empty-state{border-color:#3b4945;color:#93a099;background:#111819;border-radius:10px}
+.queue-count{background:#293527;color:#d9f69c}
+.player-bar{background:#0b1011ed;border-top:1px solid #3a4542;backdrop-filter:blur(24px);box-shadow:0 -12px 38px #0005}
+.mini-cover{background:linear-gradient(145deg,#d1b27c,#5a694b);color:#121713}
+.transport-buttons .bar-play{background:#c7ef67;color:#101510}
+.transport-buttons button{color:#c5cec7}
+.transport-options label{color:#9ba7a1}
+.volume-control input{accent-color:var(--accent)}
+#toast{background:#202a22;border:1px solid #8b9e5c;color:#f2f5e9;border-radius:9px}
+.modal-backdrop{background:#050808d9;backdrop-filter:blur(12px)}
+.modal-card{background:linear-gradient(145deg,#1a2222,#101617);border:1px solid #52604c;border-radius:14px;box-shadow:0 28px 110px #000d}
+.modal-close{background:#222b29}
+.settings-grid{gap:12px}
+.setting-field{background:#151d1d;border-color:#303d3a}
+.toggle-row{border-color:#2d3938}
+.switch:checked{background:#a6c85b}
+.switch:before{background:#f5f4e9}
+.choice-row{background:#18201f;border-color:#33403b}
+.choice-row:hover{border-color:#a3bc69}
+.pattern-tag{color:#d6f29a;border-color:#687d45}
+.ai-panel{border-color:#2e3938}
+@media(max-width:1100px){
+ .app-shell{grid-template-columns:210px minmax(0,1fr)}
+ .now-card{grid-template-columns:132px minmax(230px,1fr)}
+ .cover-wrap{width:132px;height:132px}
+}
+@media(max-width:720px){
+ body{padding-bottom:150px}
+ .app-shell{grid-template-columns:1fr}
+ .sidebar{background:#0d1313f5;border-bottom:1px solid #394442;padding:8px 10px;gap:5px}
+ .brand{margin:0 10px 0 0}
+ .brand-mark{width:30px;height:30px}
+ .nav-btn{font-size:10px}
+ .main-content{padding:17px 12px 28px}
+ .topbar{gap:8px}
+ .topbar h1{font-size:22px}
+ .party-launch{font-size:10px;padding:8px 9px}
+ .now-card{grid-template-columns:88px minmax(0,1fr);padding:13px;gap:13px}
+ .cover-wrap{width:88px;height:88px}
+ .now-info h2{font-size:20px}
+ .player-bar{background:#0b1011f7;border-top-color:#3a4542}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+/* Secondary studios and generated screens share the same material language. */
+[class*="arrangement-"],[class*="pai-"],.lyrics-studio,.punch-deck,.dj-live-feed,.dj-upcoming,.insights-now-playing{
+ --studio-line:#34413d;--studio-surface:#151d1c;
+}
+.arrangement-studio,.arrangement-library,.arrangement-editor,.arrangement-dj-settings{background-color:transparent}
+.arrangement-studio{border-color:#34413d}
+.arrangement-studio button,.arrangement-studio input,.arrangement-studio select{border-radius:8px}
+.arrangement-studio button.active,.arrangement-modebar button.active{background:#c7ef671c;border-color:#9bb65d;color:#e7f3cf}
+.arrangement-wave-wrap,.arrangement-selection,.arrangement-mark,.arrangement-segments,.arrangement-dj-settings,.arrangement-track-head,.arrangement-library{border-color:#34413d}
+.arrangement-song-list,.arrangement-segment-list,.insights-sequence{background:#111819}
+.arrangement-track-head,.arrangement-selection,.arrangement-mark,.arrangement-segments,.arrangement-dj-settings{background:#141b1b;border-radius:10px}
+.arrangement-studio .primary-btn{background:linear-gradient(135deg,#d7bd8b,#a98755);color:#141713}
+.lyrics-studio,.punch-deck{background:var(--surface);border-color:#34413d}
