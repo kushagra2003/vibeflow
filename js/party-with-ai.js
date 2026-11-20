@@ -70,7 +70,7 @@ function chooseNextIndex(){
  return chosen;
 }
 function next(){
- state.skipToken++;
+ state.skipToken++;state.skipBusy=false;
  const chosen=chooseNextIndex();
  if(chosen>=0){state.index=chosen;playCurrent();}
  else finish();
@@ -135,7 +135,7 @@ function bind(){
  $("#partyAiOpen").onclick=launcherClick;$("#paiShowUnlock").onclick=()=>{if(registerUnlockClick())return;stageSay("PLAY WITH AI · "+state.unlockClicks+"/5");};$("#paiClose").onclick=close;$("#paiRefresh").onclick=()=>{state.loaded=false;load();};$("#paiSave").onclick=save;$("#paiReturnShow").onclick=()=>{setScreen("show");if(!state.visual)animate();stageSay(state.playing?"LIVE PERFORMANCE CONTINUES":"ENGINE STANDBY");};$("#paiStart").onclick=()=>{setScreen("show");if(!state.visual)animate();};
  $("#paiShuffleStart").onclick=()=>{if(!state.tracks.length)return say("No pre-mixed audio assets found.");state.playOrder="shuffle";$("#paiStartPanel").hidden=true;state.remaining=state.tracks.map((_,i)=>i);const first=Math.floor(Math.random()*state.remaining.length);state.index=state.remaining.splice(first,1)[0];playCurrent();animate();};
  $("#paiChronologicalStart").onclick=()=>{if(!state.tracks.length)return say("No pre-mixed audio assets found.");state.playOrder="chronological";$("#paiStartPanel").hidden=true;state.remaining=state.tracks.map((_,i)=>i);state.index=state.remaining.shift();playCurrent();animate();};
- $("#paiPause").onclick=()=>{state.skipToken++;clearInterval(music._fade);music._fade=null;music._fadeResolve?.();music.volume=state.volume;music.pause();intro.pause();state.playing=false;$("#paiShow").dataset.playing="false";updateSkipControls();stageSay("PERFORMANCE PAUSED");};
+ $("#paiPause").onclick=()=>{state.skipToken++;state.skipBusy=false;clearInterval(music._fade);music._fade=null;music._fadeResolve?.();music.volume=state.volume;music.pause();intro.pause();state.playing=false;$("#paiShow").dataset.playing="false";updateSkipControls();stageSay("PERFORMANCE PAUSED");};
  $("#paiResume").onclick=()=>{if(state.mode==="done"){state.remaining=state.tracks.map((_,i)=>i);if(state.playOrder==="chronological")state.index=state.remaining.shift();else{const first=Math.floor(Math.random()*state.remaining.length);state.index=state.remaining.splice(first,1)[0];}playCurrent();}else if(state.mode==="music"){music.play();state.playing=true;$("#paiShow").dataset.playing="true";updateSkipControls();}else if(state.mode==="intro"){intro.play();state.playing=true;$("#paiShow").dataset.playing="true";updateSkipControls();}else playCurrent();};
  $("#paiNext").onclick=()=>{music.pause();intro.pause();next();};
  $("#paiSkipBack45").onclick=()=>skipBy(-45);$("#paiSkipBack30").onclick=()=>skipBy(-30);$("#paiSkipBack15").onclick=()=>skipBy(-15);$("#paiSkip15").onclick=()=>skipBy(15);$("#paiSkip30").onclick=()=>skipBy(30);$("#paiSkip45").onclick=()=>skipBy(45);updateSkipControls();
