@@ -1,7 +1,7 @@
 {
   "app": "VIBE FLOW",
   "version": 1,
-  "updatedAt": "2026-11-23T09:06:52.665Z",
+  "updatedAt": "2026-11-23T16:48:02.631Z",
   "songs": [
     {
       "file": "_Abhi Toh Party Shuru Hui Hai_ Full Video Song _ Khoobsurat _ Badshah _ Sonam Kapoor _ Aastha(MP3_160K).mp3",
@@ -271,6 +271,17 @@
           "generatedAt": 1794895605986
         },
         {
+          "id": "auto-cc6c37c1-2525-42bb-aedb-f52d99afd7ab",
+          "t": 61,
+          "end": 68,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7136091614641169,
+          "generatedAt": 1794889826779
+        },
+        {
           "id": "auto-fc4ab28e-dcd9-4522-adb7-853d3b59a923",
           "t": 75,
           "end": null,
@@ -302,6 +313,18 @@
           "detector": "repeated-section",
           "confidence": 0.7942576198415434,
           "generatedAt": 1794895605986
+        },
+        {
+          "id": "auto-b7d11960-527d-403a-97cd-7c0175091f54",
+          "t": 108,
+          "end": 113,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "manual",
+          "detector": "repeated-section",
+          "confidence": 0.7941948053431792,
+          "generatedAt": 1794889826779,
+          "verifiedAt": 1794889900250
         },
         {
           "id": "auto-0f2a63f7-0977-4c47-9366-596783649b58",
@@ -3645,6 +3668,17 @@
           "confidence": 0.6883822091498443,
           "generatedAt": 1794894145042,
           "verifiedAt": 1794894216894
+        },
+        {
+          "id": "auto-a6ac5ba8-28d7-4f9f-bf2b-1842de8d0e0d",
+          "t": 114,
+          "end": 122,
+          "lyric": "Repeated musical section",
+          "endLyric": "",
+          "source": "auto",
+          "detector": "repeated-section",
+          "confidence": 0.7556929878650239,
+          "generatedAt": 1794889693180
         },
         {
           "id": "auto-40b5976e-5f6c-4143-928e-fbcfefbf3ea4",
