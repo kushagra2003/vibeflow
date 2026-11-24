@@ -65,3 +65,25 @@ Hooks are still cached locally for offline resilience, and are also synchronized
 5. Open VIBE FLOW, let the library load, and save or rename a hook. The status will show that shared hooks are loaded/backed up when synchronization is working.
 
 The endpoint merges hook lists by stable hook ID instead of replacing the entire shared archive, reducing the chance that two browsers overwrite one another. Existing browser-local hooks are merged into the shared archive on load. Until the Cloudflare secret is configured, the app continues to use localStorage and the manual JSON export/import controls.
+
+
+## Prompt-to-YouTube DJ mode
+
+Play with AI includes an optional prompt deck that searches YouTube videos through the official YouTube Data API v3 and plays selected results in the embedded YouTube IFrame Player. Search results are shuffled once per query; **Mix Again** advances to the next result in that shuffled list. The preparation sequence is a six-second visual interlude, not actual downloading, beat detection, or audio remix processing.
+
+### One-time Cloudflare setup
+
+1. In Google Cloud Console, create/select a project and enable **YouTube Data API v3**.
+2. Create an API key and restrict it to YouTube Data API v3.
+3. In Cloudflare Pages → your project → Settings → Variables and Secrets, add **`YOUTUBE_API_KEY`** as an encrypted secret.
+4. Redeploy the Pages project so the Function receives the secret.
+
+The API key stays server-side in `functions/api/youtube-search.js`; it is not exposed to browser JavaScript. Without this secret, the prompt deck reports that YouTube search is not configured.
+
+### Playback notes
+
+- The embedded YouTube player remains visible in a compact 200×200 source-deck area; the app does not conceal or disguise the video player.
+- Browser autoplay policies may block playback after the preparation delay. If that happens, use the player’s **PLAY** control.
+- Background playback depends on the browser, device, YouTube embed behavior and account/session state. YouTube Premium does not guarantee that every embedded playback context will be ad-free.
+- The six-second preparation display is a UI transition only. VIBE FLOW does not download YouTube media, extract audio, apply real-time beat effects, or create a remixed audio file.
+- YouTube playback is provided by the official embedded player and remains subject to YouTube's terms and playback rules.
