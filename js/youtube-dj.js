@@ -67,6 +67,9 @@ async function search(event){
   state.results=payload.results.slice();
   for(let i=state.results.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[state.results[i],state.results[j]]=[state.results[j],state.results[i]];}
   state.index=0;
+  $("#paiYtResult").hidden=false;
+  $("#paiYtTitle").textContent=state.results[0].title;
+  $("#paiYtChannel").textContent=state.results[0].channel;
   await ensurePlayer();
   const messages=["Downloading the set list…","Matching tempo and checking the groove…","Lining up the intro…","Adding the beat grid…","Final checks — almost ready…"];
   for(let i=0;i<messages.length;i++){
