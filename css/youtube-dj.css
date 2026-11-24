@@ -27,3 +27,6 @@
 #partyAi .pai-prompt-foot{font-size:7px;letter-spacing:1.4px;color:#726987;margin-top:12px}
 @keyframes pai-prompt-spin{to{transform:rotate(360deg)}}
 @media(max-width:600px){#partyAi .pai-prompt-head{display:block}#partyAi .pai-prompt-live{display:inline-block;margin-top:8px}#partyAi .pai-prompt-form{flex-direction:column}#partyAi .pai-prompt-form button{width:100%}#partyAi .pai-youtube-result{align-items:flex-start;flex-direction:column}#partyAi .pai-youtube-player-wrap{flex-basis:auto}#partyAi .pai-youtube-meta{width:100%}}
+
+#partyAi .pai-youtube-reaction{font-size:10px;line-height:1.5;color:#d8c5ff;margin-top:2px}
+#partyAi .pai-youtube-now-status{font-size:9px;line-height:1.5;color:#43ddff;min-height:14px}
