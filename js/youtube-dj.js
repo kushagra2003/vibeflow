@@ -9,7 +9,7 @@ function ensureUI(){
  const anchor=stage.querySelector(".pai-stage-subtitle");
  const panel=document.createElement("section");panel.id="paiPromptDeck";panel.className="pai-prompt-deck";
  panel.innerHTML=`
- <div class="pai-prompt-head"><div><span class="pai-prompt-kicker">NEW · PROMPT TO DECK</span><h3>Tell the DJ what to play.</h3><p>Search YouTube, audition a result, then let the room decide.</p></div><span class="pai-prompt-live">● YOUTUBE SOURCE</span></div>
+ <div class="pai-prompt-head"><div><span class="pai-prompt-kicker">VIBE FLOW · PROMPT TO DECK</span><h3>Tell the DJ what to play.</h3><p>VIBE FLOW curates a track from your prompt and prepares it for playback.</p></div><span class="pai-prompt-live">● YOUTUBE SOURCE</span></div>
  <form id="paiYtForm" class="pai-prompt-form"><input id="paiYtQuery" type="search" maxlength="120" autocomplete="off" placeholder="Song name · artist · remix…" aria-label="Search YouTube for a song" required><button id="paiYtSearch" type="submit">SEARCH & MIX ↗</button></form>
  <div class="pai-prompt-work" id="paiYtWork" hidden><div class="pai-prompt-workline"><span class="pai-prompt-spinner"></span><b id="paiYtStatus" role="status">Searching the crates…</b></div><div class="pai-prompt-progress"><i id="paiYtProgress"></i></div></div>
  <div class="pai-youtube-result" id="paiYtResult" hidden>
@@ -19,7 +19,7 @@ function ensureUI(){
    <div class="pai-youtube-note">Compact YouTube player · playback may require one tap if your browser blocks autoplay.</div>
   </div>
  </div>
- <div class="pai-prompt-foot">SEARCH RESULTS ARE RANDOMIZED ONCE · MIX AGAIN LOADS THE NEXT RESULT</div>`;
+ <div class="pai-prompt-foot">VIBE FLOW · TRACK SELECTION & SET CURATION</div>`;
  anchor?.insertAdjacentElement("afterend",panel);
  $("#paiYtForm").addEventListener("submit",search);
  $("#paiYtAgain").addEventListener("click",()=>playResult(state.index+1));
@@ -71,11 +71,13 @@ async function search(event){
   $("#paiYtTitle").textContent=state.results[0].title;
   $("#paiYtChannel").textContent=state.results[0].channel;
   await ensurePlayer();
-  const messages=["Downloading the set list…","Matching tempo and checking the groove…","Lining up the intro…","Adding the beat grid…","Final checks — almost ready…"];
+  const messages=["Reading your prompt…","Finding the right track…","Preparing your VIBE FLOW set…","Setting up playback…","Final audio check…"];
+  const prepDuration=8000+Math.floor(Math.random()*4001);
+  const stepDuration=prepDuration/messages.length;
   for(let i=0;i<messages.length;i++){
    if(token!==state.searchToken)return;
    status(messages[i]);$("#paiYtProgress").style.width=((i+1)/messages.length*100)+"%";
-   await new Promise(resolve=>setTimeout(resolve,1200));
+   await new Promise(resolve=>setTimeout(resolve,stepDuration));
   }
   if(token!==state.searchToken)return;
   $("#paiYtWork").hidden=true;$("#paiYtResult").hidden=false;
