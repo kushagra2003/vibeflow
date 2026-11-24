@@ -1,7 +1,7 @@
 (()=>{"use strict";
 const $=s=>document.querySelector(s);
 const state={results:[],index:0,player:null,apiPromise:null,searching:false,playing:false,progressTimer:null,searchToken:0};
-const status=(message)=>{const el=$("#paiYtStatus");if(el)el.textContent=message;};
+const status=(message)=>{const el=$("#paiYtStatus");if(el)el.textContent=message;const live=$("#paiYtNowStatus");if(live)live.textContent=message;};
 const phase=(message)=>{const el=$("#paiPhase");if(el)el.textContent=message;};
 const escapeHtml=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function ensureUI(){
@@ -14,7 +14,7 @@ function ensureUI(){
  <div class="pai-prompt-work" id="paiYtWork" hidden><div class="pai-prompt-workline"><span class="pai-prompt-spinner"></span><b id="paiYtStatus" role="status">Searching the crates…</b></div><div class="pai-prompt-progress"><i id="paiYtProgress"></i></div></div>
  <div class="pai-youtube-result" id="paiYtResult" hidden>
   <div class="pai-youtube-player-wrap"><div class="pai-youtube-label">SOURCE DECK · YOUTUBE</div><div id="paiYoutubePlayer" class="pai-youtube-player"></div></div>
-  <div class="pai-youtube-meta"><small id="paiYtCounter">RESULT 01</small><b id="paiYtTitle">Ready</b><span id="paiYtChannel"></span>
+  <div class="pai-youtube-meta"><small id="paiYtCounter">RESULT 01</small><b id="paiYtTitle">Ready</b><span class="pai-youtube-reaction" id="paiYtReaction">DJ TAKE · Let’s hear what this one brings.</span><span id="paiYtNowStatus" class="pai-youtube-now-status" role="status">Ready to play.</span><span id="paiYtChannel"></span>
    <div class="pai-youtube-controls"><button type="button" id="paiYtPlay">Ⅱ PAUSE</button><button type="button" id="paiYtBack">↶ 15s</button><button type="button" id="paiYtForward">15s ↷</button><button type="button" id="paiYtAgain" class="pai-youtube-again">↻ MIX AGAIN</button></div>
    <div class="pai-youtube-note">Compact YouTube player · playback may require one tap if your browser blocks autoplay.</div>
   </div>
@@ -86,7 +86,7 @@ async function playResult(index,first=false){
  if(index>=state.results.length){status("That crate is empty. Search again for a fresh set.");return;}
  state.index=index;const result=state.results[index];
  $("#paiYtCounter").textContent="RESULT "+String(index+1).padStart(2,"0")+" / "+String(state.results.length).padStart(2,"0");
- $("#paiYtTitle").textContent=result.title;$("#paiYtChannel").textContent=result.channel;
+ $("#paiYtTitle").textContent=result.title;$("#paiYtChannel").textContent=result.channel;$("#paiYtReaction").textContent=["DJ TAKE · This one might bring the late-night energy.","DJ TAKE · Let’s see if this groove earns a place in the set.","DJ TAKE · A fresh crate pick. Give it a few bars.","DJ TAKE · Could be the curveball this set needs."][index%4];
  $("#paiYtAgain").disabled=index>=state.results.length-1;
  $("#paiYtResult").hidden=false;phase("YOUTUBE DECK · "+(first?"SET LOADED":"MIX RELOADED"));
  status("Loading "+result.title+"…");
