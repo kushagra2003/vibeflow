@@ -1,0 +1,32 @@
+#partyAi .pai-prompt-deck{max-width:800px;margin:22px auto 18px;padding:18px;border:1px solid #4a3b69;border-radius:16px;background:linear-gradient(135deg,#171328f2,#0c1020f2);box-shadow:0 18px 55px #0007;text-align:left;position:relative;z-index:2}
+#partyAi .pai-prompt-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+#partyAi .pai-prompt-kicker{font-size:8px;letter-spacing:2px;color:#43ddff;font-weight:900}
+#partyAi .pai-prompt-head h3{font-size:clamp(18px,2.6vw,25px);margin:5px 0;color:#fff}
+#partyAi .pai-prompt-head p{font-size:11px;color:#a99fbd;margin:0}
+#partyAi .pai-prompt-live{font-size:8px;letter-spacing:1px;color:#d6ff3f;white-space:nowrap}
+#partyAi .pai-prompt-form{display:flex;gap:9px;margin:15px 0 10px}
+#partyAi .pai-prompt-form input{flex:1;width:100%;font-size:13px;padding:13px 14px;background:#080b16;border:1px solid #3e4262;border-radius:10px;color:#fff}
+#partyAi .pai-prompt-form button,.pai-youtube-again{background:linear-gradient(100deg,#6b48e8,#d33f9c)!important;border:0!important;font-size:9px;font-weight:900;letter-spacing:1px;white-space:nowrap}
+#partyAi .pai-prompt-work{padding:10px 0}
+#partyAi .pai-prompt-workline{display:flex;align-items:center;gap:9px;color:#d8d0ed;font-size:10px;letter-spacing:.7px}
+#partyAi .pai-prompt-spinner{width:12px;height:12px;border:2px solid #4d3c68;border-top-color:#43ddff;border-radius:50%;animation:pai-prompt-spin .7s linear infinite}
+#partyAi .pai-prompt-progress{height:3px;background:#2a2440;border-radius:4px;overflow:hidden;margin-top:10px}
+#partyAi .pai-prompt-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#38d9ff,#9b70ff,#ff3fa4,#d6ff3f);transition:width .3s}
+#partyAi .pai-youtube-result{display:flex;align-items:center;gap:18px;padding-top:14px;border-top:1px solid #ffffff12}
+#partyAi .pai-youtube-player-wrap{flex:0 0 200px}
+#partyAi .pai-youtube-label{font-size:8px;letter-spacing:1.4px;color:#43ddff;margin-bottom:7px}
+#partyAi .pai-youtube-player,#partyAi .pai-youtube-player iframe{width:200px!important;height:200px!important;display:block;border:0;border-radius:9px;background:#05060b}
+#partyAi .pai-youtube-meta{display:flex;flex-direction:column;gap:7px;min-width:0}
+#partyAi .pai-youtube-meta>small{font-size:8px;color:#d6ff3f;letter-spacing:1.4px}
+#partyAi .pai-youtube-meta>b{font-size:14px;line-height:1.35;color:#fff;overflow-wrap:anywhere}
+#partyAi .pai-youtube-meta>span{font-size:10px;color:#a99fbd}
+#partyAi .pai-youtube-controls{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px}
+#partyAi .pai-youtube-controls button{font-size:9px;padding:9px 11px}
+#partyAi .pai-youtube-controls button:disabled{opacity:.35}
+#partyAi .pai-youtube-note{font-size:9px;line-height:1.5;color:#897f9d;max-width:390px}
+#partyAi .pai-prompt-foot{font-size:7px;letter-spacing:1.4px;color:#726987;margin-top:12px}
+@keyframes pai-prompt-spin{to{transform:rotate(360deg)}}
+@media(max-width:600px){#partyAi .pai-prompt-head{display:block}#partyAi .pai-prompt-live{display:inline-block;margin-top:8px}#partyAi .pai-prompt-form{flex-direction:column}#partyAi .pai-prompt-form button{width:100%}#partyAi .pai-youtube-result{align-items:flex-start;flex-direction:column}#partyAi .pai-youtube-player-wrap{flex-basis:auto}#partyAi .pai-youtube-meta{width:100%}}
+
+#partyAi .pai-youtube-reaction{font-size:10px;line-height:1.5;color:#d8c5ff;margin-top:2px}
+#partyAi .pai-youtube-now-status{font-size:9px;line-height:1.5;color:#43ddff;min-height:14px}
